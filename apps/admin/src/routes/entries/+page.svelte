@@ -3,6 +3,8 @@
   import { page } from '$app/stores';
   import type { ContentTypeField } from '@lifeos/core';
 
+  export let params: any = undefined;
+
   interface ContentType { id: number; slug: string; name: string; schema: { fields: ContentTypeField[] }; }
   interface Entry { id: number; createdAt: string; updatedAt: string; [k: string]: unknown; }
 
@@ -67,6 +69,9 @@
 
 <div class="stack">
   <h2 style="margin:0">Entries</h2>
+  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+    View, create, search, and manage individual raw database records across all custom collections and content types defined in your workspace.
+  </p>
 
   <div class="h-row" style="flex-wrap:wrap; gap:6px">
     {#each types as t (t.id)}

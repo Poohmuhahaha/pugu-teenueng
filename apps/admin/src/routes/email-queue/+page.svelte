@@ -43,15 +43,15 @@
 
   $: filter, load();
 
-  onMount(load);
+  const filterOptions: (typeof filter)[] = ['all', 'pending', 'sent', 'abandoned'];
 </script>
 
 <div class="stack">
   <h2 style="margin:0">Email queue</h2>
 
   <div class="h-row" style="gap:6px; flex-wrap:wrap">
-    {#each ['all', 'pending', 'sent', 'abandoned'] as f}
-      <button class="chip" class:active={filter === f} on:click={() => (filter = f as typeof filter)}>{f}</button>
+    {#each filterOptions as f}
+      <button class="chip" class:active={filter === f} on:click={() => (filter = f)}>{f}</button>
     {/each}
   </div>
 

@@ -81,7 +81,7 @@ function shell(opts: { preheader: string; heading: string; body: string; cta?: {
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px; background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;">
             <tr>
               <td style="padding:32px 36px 0 36px;">
-                <div style="font-weight:800; font-size:14px; color:#7c3aed; letter-spacing:0.1em;">LIFEOS</div>
+                <div style="font-weight:800; font-size:14px; color:#c9ad93; letter-spacing:0.1em;">LIFEOS</div>
               </td>
             </tr>
             <tr>
@@ -93,7 +93,7 @@ function shell(opts: { preheader: string; heading: string; body: string; cta?: {
             ${opts.cta ? `<tr>
               <td style="padding:8px 36px 32px 36px;">
                 <a href="${escapeHtml(opts.cta.url)}"
-                   style="display:inline-block; padding:12px 22px; background:#7c3aed; color:#ffffff; font-weight:600; font-size:14px; border-radius:10px; text-decoration:none;">
+                   style="display:inline-block; padding:12px 22px; background:#c9ad93; color:#000000; font-weight:700; font-size:14px; border-radius:8px; text-decoration:none;">
                   ${escapeHtml(opts.cta.label)}
                 </a>
               </td>

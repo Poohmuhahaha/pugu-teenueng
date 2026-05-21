@@ -51,6 +51,7 @@
 
 <div class="stack">
   <h2 style="margin:0">Search</h2>
+  <!-- svelte-ignore a11y-autofocus -->
   <input
     bind:value={q}
     on:input={onInput}

@@ -20,7 +20,11 @@
     const meRes = await fetch('/api/v1/me');
     if (meRes.ok) {
       const meBody = await meRes.json();
-      me = { workspace: { id: meBody.actor.workspaceId, role: meBody.actor.role }, workspaces: meBody.memberships.map((m: { workspace: { id: number; name: string; slug: string }; role: string }) => ({ ...m.workspace, role: m.role })), user: meBody.user };
+      me = {
+        workspace: { id: meBody.actor?.workspaceId, role: meBody.actor?.role },
+        workspaces: (meBody.memberships ?? []).map((m: { workspace: { id: number; name: string; slug: string }; role: string }) => ({ ...m.workspace, role: m.role })),
+        user: meBody.user
+      };
       const active = me.workspaces.find((w) => w.id === me!.workspace.id);
       renameValue = active?.name ?? '';
     }
@@ -162,7 +166,7 @@
               <td>{m.email}</td>
               <td>
                 {#if isAdmin && m.userId !== me.user.id}
-                  <select value={m.role} on:change={(e) => changeRole(m, (e.currentTarget as HTMLSelectElement).value)}>
+                  <select value={m.role} on:change={(e) => changeRole(m, e.target.value)}>
                     <option value="viewer">viewer</option>
                     <option value="member">member</option>
                     <option value="editor">editor</option>

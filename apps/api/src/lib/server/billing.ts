@@ -54,8 +54,8 @@ export async function createCheckoutSession(req: CheckoutSessionRequest): Promis
     customer: req.existingCustomerId ?? undefined,
     customer_email: req.existingCustomerId ? undefined : req.customerEmail,
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${base}/${req.workspaceSlug}/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/${req.workspaceSlug}/settings/billing?cancelled=1`,
+    success_url: `${base}/billing?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/billing?cancelled=1`,
     client_reference_id: String(req.workspaceId),
     metadata: { workspaceId: String(req.workspaceId), plan: req.plan },
     subscription_data: {
@@ -90,7 +90,7 @@ export async function createPortalSession(req: PortalRequest): Promise<{ url: st
   const base = process.env.PUBLIC_BASE_URL ?? 'http://localhost:3001';
   const session = await stripe.billingPortal.sessions.create({
     customer: req.customerId,
-    return_url: `${base}/${req.workspaceSlug}/settings/billing`,
+    return_url: `${base}/billing`,
   });
   return { url: session.url };
 }

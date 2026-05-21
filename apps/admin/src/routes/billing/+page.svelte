@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
 
+  export let params: any = undefined;
+
   interface BillingSummary {
     subscription: { plan: string; status: string; currentPeriodEnd?: string };
     usage: { entries: number; members: number };

@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import type { ContentTypeField } from '@lifeos/core';
 
+  export let params: any = undefined;
+
   interface ContentType {
     id: number;
     slug: string;
@@ -69,6 +71,9 @@
     <h2 style="margin:0">Content Types</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Type'}</button>
   </div>
+  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+    Design and manage your headless database schemas. Each Content Type defines fields (e.g. text, relations, select choices) and strict validation rules for database entries across your workspaces.
+  </p>
 
   {#if creating}
     <form class="card stack" on:submit|preventDefault={submit}>

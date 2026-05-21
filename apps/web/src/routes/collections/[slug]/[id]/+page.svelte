@@ -4,6 +4,8 @@
   import { renderWikiLinks } from '@lifeos/core';
   import type { ContentTypeField } from '@lifeos/core';
 
+  export let params: any = undefined;
+
   interface Entry { id: number; createdAt: string; updatedAt: string; [k: string]: unknown; }
   interface ContentType { schema: { fields: ContentTypeField[] }; name: string; slug: string; }
   interface BackrefRow { id: number; fromEntryId: number; toEntryId: number | null; targetName: string | null; context: string | null; }
@@ -93,12 +95,14 @@
   .field { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
   .label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
   .value { font-size: 14px; white-space: pre-wrap; }
-  :global(.wikilink) { color: var(--accent); font-weight: 600; cursor: pointer; background: rgba(124,58,237,0.08); padding: 1px 5px; border-radius: 4px; text-decoration: none; }
+  :global(.wikilink) { color: var(--accent); font-weight: 600; cursor: pointer; background: rgba(var(--accent-rgb), 0.12); padding: 2px 6px; border-radius: 4px; text-decoration: none; border-bottom: 1px dashed var(--accent); transition: all 0.2s; }
+  :global(.wikilink:hover) { background: rgba(var(--accent-rgb), 0.24); }
   .refs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 24px; border-top: 1px solid var(--border); }
   .ref { padding: 6px 0; font-size: 13px; }
   .ref a { color: var(--accent); text-decoration: none; }
+  .ref a:hover { text-decoration: underline; }
   .ref .context { color: var(--muted); margin-left: 8px; font-size: 12px; }
   .unresolved { color: var(--muted); }
   .empty { color: var(--muted); font-size: 13px; }
-  .empty code { background: rgba(124,58,237,0.08); padding: 1px 6px; border-radius: 4px; }
+  .empty code { background: rgba(var(--accent-rgb), 0.12); padding: 2px 6px; border-radius: 4px; }
 </style>

@@ -3,6 +3,8 @@
   import { goto } from '$app/navigation';
   import { onSyncEvent } from '$lib/sync';
 
+  export let params: any = undefined;
+
   interface Entry { id: number; data: Record<string, unknown>; contentType?: { slug: string; name: string } }
   interface Backref { id: number; fromEntryId: number; toEntryId: number | null; targetName: string | null; }
   interface Node { id: number; label: string; group: string; x?: number; y?: number; vx?: number; vy?: number; fx?: number | null; fy?: number | null; }
@@ -22,17 +24,26 @@
 
   async function load() {
     loading = true;
-    const typesRes = await fetch('/api/v1/content-types').then((r) => r.json());
+    const typesRes = await fetch('/api/v1/content-types').then((r) => (r.ok ? r.json() : null));
+    if (!typesRes || !typesRes.data) {
+      collections = [];
+      nodes = [];
+      edges = [];
+      loading = false;
+      return;
+    }
     collections = typesRes.data.map((t: { slug: string; name: string }) => ({ slug: t.slug, name: t.name }));
 
-    const palette = ['#7c3aed', '#facc15', '#10b981', '#3b82f6', '#ef4444', '#f97316', '#06b6d4', '#a855f7'];
+    const palette = ['#c9ad93', '#879a77', '#b36b53', '#738c9c', '#c29b63', '#5b7053', '#695a50', '#a65f46'];
     collections.forEach((c, i) => (groupColors[c.slug] = palette[i % palette.length]));
 
     const allEntries: Entry[] = [];
     for (const c of collections) {
-      const res = await fetch(`/api/v1/${c.slug}?pagination[pageSize]=200`).then((r) => r.json());
-      entriesBySlug[c.slug] = res.data.map((e: Record<string, unknown>) => ({ ...e, contentType: c }));
-      for (const e of entriesBySlug[c.slug]) allEntries.push(e as Entry);
+      const res = await fetch(`/api/v1/${c.slug}?pagination[pageSize]=200`).then((r) => (r.ok ? r.json() : null));
+      if (res && res.data) {
+        entriesBySlug[c.slug] = res.data.map((e: Record<string, unknown>) => ({ ...e, contentType: c }));
+        for (const e of entriesBySlug[c.slug]) allEntries.push(e as Entry);
+      }
     }
 
     nodes = allEntries.map((e) => ({
@@ -163,20 +174,25 @@
           {@const sy = (typeof e.source === 'object' ? e.source.y : 0) ?? 0}
           {@const tx = (typeof e.target === 'object' ? e.target.x : 0) ?? 0}
           {@const ty = (typeof e.target === 'object' ? e.target.y : 0) ?? 0}
-          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="#cbd5e1" stroke-width="1" />
+          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="var(--border)" stroke-opacity="0.5" stroke-width="1.5" />
         {/each}
       </g>
       <g>
         {#each nodes as n (n.id)}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
           <g
             transform={`translate(${n.x ?? 0}, ${n.y ?? 0})`}
             on:mousedown={(e) => onMouseDown(e, n)}
             on:dblclick={() => navigate(n)}
+            on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(n)}
+            role="button"
+            tabindex="0"
             class:dim={selectedNodeId !== null && n.id !== selectedNodeId && !neighborIds.has(n.id)}
             style="cursor:pointer"
           >
-            <circle r="10" fill={groupColors[n.group] ?? '#888'} stroke={n.id === selectedNodeId ? '#111' : 'white'} stroke-width="2" />
-            <text x="14" y="4" font-size="11" fill="#111">{n.label}</text>
+            <circle r="10" fill={groupColors[n.group] ?? 'var(--muted)'} stroke={n.id === selectedNodeId ? 'var(--ink)' : 'var(--bg)'} stroke-width="2.5" />
+            <text x="14" y="4" font-size="11" font-weight="600" fill="var(--ink)" stroke="var(--bg)" stroke-width="2" paint-order="stroke fill">{n.label}</text>
           </g>
         {/each}
       </g>

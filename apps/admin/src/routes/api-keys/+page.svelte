@@ -57,6 +57,9 @@
     <h2 style="margin:0">API Keys</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Key'}</button>
   </div>
+  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+    Issue secure authentication tokens to safely query and modify your workspace databases from external scripts, CLI clients, desktop extensions, or workflow automations.
+  </p>
 
   {#if creating}
     <form class="card stack" on:submit|preventDefault={submit}>

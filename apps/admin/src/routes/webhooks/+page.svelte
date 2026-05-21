@@ -77,6 +77,9 @@
     <h2 style="margin:0">Webhooks</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Webhook'}</button>
   </div>
+  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+    Register HTTP POST endpoints to receive real-time JSON payloads whenever database entries are created, updated, or deleted. deliveries are HMAC-signed for security.
+  </p>
 
   {#if creating}
     <form class="card stack" on:submit|preventDefault={submit}>

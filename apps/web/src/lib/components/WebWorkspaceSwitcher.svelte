@@ -13,10 +13,10 @@
     const meRes = await fetch('/api/v1/me');
     if (meRes.ok) {
       const body = await meRes.json();
-      workspaces = body.memberships.map((m: { workspace: { id: number; name: string; slug: string }; role: string }) => ({
+      workspaces = (body.memberships ?? []).map((m: { workspace: { id: number; name: string; slug: string }; role: string }) => ({
         id: m.workspace.id, name: m.workspace.name, slug: m.workspace.slug, role: m.role,
       }));
-      activeId = body.actor.workspaceId ?? null;
+      activeId = body.actor?.workspaceId ?? null;
     }
   }
 
@@ -61,6 +61,7 @@
         <div class="divider"></div>
         {#if creating}
           <form on:submit|preventDefault={create} class="new-form">
+            <!-- svelte-ignore a11y-autofocus -->
             <input bind:value={newName} placeholder="New workspace name" autofocus />
             <button type="submit">Create</button>
           </form>
@@ -80,10 +81,10 @@
   .menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 240px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 6px; z-index: 50; }
   .item { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; color: var(--ink); font-size: 13px; cursor: pointer; text-align: left; }
   .item:hover { background: var(--surface); }
-  .item.active { background: rgba(124,58,237,0.08); color: var(--accent); font-weight: 600; }
+  .item.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); font-weight: 600; }
   .role { font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.06em; }
   .divider { height: 1px; background: var(--border); margin: 4px 0; }
   .new-form { display: flex; gap: 6px; padding: 6px 4px; }
-  .new-form input { flex: 1; height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; }
-  .new-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .new-form input { flex: 1; height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; background: var(--bg); color: var(--ink); }
+  .new-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--accent); color: #000000; font-size: 12px; font-weight: 700; cursor: pointer; }
 </style>

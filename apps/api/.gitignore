@@ -1,0 +1,11 @@
+.env
+.env.local
+.env.*.local
+node_modules
+.svelte-kit
+build
+dist
+.vite
+playwright-report
+test-results
+prisma/migrations/dev.db*

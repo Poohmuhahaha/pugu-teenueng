@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  email          String            @unique
+  name           String
+  passwordHash   String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+  memberships    WorkspaceMember[]
+  apiKeys        ApiKey[]
+  createdEntries ContentEntry[]    @relation("EntryCreator")
+  tokens         AuthToken[]
+  sessions       Session[]
+}
+
+model AuthToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 'magic' | 'reset'
+  kind      String
+  /// SHA-256 hex of the token sent in email — raw token never stored
+  hash      String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, kind])
+}
+
+/// Active session JWTs. Stored so users can list + revoke individual logins.
+model Session {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// SHA-256 of the JWT — raw token never stored
+  tokenHash  String    @unique
+  ua         String?
+  ip         String?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  revokedAt  DateTime?
+
+  @@index([userId, revokedAt])
+}
+
+model EmailJob {
+  id          Int       @id @default(autoincrement())
+  recipient   String
+  subject     String
+  text        String
+  html        String?
+  attempts    Int       @default(0)
+  /// null/past = ready to run; future = scheduled retry
+  nextRunAt   DateTime  @default(now())
+  lastError   String?
+  sentAt      DateTime?
+  abandonedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([nextRunAt, sentAt, abandonedAt])
+  @@index([recipient])
+}
+
+model WaitlistEntry {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  utmSource   String?
+  utmCampaign String?
+  ref         String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Workspace {
+  id                 Int                          @id @default(autoincrement())
+  name               String
+  slug               String                       @unique
+  /// Stripe customer id (cus_...) — null until first billing event
+  stripeCustomerId   String?                      @unique
+  createdAt          DateTime                     @default(now())
+  updatedAt          DateTime                     @updatedAt
+  deletedAt          DateTime?
+  members            WorkspaceMember[]
+  contentTypes       ContentType[]
+  entries            ContentEntry[]
+  apiKeys            ApiKey[]
+  webhooks           Webhook[]
+  auditLogs          AuditLog[]
+  subscription       Subscription?
+  permissionDefaults WorkspacePermissionDefault[]
+
+  @@index([deletedAt])
+}
+
+/// Workspace-level permission template applied to new ContentTypes.
+/// On POST /content-types we copy these into ContentTypePermission rows.
+model WorkspacePermissionDefault {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  role        String
+  actions     String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([workspaceId, role])
+}
+
+model Subscription {
+  id                   Int       @id @default(autoincrement())
+  workspaceId          Int       @unique
+  workspace            Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// free | personal | studio | enterprise
+  plan                 String    @default("free")
+  /// active | past_due | canceled | trialing
+  status               String    @default("active")
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([status])
+}
+
+model WorkspaceMember {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// owner | admin | editor | viewer | member
+  role        String    @default("member")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model ContentType {
+  id          Int                     @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  slug        String
+  name        String
+  /// { fields: ContentTypeField[] }
+  schema      Json
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  deletedAt   DateTime?
+  entries     ContentEntry[]
+  permissions ContentTypePermission[]
+
+  @@unique([workspaceId, slug])
+  @@index([workspaceId, deletedAt])
+}
+
+/// Per-content-type permission override. If a row exists for { contentTypeId, role }
+/// the listed actions are granted to that role regardless of workspace rank.
+/// Absence of any row falls back to workspace role rank baseline.
+model ContentTypePermission {
+  id            Int         @id @default(autoincrement())
+  contentTypeId Int
+  contentType   ContentType @relation(fields: [contentTypeId], references: [id], onDelete: Cascade)
+  /// viewer | member | editor | admin | owner
+  role          String
+  /// ['read', 'create', 'update', 'delete']
+  actions       String[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([contentTypeId, role])
+}
+
+model ContentEntry {
+  id            Int         @id @default(autoincrement())
+  contentTypeId Int
+  contentType   ContentType @relation(fields: [contentTypeId], references: [id], onDelete: Cascade)
+  workspaceId   Int
+  workspace     Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  data          Json
+  createdById   Int?
+  createdBy     User?       @relation("EntryCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  outgoingRefs  Backref[]   @relation("BackrefFrom")
+  incomingRefs  Backref[]   @relation("BackrefTo")
+
+  @@index([contentTypeId, deletedAt])
+  @@index([workspaceId, contentTypeId, createdAt])
+}
+
+model Backref {
+  id          Int           @id @default(autoincrement())
+  workspaceId Int
+  fromEntryId Int
+  toEntryId   Int?
+  /// Target name as written in [[...]]. NULL if toEntryId resolved.
+  targetName  String?
+  /// Optional alias for display.
+  alias       String?
+  /// Where on the source the link starts (for hover-preview / scroll-to).
+  offset      Int           @default(0)
+  context     String?       @db.Text
+  createdAt   DateTime      @default(now())
+  fromEntry   ContentEntry  @relation("BackrefFrom", fields: [fromEntryId], references: [id], onDelete: Cascade)
+  toEntry     ContentEntry? @relation("BackrefTo", fields: [toEntryId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, toEntryId])
+  @@index([fromEntryId])
+  @@index([targetName])
+}
+
+model ApiKey {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  /// first 8 chars, indexed for fast lookup
+  prefix      String    @unique
+  /// bcrypt of full secret
+  hash        String
+  /// viewer | editor | admin
+  role        String    @default("viewer")
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  @@index([workspaceId])
+}
+
+model Webhook {
+  id              Int              @id @default(autoincrement())
+  workspaceId     Int
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  url             String
+  /// null = all content types
+  contentTypeSlug String?
+  /// ['afterCreate', 'afterUpdate', 'afterDelete', 'beforeDelete']
+  events          String[]
+  /// HMAC signing secret
+  secret          String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  disabledAt      DateTime?
+  failures        WebhookFailure[]
+
+  @@index([workspaceId])
+}
+
+model WebhookFailure {
+  id          Int       @id @default(autoincrement())
+  webhookId   Int
+  webhook     Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  event       String
+  payload     Json
+  statusCode  Int?
+  errorMsg    String?
+  attempts    Int       @default(0)
+  nextRetryAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([webhookId, createdAt])
+  @@index([nextRetryAt])
+}
+
+model AuditLog {
+  id          Int        @id @default(autoincrement())
+  workspaceId Int?
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  userId      Int?
+  apiKeyId    Int?
+  action      String
+  entity      String
+  entityId    Int?
+  diff        Json?
+  ip          String?
+  ua          String?
+  createdAt   DateTime   @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([entity, entityId])
+}

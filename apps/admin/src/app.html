@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>LifeOS Admin</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var t = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (_) {}
+      })();
+    </script>
+    %sveltekit.head%
+  </head>
+  <body>
+    <div style="display:contents">%sveltekit.body%</div>
+  </body>
+</html>

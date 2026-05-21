@@ -1,0 +1,59 @@
+# ── Secrets ───────────────────────────────
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+*.pem
+*.key
+
+# ── Node / pnpm ───────────────────────────
+node_modules
+**/node_modules
+.pnpm-store
+**/.pnpm-store
+npm-debug.log*
+pnpm-debug.log*
+
+# ── Build output ──────────────────────────
+.svelte-kit
+**/.svelte-kit
+build
+**/build
+dist
+**/dist
+.vite
+**/.vite
+
+# ── Prisma ────────────────────────────────
+**/prisma/migrations/dev.db*
+**/prisma/.env
+
+# ── Tests / coverage ──────────────────────
+coverage
+**/coverage
+test-results
+**/test-results
+playwright-report
+**/playwright-report
+playwright/.cache
+.nyc_output
+
+# ── OS / editor ───────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea
+*.swp
+
+# ── Docker volumes ────────────────────────
+lifeos_db
+lifeos_minio
+
+# ── Generated docs ────────────────────────
+.turbo
+.next
+
+# ── Sentry sourcemaps upload ──────────────
+.sentryclirc

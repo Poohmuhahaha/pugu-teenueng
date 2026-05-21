@@ -1,0 +1,21 @@
+Thanks for installing LifeOS — Headless productivity OS.
+
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+  http{{ if .Values.ingress.tls }}s{{ end }}://{{ .Values.ingress.host }}
+{{- else }}
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ .Release.Name }}-web {{ .Values.service.web.port }}:{{ .Values.service.web.port }}
+  Open http://127.0.0.1:{{ .Values.service.web.port }}
+{{- end }}
+
+2. Status:
+   kubectl --namespace {{ .Release.Namespace }} get all -l app.kubernetes.io/instance={{ .Release.Name }}
+
+3. Database:
+{{- if .Values.postgres.external.host }}
+   Using external Postgres at {{ .Values.postgres.external.host }}
+{{- else if .Values.postgres.bundled.enabled }}
+   Using bundled Postgres ({{ .Values.postgres.bundled.storage }} PVC)
+{{- end }}
+
+Configure feature flags in `values.yaml` under `features:`.

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lifeos
+          POSTGRES_PASSWORD: lifeos
+          POSTGRES_DB: lifeos_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lifeos"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://lifeos:lifeos@localhost:5432/lifeos_test
+      JWT_SECRET: ci-secret-min-32-chars-please-replace-in-prod
+      CSRF_SECRET: ci-csrf-secret-min-32-chars-please-replace
+      COOKIE_NAME: lifeos_session
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm --filter @lifeos/api exec prisma generate
+      - run: pnpm --filter @lifeos/core build
+      - run: pnpm --filter @lifeos/sdk build
+      - run: pnpm --filter @lifeos/api build
+      - run: pnpm --filter @lifeos/admin build
+      - run: pnpm --filter @lifeos/web build
+      - run: pnpm --filter @lifeos/landing build
+      - run: pnpm --filter @lifeos/api test

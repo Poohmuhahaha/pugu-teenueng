@@ -1,0 +1,18 @@
+{
+  "slug": "reading-log",
+  "name": "Reading Log",
+  "description": "Books / articles / podcasts you've read, are reading, or want to read.",
+  "schema": {
+    "fields": [
+      { "name": "title",     "type": "text", "required": true },
+      { "name": "author",    "type": "text" },
+      { "name": "type",      "type": "select", "options": ["book","article","podcast","video","other"] },
+      { "name": "status",    "type": "select", "options": ["queue","reading","done","abandoned"] },
+      { "name": "rating",    "type": "number" },
+      { "name": "highlights","type": "richtext" },
+      { "name": "url",       "type": "text" },
+      { "name": "startedAt", "type": "date" },
+      { "name": "finishedAt","type": "date" }
+    ]
+  }
+}

@@ -7,7 +7,7 @@ Get a working LifeOS instance in 10 minutes — locally or on a server.
 You need Docker + Docker Compose. That's it.
 
 ```bash
-git clone https://github.com/lifeos/lifeos.git
+git clone https://github.com/Poohmuhahaha/lifeos.git
 cd lifeos
 cp .env.example .env
 # edit .env: set POSTGRES_PASSWORD, JWT_SECRET, CSRF_SECRET (32+ chars each)
@@ -36,7 +36,7 @@ Open http://localhost:3001 and sign in.
 You need Node 20 + pnpm 9 + a Postgres instance.
 
 ```bash
-git clone https://github.com/lifeos/lifeos.git
+git clone https://github.com/Poohmuhahaha/lifeos.git
 cd lifeos
 pnpm install
 cp .env.example .env  # set DATABASE_URL + secrets

@@ -143,7 +143,7 @@
 </main>
 
 <footer>
-  <span>© 2026 LifeOS · <a href="https://github.com/lifeos/lifeos/blob/main/docs/quickstart.md">Quickstart</a> · <a href="https://github.com/lifeos/lifeos/blob/main/docs/self-host.md">Self-host</a> · <a href="https://github.com/lifeos/lifeos/blob/main/docs/api.md">API docs</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
+  <span>© 2026 LifeOS · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">Quickstart</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">Self-host</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">API docs</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
 </footer>
 
 <style>

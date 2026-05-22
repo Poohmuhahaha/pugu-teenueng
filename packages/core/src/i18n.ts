@@ -54,7 +54,7 @@ const messages: Record<Locale, MessageDict> = {
     'landing.section.pricing': 'Pricing',
 
     'landing.feature.graph.title': 'Knowledge graph',
-    'landing.feature.graph.desc': 'Bi-directional [[wiki-links]] with hover-preview. The connections behind what you know.',
+    'landing.feature.graph.desc': 'Bi-directional <code>[[wiki-links]]</code> with hover-preview. The connections behind what you know.',
     'landing.feature.editor.title': 'Block editor',
     'landing.feature.editor.desc': 'TipTap-powered pages. Headings, todos, code, embeds. Same data, multiple views.',
     'landing.feature.db.title': 'Database views',
@@ -67,14 +67,14 @@ const messages: Record<Locale, MessageDict> = {
     'landing.feature.webhooks.desc': 'HMAC-signed events on every create / update / delete. Wire to Slack, Zapier, anything.',
 
     'landing.pricing.free.name': 'Free',
-    'landing.pricing.free.price': '฿0',
+    'landing.pricing.free.price': '$0',
     'landing.pricing.free.period': '/mo',
     'landing.pricing.free.bullet1': '1 workspace · 1 user',
     'landing.pricing.free.bullet2': '1,000 entries',
     'landing.pricing.free.bullet3': 'Community support',
 
     'landing.pricing.pro.name': 'Personal Pro',
-    'landing.pricing.pro.price': '฿199',
+    'landing.pricing.pro.price': '$5.99',
     'landing.pricing.pro.period': '/mo',
     'landing.pricing.pro.bullet1': 'Unlimited entries',
     'landing.pricing.pro.bullet2': '5 GB files',
@@ -82,14 +82,14 @@ const messages: Record<Locale, MessageDict> = {
     'landing.pricing.pro.bullet4': 'Priority email',
 
     'landing.pricing.studio.name': 'Studio',
-    'landing.pricing.studio.price': '฿999',
+    'landing.pricing.studio.price': '$29',
     'landing.pricing.studio.period': '/mo',
     'landing.pricing.studio.bullet1': '10 users',
     'landing.pricing.studio.bullet2': '50 GB · SSO · audit log',
     'landing.pricing.studio.bullet3': 'Email SLA 24h',
 
     'landing.pricing.selfhost.name': 'Self-host',
-    'landing.pricing.selfhost.price': '฿0',
+    'landing.pricing.selfhost.price': '$0',
     'landing.pricing.selfhost.period': '· AGPL-3.0',
     'landing.pricing.selfhost.bullet1': 'Unlimited everything',
     'landing.pricing.selfhost.bullet2': 'Docker + Helm',
@@ -145,7 +145,7 @@ const messages: Record<Locale, MessageDict> = {
     'landing.section.pricing': 'ราคา',
 
     'landing.feature.graph.title': 'Knowledge graph',
-    'landing.feature.graph.desc': 'ลิงก์หากันสองทิศทาง [[wiki-links]] พร้อมหน้าต่างตัวอย่างเมื่อชี้เมาส์ เชื่อมโยงทุกสิ่งที่คุณรู้',
+    'landing.feature.graph.desc': 'ลิงก์หากันสองทิศทาง <code>[[wiki-links]]</code> พร้อมหน้าต่างตัวอย่างเมื่อชี้เมาส์ เชื่อมโยงทุกสิ่งที่คุณรู้',
     'landing.feature.editor.title': 'Block editor',
     'landing.feature.editor.desc': 'หน้าเว็บที่ทำงานด้วย TipTap รองรับหัวข้อ รายการงาน โค้ด และการฝังเนื้อหา ข้อมูลชุดเดียวแสดงผลได้หลายแบบ',
     'landing.feature.db.title': 'แสดงผลแบบฐานข้อมูล',

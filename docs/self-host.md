@@ -82,6 +82,7 @@ Then point the Stripe Dashboard webhook to `https://lifeos.example.com/api/webho
 
 ### 8. Scaling beyond one node
 
+See [docs/scaling.md](scaling.md) for full details on:
 - Move rate limit to Redis-backed (e.g. `@upstash/ratelimit`)
 - Move webhook delivery to a queue worker (BullMQ + Redis)
 - Run multiple `api` replicas behind a load balancer (sessions are stateless JWT)

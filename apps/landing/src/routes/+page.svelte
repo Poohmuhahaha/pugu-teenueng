@@ -42,7 +42,7 @@
   <nav>
     <a href="#features">Features</a>
     <a href="#pricing">Pricing</a>
-    <a href="https://github.com/lifeos">GitHub</a>
+    <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
     <div class="lang">
       {#each SUPPORTED_LOCALES as l}
         <button class:active={locale === l} on:click={() => switchLocale(l)}>{l.toUpperCase()}</button>
@@ -143,7 +143,7 @@
 </main>
 
 <footer>
-  <span>© 2026 LifeOS · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">Quickstart</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">Self-host</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">API docs</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
+  <span>© 2026 LifeOS · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">Quickstart</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">Self-host</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">API docs</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/webhooks.md">Webhooks</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
 </footer>
 
 <style>

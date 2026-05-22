@@ -40,9 +40,9 @@
 <header>
   <div class="brand">LifeOS</div>
   <nav>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
+    <a href="#features">{t('nav.features', locale)}</a>
+    <a href="#pricing">{t('nav.pricing', locale)}</a>
+    <a href="https://github.com/Poohmuhahaha/lifeos">{t('nav.github', locale)}</a>
     <div class="lang">
       {#each SUPPORTED_LOCALES as l}
         <button class:active={locale === l} on:click={() => switchLocale(l)}>{l.toUpperCase()}</button>
@@ -56,7 +56,7 @@
     <h1>{t('landing.headline.left', locale)} <span class="accent">{t('landing.headline.right', locale)}</span></h1>
     <p class="lede">{t('landing.lede', locale)}</p>
     <form class="waitlist" on:submit|preventDefault={joinWaitlist}>
-      <input type="email" bind:value={email} placeholder="you@example.com" required />
+      <input type="email" bind:value={email} placeholder={t('landing.cta.placeholder', locale)} required />
       <button type="submit" disabled={submitting}>{submitted ? t('landing.cta.done', locale) : submitting ? t('landing.cta.sending', locale) : t('landing.cta', locale)}</button>
     </form>
     <p class="microcopy">{t('landing.microcopy', locale)}</p>
@@ -67,33 +67,33 @@
     <div class="grid">
       <div class="card">
         <div class="dot"></div>
-        <h3>Knowledge graph</h3>
-        <p>Bi-directional <code>[[wiki-links]]</code> with hover-preview. The connections behind what you know.</p>
+        <h3>{t('landing.feature.graph.title', locale)}</h3>
+        <p>{@html t('landing.feature.graph.desc', locale)}</p>
       </div>
       <div class="card">
         <div class="dot green"></div>
-        <h3>Block editor</h3>
-        <p>TipTap-powered pages. Headings, todos, code, embeds. Same data, multiple views.</p>
+        <h3>{t('landing.feature.editor.title', locale)}</h3>
+        <p>{@html t('landing.feature.editor.desc', locale)}</p>
       </div>
       <div class="card">
         <div class="dot"></div>
-        <h3>Database views</h3>
-        <p>Table, Kanban, Calendar, Timeline — all reading the same content entries.</p>
+        <h3>{t('landing.feature.db.title', locale)}</h3>
+        <p>{@html t('landing.feature.db.desc', locale)}</p>
       </div>
       <div class="card">
         <div class="dot green"></div>
-        <h3>Local-first + offline PWA</h3>
-        <p>RxDB sync engine. Airplane mode editing. True ownership.</p>
+        <h3>{t('landing.feature.local.title', locale)}</h3>
+        <p>{@html t('landing.feature.local.desc', locale)}</p>
       </div>
       <div class="card">
         <div class="dot"></div>
-        <h3>Public REST API</h3>
-        <p>Strapi-style filters, sort, pagination. API keys per workspace. OpenAPI 3.1 spec.</p>
+        <h3>{t('landing.feature.api.title', locale)}</h3>
+        <p>{@html t('landing.feature.api.desc', locale)}</p>
       </div>
       <div class="card">
         <div class="dot green"></div>
-        <h3>Webhooks</h3>
-        <p>HMAC-signed events on every create / update / delete. Wire to Slack, Zapier, anything.</p>
+        <h3>{t('landing.feature.webhooks.title', locale)}</h3>
+        <p>{@html t('landing.feature.webhooks.desc', locale)}</p>
       </div>
     </div>
   </section>
@@ -102,40 +102,40 @@
     <h2>{t('landing.section.pricing', locale)}</h2>
     <div class="tiers">
       <div class="tier">
-        <div class="tier-name">Free</div>
-        <div class="tier-price">฿0 <span>/mo</span></div>
+        <div class="tier-name">{t('landing.pricing.free.name', locale)}</div>
+        <div class="tier-price">{t('landing.pricing.free.price', locale)} <span>{t('landing.pricing.free.period', locale)}</span></div>
         <ul>
-          <li>1 workspace · 1 user</li>
-          <li>1,000 entries</li>
-          <li>Community support</li>
+          <li>{t('landing.pricing.free.bullet1', locale)}</li>
+          <li>{t('landing.pricing.free.bullet2', locale)}</li>
+          <li>{t('landing.pricing.free.bullet3', locale)}</li>
         </ul>
       </div>
-      <div class="tier accent">
-        <div class="tier-name">Personal Pro</div>
-        <div class="tier-price">฿199 <span>/mo</span></div>
+      <div class="tier accent" data-label={locale === 'en' ? 'RECOMMENDED' : 'แนะนำ'}>
+        <div class="tier-name">{t('landing.pricing.pro.name', locale)}</div>
+        <div class="tier-price">{t('landing.pricing.pro.price', locale)} <span>{t('landing.pricing.pro.period', locale)}</span></div>
         <ul>
-          <li>Unlimited entries</li>
-          <li>5 GB files</li>
-          <li>Public API access</li>
-          <li>Priority email</li>
-        </ul>
-      </div>
-      <div class="tier">
-        <div class="tier-name">Studio</div>
-        <div class="tier-price">฿999 <span>/mo</span></div>
-        <ul>
-          <li>10 users</li>
-          <li>50 GB · SSO · audit log</li>
-          <li>Email SLA 24h</li>
+          <li>{t('landing.pricing.pro.bullet1', locale)}</li>
+          <li>{t('landing.pricing.pro.bullet2', locale)}</li>
+          <li>{t('landing.pricing.pro.bullet3', locale)}</li>
+          <li>{t('landing.pricing.pro.bullet4', locale)}</li>
         </ul>
       </div>
       <div class="tier">
-        <div class="tier-name">Self-host</div>
-        <div class="tier-price">฿0 <span>· AGPL-3.0</span></div>
+        <div class="tier-name">{t('landing.pricing.studio.name', locale)}</div>
+        <div class="tier-price">{t('landing.pricing.studio.price', locale)} <span>{t('landing.pricing.studio.period', locale)}</span></div>
         <ul>
-          <li>Unlimited everything</li>
-          <li>Docker + Helm</li>
-          <li>Paid customization & support</li>
+          <li>{t('landing.pricing.studio.bullet1', locale)}</li>
+          <li>{t('landing.pricing.studio.bullet2', locale)}</li>
+          <li>{t('landing.pricing.studio.bullet3', locale)}</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tier-name">{t('landing.pricing.selfhost.name', locale)}</div>
+        <div class="tier-price">{t('landing.pricing.selfhost.price', locale)} <span>{t('landing.pricing.selfhost.period', locale)}</span></div>
+        <ul>
+          <li>{t('landing.pricing.selfhost.bullet1', locale)}</li>
+          <li>{t('landing.pricing.selfhost.bullet2', locale)}</li>
+          <li>{t('landing.pricing.selfhost.bullet3', locale)}</li>
         </ul>
       </div>
     </div>
@@ -143,7 +143,7 @@
 </main>
 
 <footer>
-  <span>© 2026 LifeOS · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">Quickstart</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">Self-host</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">API docs</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/webhooks.md">Webhooks</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span>
+  <span>{t('landing.footer.copyright', locale)} · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">{t('landing.footer.quickstart', locale)}</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">{t('landing.footer.selfhost', locale)}</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">{t('landing.footer.api', locale)}</a> · <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/webhooks.md">{t('landing.footer.webhooks', locale)}</a> · <a href="/privacy">{t('landing.footer.privacy', locale)}</a> · <a href="/terms">{t('landing.footer.terms', locale)}</a></span>
 </footer>
 
 <style>
@@ -248,7 +248,7 @@
   .dot.green { background: #879a77; box-shadow: 0 0 8px #879a77; }
   .card h3 { margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #ffffff; }
   .card p { margin: 0; color: #c5c6c7; font-size: 14px; line-height: 1.6; }
-  .card code { background: rgba(201, 173, 147, 0.1); color: #c9ad93; padding: 2px 6px; border-radius: 6px; font-size: 12px; border: 1px solid rgba(201, 173, 147, 0.08); }
+  :global(.card code) { background: rgba(201, 173, 147, 0.1); color: #c9ad93; padding: 2px 6px; border-radius: 6px; font-size: 12px; border: 1px solid rgba(201, 173, 147, 0.08); }
 
   .pricing .tiers { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
   .tier {
@@ -269,7 +269,7 @@
     position: relative;
   }
   .tier.accent::before {
-    content: 'RECOMMENDED';
+    content: attr(data-label);
     position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
     background: #c9ad93;
     color: #000000; font-size: 9px; font-weight: 800; padding: 4px 10px;

@@ -46,6 +46,7 @@
     <nav class="nav-links">
       <a href="#features">{t('nav.features', locale)}</a>
       <a href="#pricing">{t('nav.pricing', locale)}</a>
+      <a href="/docs/">Docs</a>
       <a href="https://github.com/Poohmuhahaha/lifeos">{t('nav.github', locale)}</a>
     </nav>
     <div class="nav-right">
@@ -290,7 +291,7 @@
           <li>{t('landing.pricing.selfhost.bullet2', locale)}</li>
           <li>{t('landing.pricing.selfhost.bullet3', locale)}</li>
         </ul>
-        <a class="button-secondary" href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">Read docs</a>
+        <a class="button-secondary" href="/docs/self-host">Read docs</a>
       </div>
     </div>
   </section>
@@ -350,10 +351,10 @@
       </div>
       <div class="footer-col">
         <h4>Docs</h4>
-        <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/quickstart.md">{t('landing.footer.quickstart', locale)}</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/self-host.md">{t('landing.footer.selfhost', locale)}</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/api.md">{t('landing.footer.api', locale)}</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos/blob/main/docs/webhooks.md">{t('landing.footer.webhooks', locale)}</a>
+        <a href="/docs/quickstart">{t('landing.footer.quickstart', locale)}</a>
+        <a href="/docs/self-host">{t('landing.footer.selfhost', locale)}</a>
+        <a href="/docs/api">{t('landing.footer.api', locale)}</a>
+        <a href="/docs/webhooks">{t('landing.footer.webhooks', locale)}</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>

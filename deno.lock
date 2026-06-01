@@ -12,6 +12,7 @@
     "npm:bcryptjs@^2.4.3": "2.4.3",
     "npm:jose@^5.9.6": "5.10.0",
     "npm:lru-cache@11": "11.5.0",
+    "npm:marked@^14.1.4": "14.1.4",
     "npm:prisma@*": "5.22.0",
     "npm:prisma@^5.22.0": "5.22.0",
     "npm:svelte@^4.2.19": "4.2.20",
@@ -887,6 +888,10 @@
         "@jridgewell/sourcemap-codec"
       ]
     },
+    "marked@14.1.4": {
+      "integrity": "sha512-vkVZ8ONmUdPnjCKc5uTRvmkRbx4EAi2OkTOXmfTDhZz3OFqMNBM1oTTWwTr4HY4uAEojhzPf+Fy8F1DWa3Sndg==",
+      "bin": true
+    },
     "mdn-data@2.0.30": {
       "integrity": "sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA=="
     },
@@ -1162,6 +1167,9 @@
     }
   },
   "workspace": {
+    "dependencies": [
+      "npm:marked@^14.1.4"
+    ],
     "members": {
       "apps/admin": {
         "packageJson": {

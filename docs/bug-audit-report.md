@@ -168,3 +168,64 @@ Agent 1.2 found 2 bugs, Agent 2.2 fixed 2, deferred 0.
 - **Address C-B/C-C/C-D**: Three small, well-understood follow-ups from cycle 1. Each is <10 lines plus tests/docs. Bundling them into a single "tech-debt: cycle 1 carry-overs" commit would clear the backlog cleanly.
 - **Add a `parseQuery` test file**: This module is now the second-most-foot-gun-prone file in the API (after the webhook handler) and has zero direct unit coverage. A 5-case test (one per operator family + the field-name whitelist) would be cheap and load-bearing.
 - **Verdict**: Cycle 3 is **worthwhile** but small — one real bug (B-015) plus three known carry-overs. After that, signal is likely thin enough to stop and shift to test coverage.
+
+---
+
+# Bug Audit Cycle 3 — 2026-06-01
+
+Agent 1.3 found 4 confirmed bugs (B-015 + carry-overs C-B, C-C, C-D), no new bugs.
+Agent 2.3 fixed all four (plus a stale comment in `[collection]/+server.ts`).
+
+**Commit**: [63335df](https://github.com/Poohmuhahaha/lifeos/commit/63335df)
+**Tests**: 25/25 passing (`apps/api` vitest)
+**Build**: clean (`apps/api` vite build, `apps/web` vite build)
+
+## Summary
+
+| Severity | Found | Fixed | Verified | Partial | Wrong | Deferred |
+|----------|-------|-------|----------|---------|-------|----------|
+| P1       | 0     | 0     | 0        | 0       | 0     | 0        |
+| P2       | 2     | 2     | 2        | 0       | 0     | 0        |
+| P3       | 2     | 2     | 2        | 0       | 0     | 0        |
+| **Total**| **4** | **4** | **4**    | **0**   | **0** | **0**    |
+
+(B-015 = P2, C-C = P2, C-B = P3, C-D = P3.)
+
+## Verification details
+
+**B-015 — `$in` filter semantics** ✅
+`apps/api/src/lib/server/query.ts:66` now reads `andClauses.push({ OR: all.map((v) => ({ data: { path: [field], equals: v } })) })`. `array_contains` is gone from the codebase (the only remaining reference is the explanatory comment above the new line). `parseQuery` only enters this branch when at least one `filters[…][$in]=…` is present, so `all` is always non-empty and the empty-OR pitfall doesn't apply. API build clean; the upstream callsite in `[collection]/+server.ts` simply spreads `q.where.AND` into the Prisma where clause unchanged.
+
+**C-B — touchSession error visibility** ✅
+`apps/api/src/lib/server/sessions.ts:27` now logs to stderr: `.catch((err) => { console.error('[sessions.touch] update failed:', err); })`. Request flow is still non-blocking — the await + catch is preserved exactly where it was, so a DB hiccup never bubbles into the user-facing response. Operators now see failures in logs.
+
+**C-C — ensurePersonalWorkspace race** ✅
+`apps/api/src/lib/server/workspace.ts:49-69` now re-queries `workspaceMember.findFirst({ userId, role: 'owner' })` inside the P2002 catch. If the user already owns a workspace (concurrent same-user signup case), it returns that workspace and skips the suffixed-create path. Only when no owner membership exists for this `userId` (genuine cross-user slug collision) does it fall back to `${baseSlug}-${suffix}`. The free-tier subscription `upsert` at the bottom remains idempotent so it's safe on either branch. Race trace walked end-to-end; no path now creates a duplicate workspace for the same user.
+
+**C-D — PUBLIC_WEB_URL documentation** ✅
+Added to two places:
+- `.env.example:31` — `PUBLIC_WEB_URL=""` with comment noting dev fallback and production requirement.
+- `docs/self-host.md:62` — full row in the optional-env table explaining the CLI device-code use case, dev `:3000→:5176` fallback, and production requirement.
+Doc text matches the implementation at `apps/api/src/routes/api/auth/device/start/+server.ts:64` exactly (`process.env.PUBLIC_WEB_URL ?? event.url.origin.replace(/:3000$/, ':5176')`).
+
+**Stale comment cleanup** ✅
+`apps/api/src/routes/api/v1/[collection]/+server.ts:31-34` now correctly states "Sort keys that target JSON fields under `data` are silently dropped — Prisma can't push them down and we no longer support in-memory sorting for paged queries." Matches actual behavior.
+
+## Three-cycle totals
+
+| Cycle | Found | Fixed | Verified | Deferred |
+|-------|-------|-------|----------|----------|
+| 1     | 12    | 11    | 9        | 1 (B-004) |
+| 2     | 2     | 2     | 1+1⚠     | 0        |
+| 3     | 4     | 4     | 4        | 0        |
+| **Total** | **18** | **17** | **14+1⚠** | **1** |
+
+(Cycle 2's ⚠ was a partial-verify on a fix that landed but with a known follow-up — addressed and cleared in cycle 3.)
+
+## Outstanding items
+
+- **B-004** — Email "delivered: false" handling. Deferred by design judgment in cycle 1. Still applicable as a product decision, not a code bug.
+
+## Loop status
+
+🛑 **Loop terminates here** — three consecutive cycles, all cycle-3 fixes verified, no new bugs introduced by fixes, no carry-overs remaining, deferral list stable at 1 (B-004, which is a product decision rather than a defect).

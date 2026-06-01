@@ -77,7 +77,7 @@
     <h2 style="margin:0">Webhooks</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Webhook'}</button>
   </div>
-  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+  <p style="color:var(--c-muted); font-size:13.5px; margin:4px 0 16px">
     Register HTTP POST endpoints to receive real-time JSON payloads whenever database entries are created, updated, or deleted. deliveries are HMAC-signed for security.
   </p>
 
@@ -105,17 +105,17 @@
   {/if}
 
   {#if issuedSecret}
-    <div class="card" style="border-color:var(--accent); background:rgba(124,58,237,0.06)">
-      <div class="label" style="color:var(--accent)">⚠ Signing secret — save it now to verify incoming signatures</div>
-      <code style="display:block; word-break:break-all; padding:12px; background:var(--bg); border-radius:8px; margin-top:8px; font-size:12px">{issuedSecret}</code>
-      <div style="font-size:11px; color:var(--muted); margin-top:8px">Verify webhook deliveries with: HMAC-SHA256(rawBody, secret) === X-LifeOS-Signature header (after the "sha256=" prefix).</div>
+    <div class="card" style="border-color:var(--c-ink); background:rgba(124,58,237,0.06)">
+      <div class="label" style="color:var(--c-ink)">⚠ Signing secret — save it now to verify incoming signatures</div>
+      <code style="display:block; word-break:break-all; padding:12px; background:var(--c-canvas); border-radius:8px; margin-top:8px; font-size:12px">{issuedSecret}</code>
+      <div style="font-size:11px; color:var(--c-muted); margin-top:8px">Verify webhook deliveries with: HMAC-SHA256(rawBody, secret) === X-LifeOS-Signature header (after the "sha256=" prefix).</div>
     </div>
   {/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if hooks.length === 0}
-    <div class="card" style="text-align:center; padding:48px 20px; color:var(--muted)">
+    <div class="card" style="text-align:center; padding:48px 20px; color:var(--c-muted)">
       No webhooks yet. Register one to receive HTTP POSTs on content-entry events.
     </div>
   {:else}
@@ -127,7 +127,7 @@
             <td><code>{h.url}</code></td>
             <td>{h.contentTypeSlug ?? '*'}</td>
             <td>{h.events.join(', ')}</td>
-            <td style:color={h.disabledAt ? 'var(--muted)' : '#10b981'}>{h.disabledAt ? 'disabled' : 'active'}</td>
+            <td style:color={h.disabledAt ? 'var(--c-muted)' : '#10b981'}>{h.disabledAt ? 'disabled' : 'active'}</td>
             <td>
               <button class="link" on:click={() => toggleDisabled(h)}>{h.disabledAt ? 'Enable' : 'Disable'}</button>
               <button class="link" on:click={() => showFailures(h.id)}>{expandedFailures === h.id ? 'Hide' : 'Failures'}</button>
@@ -136,9 +136,9 @@
           </tr>
           {#if expandedFailures === h.id}
             <tr>
-              <td colspan="5" style="padding: 12px; background: var(--surface)">
+              <td colspan="5" style="padding: 12px; background: var(--c-surface-card)">
                 {#if failures.length === 0}
-                  <p style="color:var(--muted); font-size:13px; margin:0">No failures recorded. 🎉</p>
+                  <p style="color:var(--c-muted); font-size:13px; margin:0">No failures recorded. 🎉</p>
                 {:else}
                   <table class="t-inner">
                     <thead><tr><th>When</th><th>Event</th><th>Status</th><th>Attempts</th><th>Next retry</th><th>Error</th></tr></thead>
@@ -166,15 +166,15 @@
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom:none; }
   .t code { font-size:11px; }
-  .link { background: transparent; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 2px 6px; margin-right: 4px; }
+  .link { background: transparent; border: none; color: var(--c-ink); font-size: 12px; cursor: pointer; padding: 2px 6px; margin-right: 4px; }
   .link:hover { text-decoration: underline; }
   .link.danger { color: #dc2626; }
   .t-inner { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .t-inner th { text-align: left; padding: 6px 8px; color: var(--muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-  .t-inner td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  .t-inner th { text-align: left; padding: 6px 8px; color: var(--c-muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--c-hairline); }
+  .t-inner td { padding: 6px 8px; border-bottom: 1px solid var(--c-hairline); }
 </style>

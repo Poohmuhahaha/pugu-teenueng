@@ -73,9 +73,9 @@
   {#if err}<p style="color:#dc2626; font-size:13px; margin:0">{err}</p>{/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if sessions.length === 0}
-    <p style="color:var(--muted)">No active sessions tracked yet.</p>
+    <p style="color:var(--c-muted)">No active sessions tracked yet.</p>
   {:else}
     <table class="t">
       <thead><tr><th>Device</th><th>IP</th><th>Last seen</th><th>Created</th><th>Status</th><th></th></tr></thead>
@@ -86,10 +86,10 @@
               {shortUA(s.ua)}
               {#if s.current}<span class="chip">this device</span>{/if}
             </td>
-            <td style="font-size:12px; color:var(--muted)">{s.ip ?? '—'}</td>
+            <td style="font-size:12px; color:var(--c-muted)">{s.ip ?? '—'}</td>
             <td>{new Date(s.lastSeenAt).toLocaleString()}</td>
             <td>{new Date(s.createdAt).toLocaleDateString()}</td>
-            <td style:color={s.revokedAt ? 'var(--muted)' : '#10b981'}>{s.revokedAt ? 'revoked' : 'active'}</td>
+            <td style:color={s.revokedAt ? 'var(--c-muted)' : '#10b981'}>{s.revokedAt ? 'revoked' : 'active'}</td>
             <td>
               {#if !s.revokedAt && !s.current}
                 <button class="link danger" on:click={() => revoke(s)}>Revoke</button>
@@ -103,12 +103,12 @@
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom:none; }
-  .chip { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 10px; text-transform: uppercase; background: rgba(124,58,237,0.12); color: var(--accent); border-radius: 999px; letter-spacing: 0.06em; font-weight: 700; }
-  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--accent); }
+  .chip { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 10px; text-transform: uppercase; background: rgba(124,58,237,0.12); color: var(--c-ink); border-radius: 999px; letter-spacing: 0.06em; font-weight: 700; }
+  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); }
   .link.danger { color: #dc2626; }
   .link:hover { text-decoration: underline; }
 </style>

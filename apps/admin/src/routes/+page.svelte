@@ -61,7 +61,7 @@
 </script>
 
 <style>
-  .link { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 2px 6px; font-size: 12px; text-decoration: none; }
+  .link { background: transparent; border: none; color: var(--c-ink); cursor: pointer; padding: 2px 6px; font-size: 12px; text-decoration: none; }
   .link:hover { text-decoration: underline; }
   .link.danger { color: #dc2626; }
 </style>
@@ -71,7 +71,7 @@
     <h2 style="margin:0">Content Types</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Type'}</button>
   </div>
-  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+  <p style="color:var(--c-muted); font-size:13.5px; margin:4px 0 16px">
     Design and manage your headless database schemas. Each Content Type defines fields (e.g. text, relations, select choices) and strict validation rules for database entries across your workspaces.
   </p>
 
@@ -107,7 +107,7 @@
                 <option value="file">file</option>
                 <option value="checkbox">checkbox</option>
               </select>
-              <label class="h-row" style="font-size:12px; color:var(--muted)">
+              <label class="h-row" style="font-size:12px; color:var(--c-muted)">
                 <input type="checkbox" bind:checked={f.required} /> required
               </label>
               <button type="button" class="btn btn-ghost" on:click={() => removeField(i)}>×</button>
@@ -122,9 +122,9 @@
   {/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if types.length === 0}
-    <div class="card" style="text-align:center; padding:48px 20px; color:var(--muted)">
+    <div class="card" style="text-align:center; padding:48px 20px; color:var(--c-muted)">
       No content types yet. Click + New Type to define your first collection.
     </div>
   {:else}
@@ -134,12 +134,12 @@
           <div class="h-row" style="justify-content:space-between; align-items:center">
             <a href={`/entries?type=${t.slug}`} style="text-decoration:none; color:inherit; flex:1">
               <div style="font-weight:600">{t.name}</div>
-              <div style="font-size:12px; color:var(--muted); margin-top:4px">/{t.slug} · {t.schema.fields.length} fields</div>
+              <div style="font-size:12px; color:var(--c-muted); margin-top:4px">/{t.slug} · {t.schema.fields.length} fields</div>
             </a>
             <div class="h-row" style="gap:8px; font-size:12px">
               <a href={`/content-types/${t.id}/permissions`} class="link">Permissions</a>
               <button class="link danger" type="button" on:click={() => deleteType(t)}>Delete</button>
-              <span style="color:var(--muted); font-size:11px; margin-left:8px">{new Date(t.createdAt).toLocaleDateString()}</span>
+              <span style="color:var(--c-muted); font-size:11px; margin-left:8px">{new Date(t.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         </div>

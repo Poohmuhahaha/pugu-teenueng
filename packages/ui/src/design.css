@@ -68,27 +68,6 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Legacy aliases — match older page-level CSS that used these names */
-  --bg: var(--c-canvas);
-  --bg-rgb: 255, 255, 255;
-  --canvas: var(--c-canvas);
-  --primary: var(--c-primary);
-  --primary-active: var(--c-primary-active);
-  --primary-disabled: var(--c-hairline);
-  --surface: var(--c-surface-card);
-  --surface-soft: var(--c-surface-soft);
-  --surface-dark: var(--c-surface-dark);
-  --border: var(--c-hairline);
-  --border-soft: var(--c-hairline-soft);
-  --ink: var(--c-ink);
-  --body: var(--c-body);
-  --muted: var(--c-muted);
-  --muted-soft: var(--c-muted-soft);
-  --accent: var(--c-ink);
-  --accent-rgb: 17, 17, 17;
-  --brand-accent: var(--c-brand-accent);
-  --accent-kpi: var(--c-success);
-  --shadow: var(--shadow-sm);
 }
 
 /* ===== Reset / base ===== */

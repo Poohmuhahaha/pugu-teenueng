@@ -57,7 +57,7 @@
     <h2 style="margin:0">API Keys</h2>
     <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Key'}</button>
   </div>
-  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+  <p style="color:var(--c-muted); font-size:13.5px; margin:4px 0 16px">
     Issue secure authentication tokens to safely query and modify your workspace databases from external scripts, CLI clients, desktop extensions, or workflow automations.
   </p>
 
@@ -81,16 +81,16 @@
   {/if}
 
   {#if issuedSecret}
-    <div class="card" style="border-color:var(--accent); background:rgba(124,58,237,0.06)">
-      <div class="label" style="color:var(--accent)">⚠ Save this key — it will not be shown again</div>
-      <code style="display:block; word-break:break-all; padding:12px; background:var(--bg); border-radius:8px; margin-top:8px; font-size:12px">{issuedSecret}</code>
+    <div class="card" style="border-color:var(--c-ink); background:rgba(124,58,237,0.06)">
+      <div class="label" style="color:var(--c-ink)">⚠ Save this key — it will not be shown again</div>
+      <code style="display:block; word-break:break-all; padding:12px; background:var(--c-canvas); border-radius:8px; margin-top:8px; font-size:12px">{issuedSecret}</code>
     </div>
   {/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if keys.length === 0}
-    <div class="card" style="text-align:center; padding:48px 20px; color:var(--muted)">
+    <div class="card" style="text-align:center; padding:48px 20px; color:var(--c-muted)">
       No API keys issued yet. Use one to access the REST API from outside this dashboard.
     </div>
   {:else}
@@ -106,7 +106,7 @@
             <td>{k.role}</td>
             <td>{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleString() : '—'}</td>
             <td>{new Date(k.createdAt).toLocaleDateString()}</td>
-            <td style:color={k.revokedAt ? 'var(--muted)' : '#10b981'}>{k.revokedAt ? 'revoked' : 'active'}</td>
+            <td style:color={k.revokedAt ? 'var(--c-muted)' : '#10b981'}>{k.revokedAt ? 'revoked' : 'active'}</td>
             <td>
               {#if !k.revokedAt}
                 <button class="link danger" on:click={() => revoke(k)}>Revoke</button>
@@ -120,11 +120,11 @@
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom:none; }
-  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--accent); }
+  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); }
   .link:hover { text-decoration: underline; }
   .link.danger { color: #dc2626; }
 </style>

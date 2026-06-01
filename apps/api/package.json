@@ -12,7 +12,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps"
   },
   "prisma": { "seed": "tsx prisma/seed.ts" },
   "dependencies": {
@@ -28,13 +29,15 @@
     "stripe": { "optional": true },
     "@sentry/node": { "optional": true },
     "resend": { "optional": true },
-    "ioredis": { "optional": true }
+    "ioredis": { "optional": true },
+    "bullmq": { "optional": true }
   },
   "peerDependencies": {
     "stripe": "^17.0.0",
     "@sentry/node": "^8.0.0",
     "resend": "^4.0.0",
-    "ioredis": "^5.4.0"
+    "ioredis": "^5.4.0",
+    "bullmq": "^5.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.2.0",

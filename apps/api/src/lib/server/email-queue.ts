@@ -1,16 +1,20 @@
 import { db } from './db';
 import { sendEmail, type SendEmailRequest } from './email';
+import { enqueueEmailJob, activeBackendName } from './queue';
 
 const MAX_ATTEMPTS = 5;
 const BACKOFFS_SEC = [30, 120, 600, 3600, 21600]; // 30s, 2m, 10m, 1h, 6h
 
 /**
- * Persist an email and run it through the queue worker.
+ * Persist an email and dispatch it.
+ *
+ * Backend dispatch:
+ *   - Default (Postgres): processOne() runs in-process, cron retries.
+ *   - BullMQ (REDIS_URL set): enqueues to BullMQ; an external worker reads
+ *     the EmailJob row and calls sendEmail(). See docs/scaling.md.
+ *
  * Use this for transactional emails (signup welcome, invites, etc.) where
  * losing the message because the process crashed is unacceptable.
- *
- * For pure "fire and forget where bounce is fine" cases, calling sendEmail()
- * directly is still appropriate (e.g., audit notification noise).
  */
 export async function enqueueEmail(req: SendEmailRequest): Promise<number> {
   const row = await db.emailJob.create({
@@ -21,8 +25,14 @@ export async function enqueueEmail(req: SendEmailRequest): Promise<number> {
       html: req.html ?? null,
     },
   });
-  // Try immediately so dev flows don't wait for the cron tick
-  processOne(row.id).catch(() => {});
+
+  const backend = await activeBackendName();
+  if (backend === 'bullmq') {
+    await enqueueEmailJob({ ...req, jobId: row.id });
+  } else {
+    // In-process: try immediately so dev flows don't wait for the cron tick
+    processOne(row.id).catch(() => {});
+  }
   return row.id;
 }
 

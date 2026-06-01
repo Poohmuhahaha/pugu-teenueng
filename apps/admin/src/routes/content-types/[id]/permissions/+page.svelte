@@ -66,12 +66,12 @@
 </script>
 
 <div class="stack">
-  <a href="/" style="color:var(--muted); font-size:13px; text-decoration:none">← Content Types</a>
+  <a href="/" style="color:var(--c-muted); font-size:13px; text-decoration:none">← Content Types</a>
   <h2 style="margin:0">Permissions — {typeName}</h2>
-  <p style="color:var(--muted); font-size:13px; margin:0">Check a cell to grant that role the action on this content type. Falls back to workspace role defaults if all rows are empty.</p>
+  <p style="color:var(--c-muted); font-size:13px; margin:0">Check a cell to grant that role the action on this content type. Falls back to workspace role defaults if all rows are empty.</p>
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else}
     <div class="card">
       <table class="matrix">
@@ -105,7 +105,7 @@
 
 <style>
   .matrix { width: 100%; border-collapse: collapse; }
-  .matrix th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  .matrix td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .matrix th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--c-muted); padding: 10px 12px; border-bottom: 1px solid var(--c-hairline); }
+  .matrix td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--c-hairline); }
   .matrix tr:last-child td { border-bottom: none; }
 </style>

@@ -122,13 +122,13 @@
   .editor {
     min-height: 240px;
     padding: 20px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--c-hairline);
     border-radius: 8px;
-    background: var(--canvas);
+    background: var(--c-canvas);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     line-height: 1.6;
-    color: var(--body);
+    color: var(--c-body);
   }
   :global(.editor .ProseMirror) { outline: none; min-height: 220px; }
   :global(.editor .ProseMirror p.is-editor-empty:first-child::before) {
@@ -138,21 +138,21 @@
     float: left;
     height: 0;
   }
-  :global(.editor h1) { font-size: 22px; font-weight: 600; margin: 16px 0 8px; letter-spacing: -0.03em; color: var(--ink); }
-  :global(.editor h2) { font-size: 18px; font-weight: 600; margin: 14px 0 6px; letter-spacing: -0.02em; color: var(--ink); }
-  :global(.editor h3) { font-size: 15px; font-weight: 600; margin: 12px 0 4px; letter-spacing: -0.01em; color: var(--ink); }
+  :global(.editor h1) { font-size: 22px; font-weight: 600; margin: 16px 0 8px; letter-spacing: -0.03em; color: var(--c-ink); }
+  :global(.editor h2) { font-size: 18px; font-weight: 600; margin: 14px 0 6px; letter-spacing: -0.02em; color: var(--c-ink); }
+  :global(.editor h3) { font-size: 15px; font-weight: 600; margin: 12px 0 4px; letter-spacing: -0.01em; color: var(--c-ink); }
   :global(.editor ul) { padding-left: 20px; margin: 8px 0; }
   :global(.editor ol) { padding-left: 20px; margin: 8px 0; }
   :global(.editor pre) {
-    background: var(--surface);
-    color: var(--ink);
+    background: var(--c-surface-card);
+    color: var(--c-ink);
     padding: 12px 16px;
     border-radius: 6px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     margin: 12px 0;
   }
-  :global(.editor hr) { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  :global(.editor hr) { border: none; border-top: 1px solid var(--c-hairline); margin: 20px 0; }
   :global(.editor ul[data-type="taskList"]) { list-style: none; padding: 0; margin: 12px 0; }
   :global(.editor ul[data-type="taskList"] li) { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
 </style>

@@ -61,9 +61,9 @@
 
 <div class="head">
   <div>
-    <a href="/" style="color:var(--muted); text-decoration:none; font-size:13px">← Collections</a>
+    <a href="/" style="color:var(--c-muted); text-decoration:none; font-size:13px">← Collections</a>
     <h1 style="margin:8px 0 0">{type?.name ?? slug}</h1>
-    <p style="color:var(--muted); font-size:13px; margin:4px 0">{entries.length} entries</p>
+    <p style="color:var(--c-muted); font-size:13px; margin:4px 0">{entries.length} entries</p>
   </div>
   <div class="views">
     <button class:active={view === 'table'} on:click={() => (view = 'table')}>Table</button>
@@ -73,7 +73,7 @@
 </div>
 
 {#if loading}
-  <p style="color:var(--muted)">Loading…</p>
+  <p style="color:var(--c-muted)">Loading…</p>
 {:else if entries.length === 0}
   <div class="empty">No entries yet. Add one from <a href="http://localhost:5175/entries?type={slug}">admin</a>.</div>
 {:else if view === 'table' && type}
@@ -119,69 +119,69 @@
       </div>
     {/each}
     {#if entries.filter((e) => dateOf(e)).length === 0}
-      <p style="color:var(--muted)">No entries with date fields.</p>
+      <p style="color:var(--c-muted)">No entries with date fields.</p>
     {/if}
   </div>
 {/if}
 
 <style>
   .head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-  h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); }
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.04em; color: var(--c-ink); }
   .views {
     display: flex; gap: 4px; padding: 4px;
     background: var(--surface-soft, #f8f9fa);
-    border: 1px solid var(--border); border-radius: 9999px;
+    border: 1px solid var(--c-hairline); border-radius: 9999px;
   }
   .views button {
     padding: 6px 14px; border: none; background: transparent;
     border-radius: 9999px; font-size: 13px; cursor: pointer;
-    color: var(--muted); font-weight: 500; transition: all 0.2s;
+    color: var(--c-muted); font-weight: 500; transition: all 0.2s;
   }
-  .views button:hover:not(.active) { color: var(--ink); }
+  .views button:hover:not(.active) { color: var(--c-ink); }
   .views button.active {
-    background: var(--canvas); color: var(--ink);
-    font-weight: 600; box-shadow: var(--shadow);
+    background: var(--c-canvas); color: var(--c-ink);
+    font-weight: 600; box-shadow: var(--shadow-sm);
   }
-  .empty { padding: 60px 20px; text-align: center; color: var(--muted-soft); border: 1px dashed var(--border); border-radius: 12px; }
+  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted-soft); border: 1px dashed var(--c-hairline); border-radius: 12px; }
   .t {
-    width: 100%; border-collapse: collapse; background: var(--canvas);
-    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    width: 100%; border-collapse: collapse; background: var(--c-canvas);
+    border: 1px solid var(--c-hairline); border-radius: 8px; overflow: hidden;
   }
   .t th {
     text-align: left; font-size: 11px; text-transform: uppercase;
-    color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--border);
+    color: var(--c-muted); padding: 12px 16px; border-bottom: 1px solid var(--c-hairline);
     font-weight: 600; letter-spacing: 0.05em;
   }
-  .t td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--body); }
+  .t td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--c-hairline); color: var(--c-body); }
   .t tr:last-child td { border-bottom: none; }
-  .t a { color: var(--ink); text-decoration: none; font-weight: 600; }
-  .t a:hover { color: var(--brand-accent); }
+  .t a { color: var(--c-ink); text-decoration: none; font-weight: 600; }
+  .t a:hover { color: var(--c-brand-accent); }
   .kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
   .col {
-    min-width: 260px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 12px;
+    min-width: 260px; background: var(--c-surface-card);
+    border: 1px solid var(--c-hairline); border-radius: 12px;
     padding: 16px; display: flex; flex-direction: column; gap: 8px;
   }
-  .col-head { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .col-head { font-size: 11px; text-transform: uppercase; color: var(--c-muted); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 8px; }
   .kb-card {
-    display: block; background: var(--canvas); border: 1px solid var(--border);
-    border-radius: 8px; padding: 12px; font-size: 13px; color: var(--ink);
+    display: block; background: var(--c-canvas); border: 1px solid var(--c-hairline);
+    border-radius: 8px; padding: 12px; font-size: 13px; color: var(--c-ink);
     text-decoration: none; transition: all 0.2s; font-weight: 500;
   }
   .kb-card:hover {
-    border-color: var(--muted);
+    border-color: var(--c-muted);
     transform: translateY(-1px);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
   }
   .calendar { display: flex; flex-direction: column; gap: 8px; }
   .cal-row {
     display: flex; gap: 24px; align-items: center;
-    padding: 12px 16px; border: 1px solid var(--border);
-    border-radius: 8px; background: var(--canvas);
+    padding: 12px 16px; border: 1px solid var(--c-hairline);
+    border-radius: 8px; background: var(--c-canvas);
     transition: border-color 0.2s;
   }
-  .cal-row:hover { border-color: var(--muted); }
-  .cal-date { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 100px; font-weight: 500; }
-  .cal-title { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
-  .cal-title:hover { color: var(--brand-accent); }
+  .cal-row:hover { border-color: var(--c-muted); }
+  .cal-date { font-size: 12px; color: var(--c-muted); font-variant-numeric: tabular-nums; min-width: 100px; font-weight: 500; }
+  .cal-title { color: var(--c-ink); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+  .cal-title:hover { color: var(--c-brand-accent); }
 </style>

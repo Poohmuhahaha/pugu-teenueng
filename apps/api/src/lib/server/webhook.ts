@@ -1,14 +1,17 @@
 import { createHmac } from 'node:crypto';
 import { db } from './db';
+import { enqueueWebhookJob, activeBackendName } from './queue';
 
 export type HookEvent = 'afterCreate' | 'afterUpdate' | 'afterDelete' | 'beforeDelete';
 
 /**
  * Fire all matching webhooks for a workspace + content-type event.
- * Fire-and-forget — failures land in WebhookFailure for retry.
  *
- * For a true production pipeline, replace direct fetch with BullMQ + Redis;
- * this in-process version is appropriate for self-host single-node deployments.
+ * Backend dispatch:
+ *   - Default (in-process fetch): fire-and-forget; failures land in
+ *     WebhookFailure for cron-driven retry.
+ *   - BullMQ (REDIS_URL set): enqueues to BullMQ; an external worker
+ *     handles delivery + retries. See docs/scaling.md.
  */
 export async function fireWebhooks(opts: {
   workspaceId: number;
@@ -27,7 +30,9 @@ export async function fireWebhooks(opts: {
   });
   if (hooks.length === 0) return;
 
+  const backend = await activeBackendName();
   const timestamp = new Date().toISOString();
+
   for (const hook of hooks) {
     const body = JSON.stringify({
       event: opts.event,
@@ -37,8 +42,22 @@ export async function fireWebhooks(opts: {
       workspaceId: opts.workspaceId,
       timestamp,
     });
+
+    if (backend === 'bullmq') {
+      enqueueWebhookJob({
+        url: hook.url,
+        secret: hook.secret,
+        body,
+        hookId: hook.id,
+        event: opts.event,
+        contentTypeSlug: opts.contentTypeSlug,
+        entityId: opts.entityId,
+        workspaceId: opts.workspaceId,
+      }).catch(() => { /* falls back to DB retry below if BullMQ enqueue itself fails */ });
+      continue;
+    }
+
     const signature = createHmac('sha256', hook.secret).update(body).digest('hex');
-    // Fire — don't await; track failures async
     fetch(hook.url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-LifeOS-Signature': `sha256=${signature}` },
@@ -54,7 +73,7 @@ export async function fireWebhooks(opts: {
               statusCode: res.status,
               errorMsg: await res.text().catch(() => ''),
               attempts: 1,
-              nextRetryAt: new Date(Date.now() + 60_000), // retry in 1 min
+              nextRetryAt: new Date(Date.now() + 60_000),
             },
           });
         }

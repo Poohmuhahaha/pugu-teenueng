@@ -139,4 +139,46 @@ test.describe.serial('LifeOS happy path', () => {
     const body = await res.json();
     expect(body.ok).toBe(true);
   });
+
+  test('workspace switching persists across requests via cookie', async () => {
+    // Create a second workspace for this user so we have something to switch to.
+    const wsCreate = await ctx.post('/api/v1/workspaces', {
+      data: { name: `PW Second WS ${RUN}` },
+    });
+    expect(wsCreate.status()).toBeLessThan(300);
+    const secondId = (await wsCreate.json()).id;
+
+    // Initially /me reports the *first* workspace (oldest membership).
+    const before = await (await ctx.get('/api/v1/me')).json();
+    const initialWsId = before.actor.workspaceId;
+    expect(initialWsId).not.toBe(secondId);
+
+    // Switch to the second workspace.
+    const switched = await ctx.post(`/api/v1/workspaces/${secondId}/switch`);
+    expect(switched.status()).toBe(200);
+    const switchBody = await switched.json();
+    expect(switchBody.workspaceId).toBe(secondId);
+
+    // /me now reports the new active workspace.
+    const after = await (await ctx.get('/api/v1/me')).json();
+    expect(after.actor.workspaceId).toBe(secondId);
+
+    // Switching to a workspace the user isn't a member of must 403.
+    const stranger = await ctx.post('/api/v1/workspaces/999999999/switch');
+    expect(stranger.status()).toBe(403);
+  });
+
+  test('rate limiter rejects after threshold on login', async ({ request }) => {
+    // Login is configured with limit:10 / 15min per (ip + email).
+    // We hit a unique address with bad creds 11 times — the 11th must be 429.
+    const target = `rl-${RUN}@example.com`;
+    let saw429 = false;
+    for (let i = 0; i < 11; i++) {
+      const res = await request.post('/api/auth/login', {
+        data: { email: target, password: 'wrong-password' },
+      });
+      if (res.status() === 429) { saw429 = true; break; }
+    }
+    expect(saw429).toBe(true);
+  });
 });

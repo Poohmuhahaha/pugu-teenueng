@@ -152,7 +152,7 @@
 <div class="graph-head">
   <div>
     <h1>Knowledge Graph</h1>
-    <p style="color:var(--muted); font-size:13px; margin:4px 0">{nodes.length} entries · {edges.length} links</p>
+    <p style="color:var(--c-muted); font-size:13px; margin:4px 0">{nodes.length} entries · {edges.length} links</p>
   </div>
   <div class="legend">
     {#each collections as c (c.slug)}
@@ -162,7 +162,7 @@
 </div>
 
 {#if loading}
-  <p style="color:var(--muted)">Building graph…</p>
+  <p style="color:var(--c-muted)">Building graph…</p>
 {:else if nodes.length === 0}
   <div class="empty">No entries yet. Add some at <a href="http://localhost:5175">admin</a>.</div>
 {:else}
@@ -174,7 +174,7 @@
           {@const sy = (typeof e.source === 'object' ? e.source.y : 0) ?? 0}
           {@const tx = (typeof e.target === 'object' ? e.target.x : 0) ?? 0}
           {@const ty = (typeof e.target === 'object' ? e.target.y : 0) ?? 0}
-          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="var(--border)" stroke-opacity="0.5" stroke-width="1.5" />
+          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="var(--c-hairline)" stroke-opacity="0.5" stroke-width="1.5" />
         {/each}
       </g>
       <g>
@@ -191,8 +191,8 @@
             class:dim={selectedNodeId !== null && n.id !== selectedNodeId && !neighborIds.has(n.id)}
             style="cursor:pointer"
           >
-            <circle r="10" fill={groupColors[n.group] ?? 'var(--muted)'} stroke={n.id === selectedNodeId ? 'var(--ink)' : 'var(--bg)'} stroke-width="2.5" />
-            <text x="14" y="4" font-size="11" font-weight="600" fill="var(--ink)" stroke="var(--bg)" stroke-width="2" paint-order="stroke fill">{n.label}</text>
+            <circle r="10" fill={groupColors[n.group] ?? 'var(--c-muted)'} stroke={n.id === selectedNodeId ? 'var(--c-ink)' : 'var(--c-canvas)'} stroke-width="2.5" />
+            <text x="14" y="4" font-size="11" font-weight="600" fill="var(--c-ink)" stroke="var(--c-canvas)" stroke-width="2" paint-order="stroke fill">{n.label}</text>
           </g>
         {/each}
       </g>
@@ -202,7 +202,7 @@
         <button class="close" on:click={() => (selectedNodeId = null)} aria-label="Close">×</button>
         <div class="label">Selected</div>
         <h2>{selectedNode.label}</h2>
-        <p style="font-size:12px; color:var(--muted); margin:0 0 14px">in <code>{selectedNode.group}</code></p>
+        <p style="font-size:12px; color:var(--c-muted); margin:0 0 14px">in <code>{selectedNode.group}</code></p>
         <button class="btn" on:click={() => navigate(selectedNode)}>Open entry →</button>
         <div class="label" style="margin-top:24px">Neighbors ({neighborIds.size})</div>
         <ul class="neighbors">
@@ -212,7 +212,7 @@
               <li><button on:click={() => (selectedNodeId = nid)}>{node.label}</button></li>
             {/if}
           {/each}
-          {#if neighborIds.size === 0}<li style="color:var(--muted); font-size:13px">No connections yet.</li>{/if}
+          {#if neighborIds.size === 0}<li style="color:var(--c-muted); font-size:13px">No connections yet.</li>{/if}
         </ul>
       </aside>
     {/if}
@@ -223,21 +223,21 @@
   .graph-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   h1 { font-size: 26px; letter-spacing: -0.02em; margin: 0; }
   .legend { display: flex; gap: 8px; flex-wrap: wrap; max-width: 480px; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--c-muted); }
   .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .empty { padding: 60px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 12px; }
-  .graph-shell { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted); border: 1px dashed var(--c-hairline); border-radius: 12px; }
+  .graph-shell { position: relative; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 12px; overflow: hidden; }
   svg { width: 100%; height: 600px; display: block; }
   g.dim { opacity: 0.25; }
   .panel {
     position: absolute; top: 12px; right: 12px;
     width: 240px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    background: var(--c-canvas); border: 1px solid var(--c-hairline); border-radius: 10px;
     padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   }
-  .panel .close { position: absolute; top: 8px; right: 8px; background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--muted); }
+  .panel .close { position: absolute; top: 8px; right: 8px; background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--c-muted); }
   h2 { font-size: 16px; margin: 4px 0 2px; }
   .neighbors { list-style: none; padding: 0; margin: 0; max-height: 280px; overflow-y: auto; }
-  .neighbors li button { width: 100%; text-align: left; padding: 6px 8px; background: transparent; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--ink); }
-  .neighbors li button:hover { background: var(--surface); }
+  .neighbors li button { width: 100%; text-align: left; padding: 6px 8px; background: transparent; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--c-ink); }
+  .neighbors li button:hover { background: var(--c-surface-card); }
 </style>

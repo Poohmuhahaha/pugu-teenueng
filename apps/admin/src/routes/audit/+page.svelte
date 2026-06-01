@@ -42,9 +42,9 @@
   </div>
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if rows.length === 0}
-    <div class="card" style="text-align:center; padding:40px; color:var(--muted)">
+    <div class="card" style="text-align:center; padding:40px; color:var(--c-muted)">
       No audit entries match your filter.
     </div>
   {:else}
@@ -62,7 +62,7 @@
             </td>
             <td><code>{r.entity}</code></td>
             <td>{r.entityId ?? '—'}</td>
-            <td style="font-size:11px; color:var(--muted)">{r.ip ?? ''}</td>
+            <td style="font-size:11px; color:var(--c-muted)">{r.ip ?? ''}</td>
             <td>
               {#if r.diff}
                 <button class="link" on:click={() => (expanded = expanded === r.id ? null : r.id)}>{expanded === r.id ? 'Hide' : 'Diff'}</button>
@@ -71,7 +71,7 @@
           </tr>
           {#if expanded === r.id}
             <tr>
-              <td colspan="7" style="padding: 8px 12px; background: var(--surface)">
+              <td colspan="7" style="padding: 8px 12px; background: var(--c-surface-card)">
                 <pre style="font-size: 11px; margin: 0; white-space: pre-wrap; word-break: break-word">{JSON.stringify(r.diff, null, 2)}</pre>
               </td>
             </tr>
@@ -83,14 +83,14 @@
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom:none; }
   .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--surface-alt, #f5f5f5); }
   .chip[data-action="create"] { background: rgba(16,185,129,0.12); color: #047857; }
   .chip[data-action="update"] { background: rgba(59,130,246,0.12); color: #1d4ed8; }
   .chip[data-action="delete"] { background: rgba(220,38,38,0.12); color: #b91c1c; }
-  .link { background: transparent; border: none; color: var(--accent); font-size: 12px; cursor: pointer; }
+  .link { background: transparent; border: none; color: var(--c-ink); font-size: 12px; cursor: pointer; }
   .link:hover { text-decoration: underline; }
 </style>

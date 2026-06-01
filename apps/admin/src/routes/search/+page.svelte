@@ -62,21 +62,21 @@
   />
 
   {#if loading}
-    <p style="color:var(--muted)">Searching…</p>
+    <p style="color:var(--c-muted)">Searching…</p>
   {:else if hits.length === 0 && q.trim().length >= 2}
-    <p style="color:var(--muted)">No results for <strong>{q}</strong>.</p>
+    <p style="color:var(--c-muted)">No results for <strong>{q}</strong>.</p>
   {:else if hits.length > 0}
-    <p style="color:var(--muted); font-size:13px; margin:0">{total} {total === 1 ? 'hit' : 'hits'}</p>
+    <p style="color:var(--c-muted); font-size:13px; margin:0">{total} {total === 1 ? 'hit' : 'hits'}</p>
     <div class="stack">
       {#each hits as h (`${h.slug}-${h.id}`)}
         <a href={`/entries?type=${h.slug}`} class="card">
           <div class="h-row" style="justify-content:space-between; align-items:flex-start">
             <div style="flex:1">
               <div style="font-weight:600">{primaryField(h.data)}</div>
-              <div style="font-size:12px; color:var(--muted); margin-top:4px">in <code>{h.slug}</code> · {h.typeName}</div>
-              <p style="font-size:13px; margin:8px 0 0; color:var(--ink)">{snippet(h.data, q)}</p>
+              <div style="font-size:12px; color:var(--c-muted); margin-top:4px">in <code>{h.slug}</code> · {h.typeName}</div>
+              <p style="font-size:13px; margin:8px 0 0; color:var(--c-ink)">{snippet(h.data, q)}</p>
             </div>
-            <div style="font-size:11px; color:var(--muted)">{new Date(h.updatedAt).toLocaleDateString()}</div>
+            <div style="font-size:11px; color:var(--c-muted)">{new Date(h.updatedAt).toLocaleDateString()}</div>
           </div>
         </a>
       {/each}
@@ -85,7 +85,7 @@
 </div>
 
 <style>
-  .card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-decoration: none; color: inherit; }
-  .card:hover { border-color: var(--accent); }
+  .card { display: block; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 10px; padding: 16px; text-decoration: none; color: inherit; }
+  .card:hover { border-color: var(--c-ink); }
   code { background: rgba(124,58,237,0.08); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
 </style>

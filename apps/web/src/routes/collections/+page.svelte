@@ -173,18 +173,18 @@
     margin-bottom: 12px;
   }
   .breadcrumbs a {
-    color: var(--muted);
+    color: var(--c-muted);
     text-decoration: none;
     transition: color 0.2s;
   }
   .breadcrumbs a:hover {
-    color: var(--ink);
+    color: var(--c-ink);
   }
   .breadcrumbs .separator {
-    color: var(--border);
+    color: var(--c-hairline);
   }
   .breadcrumbs .current {
-    color: var(--ink);
+    color: var(--c-ink);
     font-weight: 500;
   }
 
@@ -194,11 +194,11 @@
     font-weight: 600;
     margin: 0 0 8px 0;
     letter-spacing: -0.04em;
-    color: var(--ink);
+    color: var(--c-ink);
   }
   .subtitle {
     font-size: 15px;
-    color: var(--muted);
+    color: var(--c-muted);
     margin: 0;
     max-width: 600px;
   }
@@ -210,7 +210,7 @@
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--c-hairline);
     padding-bottom: 24px;
   }
 
@@ -228,23 +228,23 @@
     transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    color: var(--muted);
+    color: var(--c-muted);
     pointer-events: none;
   }
   .search-input {
     width: 100%;
-    background: var(--canvas);
-    border: 1px solid var(--border);
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
     border-radius: 8px;
     padding: 10px 14px 10px 40px;
     font-family: inherit;
     font-size: 14px;
-    color: var(--ink);
+    color: var(--c-ink);
     outline: none;
     transition: all 0.2s;
   }
   .search-input:focus {
-    border-color: var(--ink);
+    border-color: var(--c-ink);
   }
   .clear-search {
     position: absolute;
@@ -253,13 +253,13 @@
     transform: translateY(-50%);
     background: transparent;
     border: none;
-    color: var(--muted);
+    color: var(--c-muted);
     font-size: 12px;
     cursor: pointer;
     font-weight: 500;
   }
   .clear-search:hover {
-    color: var(--ink);
+    color: var(--c-ink);
   }
 
   /* Admin Banner */
@@ -268,14 +268,14 @@
     align-items: center;
     gap: 10px;
     font-size: 13px;
-    color: var(--muted);
-    background: var(--surface);
+    color: var(--c-muted);
+    background: var(--c-surface-card);
     padding: 8px 16px;
     border-radius: 8px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--c-hairline);
   }
   .admin-link {
-    color: var(--ink);
+    color: var(--c-ink);
     font-weight: 600;
     text-decoration: none;
     display: flex;
@@ -284,7 +284,7 @@
     transition: color 0.2s;
   }
   .admin-link:hover {
-    color: var(--brand-accent);
+    color: var(--c-brand-accent);
   }
   .external-icon {
     width: 12px;
@@ -300,8 +300,8 @@
 
   /* Card */
   .collection-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--c-surface-card);
+    border: 1px solid var(--c-hairline);
     border-radius: 12px;
     padding: 24px;
     display: flex;
@@ -313,9 +313,9 @@
     min-height: 220px;
   }
   .collection-card:hover {
-    border-color: var(--muted);
+    border-color: var(--c-muted);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
   }
 
   .collection-meta {
@@ -324,9 +324,9 @@
   .collection-slug {
     font-family: monospace;
     font-size: 12px;
-    color: var(--muted);
-    background: var(--canvas);
-    border: 1px solid var(--border);
+    color: var(--c-muted);
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 600;
@@ -335,7 +335,7 @@
     font-size: 20px;
     font-weight: 600;
     margin: 0;
-    color: var(--ink);
+    color: var(--c-ink);
     letter-spacing: -0.03em;
   }
 
@@ -346,7 +346,7 @@
   .fields-label {
     font-size: 11px;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--c-muted);
     font-weight: 600;
     letter-spacing: 0.05em;
     margin-bottom: 10px;
@@ -360,38 +360,38 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: var(--canvas);
-    border: 1px solid var(--border);
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
     border-radius: 9999px;
     padding: 4px 10px;
     font-size: 11px;
   }
   .field-name {
-    color: var(--ink);
+    color: var(--c-ink);
     font-weight: 500;
   }
   .field-type {
-    color: var(--muted);
+    color: var(--c-muted);
     font-size: 10px;
-    border-left: 1px solid var(--border);
+    border-left: 1px solid var(--c-hairline);
     padding-left: 6px;
   }
   .no-fields {
     font-size: 13px;
-    color: var(--muted-soft);
+    color: var(--c-muted-soft);
     margin: 0;
     font-style: italic;
   }
 
   .card-footer {
     margin-top: 24px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--c-hairline);
     padding-top: 16px;
   }
   .explore-link {
     font-size: 13px;
     font-weight: 600;
-    color: var(--ink);
+    color: var(--c-ink);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -409,8 +409,8 @@
   .state-container {
     padding: 80px 20px;
     text-align: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--c-surface-card);
+    border: 1px solid var(--c-hairline);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -419,7 +419,7 @@
     gap: 16px;
   }
   .state-container p {
-    color: var(--muted);
+    color: var(--c-muted);
     margin: 0;
     font-size: 14px;
   }
@@ -428,8 +428,8 @@
   .spinner {
     width: 28px;
     height: 28px;
-    border: 2px solid var(--border);
-    border-top-color: var(--ink);
+    border: 2px solid var(--c-hairline);
+    border-top-color: var(--c-ink);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -439,15 +439,15 @@
 
   /* Error state */
   .error-state p {
-    color: var(--brand-accent);
+    color: var(--c-brand-accent);
     font-weight: 500;
   }
   .error-icon {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: var(--border);
-    color: var(--ink);
+    background: var(--c-hairline);
+    color: var(--c-ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -455,8 +455,8 @@
     font-size: 18px;
   }
   .retry-btn, .clear-btn, .create-btn {
-    background: var(--primary);
-    color: var(--canvas);
+    background: var(--c-primary);
+    color: var(--c-canvas);
     border: none;
     padding: 8px 18px;
     border-radius: 8px;
@@ -467,7 +467,7 @@
     transition: background 0.2s;
   }
   .retry-btn:hover, .clear-btn:hover, .create-btn:hover {
-    background: var(--primary-active);
+    background: var(--c-primary-active);
   }
 
   /* Empty state */
@@ -475,6 +475,6 @@
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: var(--ink);
+    color: var(--c-ink);
   }
 </style>

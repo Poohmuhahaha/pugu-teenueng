@@ -89,14 +89,14 @@
   {/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if summary}
     <div class="card stack">
       <div class="h-row" style="justify-content: space-between">
         <div>
           <div class="label">Current plan</div>
           <div style="font-size:24px; font-weight:700; margin-top:4px; text-transform:capitalize">{summary.subscription.plan}</div>
-          <div style="font-size:12px; color:var(--muted); margin-top:4px">Status: {summary.subscription.status}</div>
+          <div style="font-size:12px; color:var(--c-muted); margin-top:4px">Status: {summary.subscription.status}</div>
         </div>
         {#if summary.subscription.plan === 'free'}
           <button class="btn" on:click={() => startCheckout('personal')} disabled={upgrading}>Upgrade to Personal Pro</button>
@@ -129,7 +129,7 @@
         <div class="h-row" style="justify-content: space-between; margin-top:8px">
           <div>
             <div style="font-weight:600">Studio</div>
-            <div style="font-size:12px; color:var(--muted)">10 users · 50 GB · SSO · audit log · ฿999/mo</div>
+            <div style="font-size:12px; color:var(--c-muted)">10 users · 50 GB · SSO · audit log · ฿999/mo</div>
           </div>
           <button class="btn" on:click={() => startCheckout('studio')} disabled={upgrading}>Upgrade to Studio</button>
         </div>
@@ -139,9 +139,9 @@
 </div>
 
 <style>
-  .usage { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .usage { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid var(--c-hairline); }
   .usage-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
-  .usage-row span:first-child { color: var(--muted); }
+  .usage-row span:first-child { color: var(--c-muted); }
   .usage-row span:last-child { font-variant-numeric: tabular-nums; }
-  .banner { padding: 12px 16px; background: rgba(124,58,237,0.06); border: 1px solid var(--accent); border-radius: 10px; color: var(--accent); font-size: 13px; font-weight: 500; }
+  .banner { padding: 12px 16px; background: rgba(124,58,237,0.06); border: 1px solid var(--c-ink); border-radius: 10px; color: var(--c-ink); font-size: 13px; font-weight: 500; }
 </style>

@@ -38,7 +38,7 @@
     if (j.sentAt) return { label: 'sent', color: '#10b981' };
     if (j.abandonedAt) return { label: 'abandoned', color: '#dc2626' };
     if (j.attempts > 0) return { label: 'retrying', color: '#f59e0b' };
-    return { label: 'pending', color: 'var(--muted)' };
+    return { label: 'pending', color: 'var(--c-muted)' };
   }
 
   $: filter, load();
@@ -58,9 +58,9 @@
   {#if err}<p style="color:#dc2626; font-size:13px; margin:0">{err}</p>{/if}
 
   {#if loading}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else if jobs.length === 0}
-    <p style="color:var(--muted)">No jobs match filter "{filter}".</p>
+    <p style="color:var(--c-muted)">No jobs match filter "{filter}".</p>
   {:else}
     <table class="t">
       <thead>
@@ -75,7 +75,7 @@
             <td>{j.attempts} / 5</td>
             <td>{j.sentAt ? new Date(j.sentAt).toLocaleString() : new Date(j.nextRunAt).toLocaleString()}</td>
             <td><span style:color={s.color} style="font-weight:600; font-size:12px; text-transform:uppercase">{s.label}</span></td>
-            <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; color:var(--muted)" title={j.lastError ?? ''}>{j.lastError ?? ''}</td>
+            <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; color:var(--c-muted)" title={j.lastError ?? ''}>{j.lastError ?? ''}</td>
             <td>
               {#if !j.sentAt}
                 <button class="link" on:click={() => retry(j)}>Retry</button>
@@ -89,12 +89,12 @@
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom:none; }
-  .chip { padding: 4px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; font-size: 12px; cursor: pointer; color: var(--ink); text-transform: capitalize; }
-  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .link { background: transparent; border: none; color: var(--accent); cursor: pointer; padding: 2px 6px; font-size: 12px; }
+  .chip { padding: 4px 12px; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 999px; font-size: 12px; cursor: pointer; color: var(--c-ink); text-transform: capitalize; }
+  .chip.active { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
+  .link { background: transparent; border: none; color: var(--c-ink); cursor: pointer; padding: 2px 6px; font-size: 12px; }
   .link:hover { text-decoration: underline; }
 </style>

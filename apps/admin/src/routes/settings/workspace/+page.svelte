@@ -127,7 +127,7 @@
   <h2 style="margin:0">Workspace settings</h2>
 
   {#if loading || !me}
-    <p style="color:var(--muted)">Loading…</p>
+    <p style="color:var(--c-muted)">Loading…</p>
   {:else}
     {@const isOwner = me.workspace.role === 'owner'}
     {@const isAdmin = isOwner || me.workspace.role === 'admin'}
@@ -189,7 +189,7 @@
     {#if isOwner}
       <div class="card stack">
         <div class="label">Transfer ownership</div>
-        <div style="font-size:12px; color:var(--muted)">After transfer you will become an admin. Enter the user id of an existing member.</div>
+        <div style="font-size:12px; color:var(--c-muted)">After transfer you will become an admin. Enter the user id of an existing member.</div>
         <div class="h-row">
           <input bind:value={transferTarget} placeholder="user id" type="number" min="1" style="flex:1" />
           <button class="btn" on:click={transfer}>Transfer</button>
@@ -202,7 +202,7 @@
       <div class="h-row" style="justify-content: space-between">
         <div>
           <div style="font-weight:600">Leave workspace</div>
-          <div style="font-size:12px; color:var(--muted)">Remove your membership. Sole owner cannot leave — transfer or delete.</div>
+          <div style="font-size:12px; color:var(--c-muted)">Remove your membership. Sole owner cannot leave — transfer or delete.</div>
         </div>
         <button class="btn btn-ghost" on:click={leave}>Leave</button>
       </div>
@@ -210,7 +210,7 @@
         <div class="h-row" style="justify-content: space-between; margin-top:8px">
           <div>
             <div style="font-weight:600; color:#ef4444">Delete workspace</div>
-            <div style="font-size:12px; color:var(--muted)">Permanent. Requires no other members.</div>
+            <div style="font-size:12px; color:var(--c-muted)">Permanent. Requires no other members.</div>
           </div>
           <button class="btn" style="background:#ef4444" on:click={destroyWorkspace}>Delete</button>
         </div>
@@ -223,12 +223,12 @@
 
 <style>
   .t { width:100%; border-collapse:collapse; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); padding:6px 0; border-bottom:1px solid var(--border); }
-  .t td { padding:8px 0; font-size:13px; border-bottom:1px solid var(--border); }
+  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:6px 0; border-bottom:1px solid var(--c-hairline); }
+  .t td { padding:8px 0; font-size:13px; border-bottom:1px solid var(--c-hairline); }
   .t tr:last-child td { border-bottom: none; }
-  .invite-row { display: flex; gap: 8px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed var(--border); margin-bottom: 8px; }
+  .invite-row { display: flex; gap: 8px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed var(--c-hairline); margin-bottom: 8px; }
   .invite-row select { width: 110px; }
-  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--accent); }
+  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); }
   .link.danger { color: #dc2626; }
   .link:hover { text-decoration: underline; }
 </style>

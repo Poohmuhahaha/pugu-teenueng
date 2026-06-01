@@ -15,12 +15,14 @@ export default defineConfig({
   webServer: process.env.E2E_NO_SERVER
     ? undefined
     : {
-        command: 'npm run dev -- --port=3000',
+        // Works for both pnpm (`npm run dev`) and deno workspaces — the api package
+        // exposes a `dev` task that resolves to `vite dev` either way. CI usually
+        // wants to point at an already-running server via E2E_NO_SERVER=1 instead.
+        command: process.env.E2E_DEV_CMD ?? 'npx vite dev --port 3000',
         port: 3000,
         reuseExistingServer: !process.env.CI,
-        timeout: 90_000,
+        timeout: 120_000,
         env: {
-          // Allow magic-link / forgot endpoints to fall through to log-only in test
           NODE_ENV: 'test',
         },
       },

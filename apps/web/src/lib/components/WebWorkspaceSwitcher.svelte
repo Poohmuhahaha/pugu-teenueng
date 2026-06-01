@@ -95,7 +95,7 @@
     background: var(--c-canvas);
     border: 1px solid var(--c-hairline);
     border-radius: var(--r-lg);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
     padding: 6px;
     z-index: 50;
   }

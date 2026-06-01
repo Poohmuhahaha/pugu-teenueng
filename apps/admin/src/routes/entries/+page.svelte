@@ -69,7 +69,7 @@
 
 <div class="stack">
   <h2 style="margin:0">Entries</h2>
-  <p style="color:var(--muted); font-size:13.5px; margin:4px 0 16px">
+  <p style="color:var(--c-muted); font-size:13.5px; margin:4px 0 16px">
     View, create, search, and manage individual raw database records across all custom collections and content types defined in your workspace.
   </p>
 
@@ -80,13 +80,13 @@
       </button>
     {/each}
     {#if types.length === 0}
-      <span style="color:var(--muted); font-size:13px">No content types yet — define one on the home page first.</span>
+      <span style="color:var(--c-muted); font-size:13px">No content types yet — define one on the home page first.</span>
     {/if}
   </div>
 
   {#if selectedType}
     <div class="h-row" style="justify-content: space-between">
-      <span style="color:var(--muted); font-size:13px">{entries.length} entries in <code>{selectedType.slug}</code></span>
+      <span style="color:var(--c-muted); font-size:13px">{entries.length} entries in <code>{selectedType.slug}</code></span>
       <button class="btn" on:click={() => (creating = !creating)}>{creating ? 'Cancel' : '+ New Entry'}</button>
     </div>
 
@@ -119,9 +119,9 @@
     {/if}
 
     {#if loading}
-      <p style="color:var(--muted)">Loading…</p>
+      <p style="color:var(--c-muted)">Loading…</p>
     {:else if entries.length === 0}
-      <div class="card" style="text-align:center; padding:48px 20px; color:var(--muted)">
+      <div class="card" style="text-align:center; padding:48px 20px; color:var(--c-muted)">
         No entries yet in this collection.
       </div>
     {:else}
@@ -154,19 +154,19 @@
 <style>
   .btn-chip {
     padding: 6px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--c-surface-card);
+    border: 1px solid var(--c-hairline);
     border-radius: 999px;
     font-size: 12px;
     cursor: pointer;
-    color: var(--ink);
+    color: var(--c-ink);
   }
-  .btn-chip:hover { background: var(--border); }
-  .btn-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .entries-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .entries-table th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--muted); padding: 10px 12px; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .entries-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .btn-chip:hover { background: var(--c-hairline); }
+  .btn-chip.active { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
+  .entries-table { width: 100%; border-collapse: collapse; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 10px; overflow: hidden; }
+  .entries-table th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--c-muted); padding: 10px 12px; background: var(--c-surface-card); border-bottom: 1px solid var(--c-hairline); }
+  .entries-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--c-hairline); }
   .entries-table tr:last-child td { border-bottom: none; }
-  .btn-ghost { background: transparent; border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--ink); }
-  .btn-ghost:hover { background: var(--border); }
+  .btn-ghost { background: transparent; border: 1px solid var(--c-hairline); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--c-ink); }
+  .btn-ghost:hover { background: var(--c-hairline); }
 </style>

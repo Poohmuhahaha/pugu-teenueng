@@ -3,13 +3,78 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="Headless productivity OS you can self-host. Strapi for personal life management." />
-    <meta property="og:title" content="LifeOS — Headless productivity OS" />
-    <meta property="og:description" content="The TodoList that's actually yours. Knowledge graph, block editor, REST API, self-host or cloud." />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Primary SEO -->
+    <title>LifeOS — Headless productivity OS · Open-source, self-host or cloud</title>
+    <meta name="description" content="LifeOS is the open-source headless productivity OS. Knowledge graph, block editor, database views, REST API, and zero-knowledge sync. Self-host with Docker, or use LifeOS Cloud." />
+    <meta name="keywords" content="open source notion alternative, headless cms, self-hosted productivity, knowledge graph, block editor, local-first, e2ee sync, productivity os, lifeos" />
+    <meta name="author" content="LifeOS" />
+    <link rel="canonical" href="https://lifeos.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LifeOS" />
+    <meta property="og:url" content="https://lifeos.app/" />
+    <meta property="og:title" content="LifeOS — Open-source headless productivity OS" />
+    <meta property="og:description" content="Knowledge graph + block editor + REST API. Self-host or cloud. Your data stays yours." />
+    <meta property="og:image" content="https://lifeos.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="th_TH" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LifeOS — Open-source headless productivity OS" />
+    <meta name="twitter:description" content="Knowledge graph + block editor + REST API. Self-host or cloud." />
+    <meta name="twitter:image" content="https://lifeos.app/og-image.png" />
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>LifeOS — Headless productivity OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- JSON-LD: Organization + SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://lifeos.app/#org",
+          "name": "LifeOS",
+          "url": "https://lifeos.app/",
+          "logo": "https://lifeos.app/logo.png",
+          "sameAs": [
+            "https://github.com/Poohmuhahaha/lifeos"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "LifeOS",
+          "url": "https://lifeos.app/",
+          "applicationCategory": "ProductivityApplication",
+          "operatingSystem": "Web, Linux, macOS, Windows (Docker)",
+          "description": "Open-source headless productivity OS. Knowledge graph, block editor, REST API, zero-knowledge sync.",
+          "publisher": { "@id": "https://lifeos.app/#org" },
+          "offers": [
+            { "@type": "Offer", "name": "Free",         "price": "0",    "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Personal Pro", "price": "5.99", "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Studio",       "price": "29",   "priceCurrency": "USD" },
+            { "@type": "Offer", "name": "Self-host",    "price": "0",    "priceCurrency": "USD" }
+          ],
+          "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+        }
+      ]
+    }
+    </script>
+
     %sveltekit.head%
   </head>
   <body>

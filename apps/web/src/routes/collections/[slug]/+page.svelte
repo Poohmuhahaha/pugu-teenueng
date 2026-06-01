@@ -125,27 +125,63 @@
 {/if}
 
 <style>
-  .head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-  h1 { font-size: 26px; letter-spacing: -0.02em; }
-  .views { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
-  .views button { padding: 6px 14px; border: none; background: transparent; border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--muted); font-weight: 500; transition: all 0.2s; }
-  .views button:hover:not(.active) { color: var(--ink); background: rgba(var(--accent-rgb), 0.08); }
-  .views button.active { background: var(--accent); color: #000000; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  .empty { padding: 60px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 12px; }
-  .t { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .t th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  .t td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.04em; color: var(--ink); }
+  .views {
+    display: flex; gap: 4px; padding: 4px;
+    background: var(--surface-soft, #f8f9fa);
+    border: 1px solid var(--border); border-radius: 9999px;
+  }
+  .views button {
+    padding: 6px 14px; border: none; background: transparent;
+    border-radius: 9999px; font-size: 13px; cursor: pointer;
+    color: var(--muted); font-weight: 500; transition: all 0.2s;
+  }
+  .views button:hover:not(.active) { color: var(--ink); }
+  .views button.active {
+    background: var(--canvas); color: var(--ink);
+    font-weight: 600; box-shadow: var(--shadow);
+  }
+  .empty { padding: 60px 20px; text-align: center; color: var(--muted-soft); border: 1px dashed var(--border); border-radius: 12px; }
+  .t {
+    width: 100%; border-collapse: collapse; background: var(--canvas);
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .t th {
+    text-align: left; font-size: 11px; text-transform: uppercase;
+    color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-weight: 600; letter-spacing: 0.05em;
+  }
+  .t td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--body); }
   .t tr:last-child td { border-bottom: none; }
-  .t a { color: var(--accent); text-decoration: none; font-weight: 600; }
-  .t a:hover { text-decoration: underline; }
-  .kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
-  .col { min-width: 240px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-  .col-head { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-  .kb-card { display: block; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-size: 13px; color: var(--ink); text-decoration: none; transition: all 0.2s; }
-  .kb-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-  .calendar { display: flex; flex-direction: column; gap: 4px; }
-  .cal-row { display: flex; gap: 16px; align-items: baseline; padding: 8px 12px; border-bottom: 1px solid var(--border); }
-  .cal-date { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 100px; }
-  .cal-title { color: var(--ink); text-decoration: none; font-size: 14px; transition: all 0.2s; }
-  .cal-title:hover { color: var(--accent); }
+  .t a { color: var(--ink); text-decoration: none; font-weight: 600; }
+  .t a:hover { color: var(--brand-accent); }
+  .kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+  .col {
+    min-width: 260px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .col-head { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .kb-card {
+    display: block; background: var(--canvas); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; font-size: 13px; color: var(--ink);
+    text-decoration: none; transition: all 0.2s; font-weight: 500;
+  }
+  .kb-card:hover {
+    border-color: var(--muted);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .calendar { display: flex; flex-direction: column; gap: 8px; }
+  .cal-row {
+    display: flex; gap: 24px; align-items: center;
+    padding: 12px 16px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--canvas);
+    transition: border-color 0.2s;
+  }
+  .cal-row:hover { border-color: var(--muted); }
+  .cal-date { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 100px; font-weight: 500; }
+  .cal-title { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+  .cal-title:hover { color: var(--brand-accent); }
 </style>

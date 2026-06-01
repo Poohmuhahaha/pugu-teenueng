@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 import { db } from './db';
 
 export type HookEvent = 'afterCreate' | 'afterUpdate' | 'afterDelete' | 'beforeDelete';

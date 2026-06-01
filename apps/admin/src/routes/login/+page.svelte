@@ -19,32 +19,52 @@
   }
 </script>
 
-<svelte:head><title>Sign in — LifeOS Admin</title></svelte:head>
+<svelte:head><title>Sign in · LifeOS Admin</title></svelte:head>
 
-<div class="auth">
-  <form class="auth-card stack" on:submit|preventDefault={submit}>
+<div class="auth-shell">
+  <div class="auth-card">
+    <a class="auth-brand" href="/">
+      <span class="brand-dot"></span>
+      LifeOS Admin
+    </a>
     <h1>Sign in</h1>
-    <label><span class="label">Email</span>
-      <input type="email" bind:value={email} required autocomplete="email" />
-    </label>
-    <label><span class="label">Password</span>
-      <input type="password" bind:value={password} required autocomplete="current-password" />
-    </label>
-    {#if err}<p style="color:#dc2626; font-size:13px; margin:0">{err}</p>{/if}
-    <button type="submit" class="btn" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
-    <div style="display:flex; align-items:center; gap:10px; color:var(--muted); font-size:11px"><div style="flex:1; height:1px; background:var(--border)"></div>OR<div style="flex:1; height:1px; background:var(--border)"></div></div>
-    <a href="/api/auth/google/start" class="btn btn-ghost" style="text-align:center; text-decoration:none">Continue with Google</a>
-    <p style="font-size:13px; text-align:center; margin:0; color:var(--muted)">
-      New? <a href="/signup" style="color:var(--accent)">Create an account</a>
-      · Forgot? <a href="/forgot" style="color:var(--accent)">Reset password</a>
+    <p class="auth-sub">Manage content types, entries, API keys, and more.</p>
+
+    <form on:submit|preventDefault={submit}>
+      <div class="field">
+        <label class="field-label" for="email">Email</label>
+        <input id="email" type="email" bind:value={email} required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="password">Password</label>
+        <input id="password" type="password" bind:value={password} required autocomplete="current-password" />
+      </div>
+      {#if err}<p class="field-error">{err}</p>{/if}
+      <button type="submit" class="btn btn-block" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+    </form>
+
+    <div class="divider-or"><span>OR</span></div>
+    <a href="/api/auth/google/start" class="btn btn-secondary btn-block">Continue with Google</a>
+
+    <p class="auth-foot">
+      New? <a href="/signup">Create an account</a> · <a href="/forgot">Forgot?</a>
     </p>
-  </form>
+  </div>
 </div>
 
 <style>
-  .auth { min-height: 100vh; display: grid; place-items: center; }
-  .auth-card { width: 100%; max-width: 360px; padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
-  h1 { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
-  label { display: flex; flex-direction: column; gap: 6px; }
-  input { width: 100%; height: 40px; padding: 0 12px; }
+  .divider-or {
+    display: flex; align-items: center;
+    margin: var(--s-md) 0;
+    color: var(--c-muted-soft);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+  .divider-or::before, .divider-or::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--c-hairline);
+  }
+  .divider-or span { padding: 0 var(--s-sm); }
 </style>

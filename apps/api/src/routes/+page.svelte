@@ -50,7 +50,7 @@
   async function checkServices() {
     for (let i = 0; i < services.length; i++) {
       try {
-        const res = await fetch(services[i].url, { mode: 'no-cors' });
+        await fetch(services[i].url, { mode: 'no-cors' });
         services[i].status = 'active';
       } catch {
         services[i].status = 'inactive';
@@ -77,7 +77,7 @@
       const end = performance.now();
       responseTime = Math.round(end - start);
       responseStatus = res.status;
-      
+
       const text = await res.text();
       try {
         responseData = JSON.stringify(JSON.parse(text), null, 2);
@@ -105,30 +105,43 @@
   <title>LifeOS API Console</title>
 </svelte:head>
 
-<header>
-  <div class="brand">LifeOS <span>API</span></div>
-  <div class="status-badge" class:online={healthStatus === 'online'}>
-    <span class="pulse"></span>
-    API {healthStatus.toUpperCase()}
+<header class="top-nav">
+  <div class="top-nav-inner">
+    <a class="brand" href="/">
+      <span class="brand-dot"></span>
+      LifeOS
+      <span class="badge badge-blue" style="margin-left: 8px; font-size: 11px">API</span>
+    </a>
+    <div class="status">
+      <span class="status-dot" class:online={healthStatus === 'online'}></span>
+      <span class="status-text">API {healthStatus}</span>
+    </div>
   </div>
 </header>
 
 <main>
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">API Console</h1>
+      <p class="page-sub">Inspect endpoints, ping the database, and view connected services.</p>
+    </div>
+  </div>
+
   <div class="grid">
-    <div class="left-panel">
-      <div class="section-title">System Status</div>
-      <div class="stats-card">
+    <aside class="left-panel">
+      <h2 class="block-title">System status</h2>
+      <div class="card-soft stats-card">
         <div class="stat-row">
-          <span class="label">API Engine</span>
-          <span class="value success" class:error={healthStatus === 'offline'}>{healthStatus}</span>
+          <span class="muted">API engine</span>
+          <span class="value" class:ok={healthStatus === 'online'} class:err={healthStatus === 'offline'}>{healthStatus}</span>
         </div>
         <div class="stat-row">
-          <span class="label">Database PING</span>
-          <span class="value success" class:error={dbStatus !== 'connected'}>{dbStatus}</span>
+          <span class="muted">Database ping</span>
+          <span class="value" class:ok={dbStatus === 'connected'} class:err={dbStatus !== 'connected'}>{dbStatus}</span>
         </div>
       </div>
 
-      <div class="section-title" style="margin-top: 32px;">Workspace Applications</div>
+      <h2 class="block-title mt-xl">Connected services</h2>
       <div class="app-list">
         {#each services as app}
           <a href={app.url} target="_blank" rel="noreferrer" class="app-item">
@@ -136,18 +149,17 @@
               <div class="app-name">{app.name}</div>
               <div class="app-port">Port {app.port}</div>
             </div>
-            <span class="app-badge" class:active={app.status === 'active'}>
-              {app.status}
-            </span>
+            <span class="badge {app.status === 'active' ? 'badge-success' : 'badge-muted'}">{app.status}</span>
           </a>
         {/each}
       </div>
-    </div>
+    </aside>
 
-    <div class="right-panel">
-      <div class="section-title">Interactive API Tester</div>
-      <div class="selector-card">
-        <label for="endpoint-select" class="control-label">Select Endpoint</label>
+    <section class="right-panel">
+      <h2 class="block-title">Interactive endpoint tester</h2>
+
+      <div class="field">
+        <label class="field-label" for="endpoint-select">Endpoint</label>
         <select id="endpoint-select" bind:value={selectedEndpoint} on:change={testEndpoint}>
           {#each endpoints as ep}
             <option value={ep}>{ep.method} {ep.path} — {ep.description}</option>
@@ -155,231 +167,337 @@
         </select>
       </div>
 
-      <div class="terminal-shell" style="margin-top: 24px;">
-        <div class="terminal-header">
+      <div class="terminal mt-md">
+        <div class="terminal-head">
           <div class="terminal-info">
             <span class="method-tag method-{selectedEndpoint.method}">{selectedEndpoint.method}</span>
             <code class="url-text">{selectedEndpoint.path}</code>
           </div>
-          <button class="send-btn" on:click={testEndpoint} disabled={responseLoading}>
-            {responseLoading ? 'SENDING...' : 'SEND REQUEST'}
+          <button class="btn btn-sm" on:click={testEndpoint} disabled={responseLoading}>
+            {responseLoading ? 'Sending…' : 'Send request'}
           </button>
         </div>
 
-        <div class="terminal-details">
-          {#if responseStatus > 0}
-            <div class="stat-item">
-              <span class="label">Status:</span>
-              <span class="value" class:success={responseStatus < 400} class:error={responseStatus >= 400}>
-                {responseStatus}
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="label">Time:</span>
-              <span class="value">{responseTime} ms</span>
-            </div>
-          {/if}
-        </div>
+        {#if responseStatus > 0}
+          <div class="terminal-meta">
+            <span><span class="muted-soft">Status:</span> <strong class:ok={responseStatus < 400} class:err={responseStatus >= 400}>{responseStatus}</strong></span>
+            <span><span class="muted-soft">Time:</span> <strong>{responseTime} ms</strong></span>
+          </div>
+        {/if}
 
         <div class="terminal-body">
           {#if responseLoading}
-            <div class="loading-state">
+            <div class="loading">
               <div class="spinner"></div>
-              <span>Fetching secure API response...</span>
+              <span>Fetching response…</span>
             </div>
           {:else}
-            <pre><code>{responseData || '// Click Send Request to query data'}</code></pre>
+            <pre><code>{responseData || '// Click Send request to query'}</code></pre>
           {/if}
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </main>
 
-<footer>
-  <span>© 2026 LifeOS · <a href="/api/v1/docs">OpenAPI v3 Docs</a> · <a href="/api/health">JSON Health</a></span>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <a class="brand" href="/">
+        <span class="brand-dot"></span>
+        LifeOS
+      </a>
+      <p class="footer-tag">Headless productivity OS · API surface</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>API</h4>
+        <a href="/api/v1/docs">OpenAPI v3</a>
+        <a href="/api/health">JSON health</a>
+      </div>
+      <div class="footer-col">
+        <h4>Apps</h4>
+        <a href="http://localhost:5175">Admin</a>
+        <a href="http://localhost:5176">Workspace</a>
+        <a href="http://localhost:5177">Landing</a>
+      </div>
+      <div class="footer-col">
+        <h4>Source</h4>
+        <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
+      </div>
+    </div>
+  </div>
+  <div class="site-footer-bottom">© {new Date().getFullYear()} LifeOS · All rights reserved</div>
 </footer>
 
 <style>
-  :root {
-    --bg: #ffffff;
-    --ink: #000000;
-    --accent: #c9ad93;
-    --accent-rgb: 201, 173, 147;
-    --success: #879a77;
-    --error: #b36b53;
-    --border: #73787c;
-    --surface: #d7e5f0;
-    --muted: #73787c;
+  /* ===== Cal.com tokens (api app is standalone, ships its own) ===== */
+  :global(:root) {
+    --c-primary: #111111;
+    --c-primary-active: #242424;
+    --c-ink: #111111;
+    --c-body: #374151;
+    --c-muted: #6b7280;
+    --c-muted-soft: #898989;
+    --c-hairline: #e5e7eb;
+    --c-hairline-soft: #f3f4f6;
+    --c-canvas: #ffffff;
+    --c-surface-soft: #f8f9fa;
+    --c-surface-card: #f5f5f5;
+    --c-surface-dark: #101010;
+    --c-surface-dark-elev: #1a1a1a;
+    --c-on-dark: #ffffff;
+    --c-on-dark-soft: #a1a1aa;
+    --c-brand-accent: #3b82f6;
+    --c-success: #10b981;
+    --c-warning: #f59e0b;
+    --c-error: #ef4444;
+    --c-badge-violet: #8b5cf6;
+    --c-badge-orange: #fb923c;
+    --c-badge-emerald: #34d399;
+    --r-md: 8px;
+    --r-lg: 12px;
+    --r-pill: 9999px;
+    --s-xs: 8px;
+    --s-sm: 12px;
+    --s-md: 16px;
+    --s-lg: 24px;
+    --s-xl: 32px;
+    --s-xxl: 48px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --font-display: 'Cal Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #000000;
-      --ink: #d7e5f0;
-      --accent: #c9ad93;
-      --accent-rgb: 201, 173, 147;
-      --success: #879a77;
-      --error: #b36b53;
-      --border: #73787c;
-      --surface: #554940;
-      --muted: #c5c6c7;
-    }
-  }
-
-  :global(html, body) { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  :global(*) { box-sizing: border-box; }
+  :global(html, body) { margin: 0; padding: 0; background: var(--c-canvas); color: var(--c-body); }
   :global(body) {
-    font-family: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
-    line-height: 1.6;
-    transition: background 0.3s, color 0.3s;
+    font-family: var(--font-body);
+    font-size: 16px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
-  header {
+  /* Top nav */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--c-hairline-soft);
+  }
+  .top-nav-inner {
+    max-width: 1200px; margin: 0 auto;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 32px; border-bottom: 1px solid rgba(var(--accent-rgb), 0.15);
-    background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px);
+    padding: 0 var(--s-xl); height: 64px;
   }
   .brand {
-    font-weight: 800; letter-spacing: -0.03em; font-size: 20px;
-    color: var(--accent);
+    display: inline-flex; align-items: center; gap: 8px;
+    font: 600 20px/1 var(--font-display);
+    letter-spacing: -0.04em;
+    color: var(--c-ink);
+    text-decoration: none;
   }
-  .brand span {
-    font-size: 11px; background: rgba(var(--accent-rgb), 0.15);
-    padding: 2px 8px; border-radius: 20px; vertical-align: middle;
-    margin-left: 6px; font-weight: 700; color: var(--accent);
+  .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-ink); }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font: 500 12px/1.4 var(--font-body);
+    border-radius: var(--r-pill);
   }
-  .status-badge {
-    display: flex; align-items: center; gap: 8px; font-size: 11px;
-    font-weight: 800; background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent); padding: 6px 12px; border-radius: 20px;
-    border: 1px solid rgba(var(--accent-rgb), 0.15);
-  }
-  .status-badge.online {
-    background: rgba(135, 154, 119, 0.1); color: var(--success);
-    border-color: rgba(135, 154, 119, 0.2);
-  }
-  .pulse {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-  }
-  .status-badge.online .pulse {
-    background: var(--success); box-shadow: 0 0 6px var(--success);
-  }
+  .badge-blue { background: rgba(59, 130, 246, 0.12); color: var(--c-brand-accent); }
+  .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--c-success); }
+  .badge-muted { background: var(--c-surface-card); color: var(--c-muted); }
 
-  main { max-width: 1200px; margin: 40px auto; padding: 0 32px 80px; }
-  .grid { display: grid; grid-template-columns: 280px 1fr; gap: 32px; }
-
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
+  .status {
+    display: flex; align-items: center; gap: 8px;
+    font: 500 13px/1.4 var(--font-body);
+    color: var(--c-muted);
   }
-
-  .section-title {
-    font-size: 11px; font-weight: 800; text-transform: uppercase;
-    color: var(--accent); letter-spacing: 0.08em; margin-bottom: 12px;
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--c-muted-soft);
   }
-
-  .stats-card {
-    background: var(--surface); border: 1px solid rgba(var(--accent-rgb), 0.15);
-    border-radius: 12px; padding: 18px;
+  .status-dot.online {
+    background: var(--c-success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
   }
+  .status-text { text-transform: capitalize; }
+
+  /* Page */
+  main { max-width: 1200px; margin: 0 auto; padding: var(--s-xl) var(--s-xl) var(--s-xxl); }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-md); margin-bottom: var(--s-lg); }
+  .page-title { font: 600 28px/1.2 var(--font-display); letter-spacing: -0.5px; color: var(--c-ink); }
+  .page-sub { margin-top: 4px; color: var(--c-muted); font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: 320px 1fr; gap: var(--s-xl); }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .block-title {
+    font: 600 14px/1.4 var(--font-body);
+    color: var(--c-ink);
+    margin: 0 0 var(--s-sm);
+  }
+  .card-soft {
+    background: var(--c-surface-card);
+    border-radius: var(--r-lg);
+    padding: var(--s-lg);
+  }
+  .stats-card { display: flex; flex-direction: column; gap: 4px; }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid rgba(115, 120, 124, 0.15);
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--c-hairline-soft);
   }
   .stat-row:last-child { border-bottom: none; }
-  .stat-row .label { font-size: 12px; color: var(--muted); }
-  .stat-row .value { font-size: 13px; font-weight: 700; text-transform: capitalize; }
-  .value.success { color: var(--success); }
-  .value.error { color: var(--error); }
+  .value { font-weight: 600; text-transform: capitalize; color: var(--c-ink); }
+  .ok { color: var(--c-success); }
+  .err { color: var(--c-error); }
+  .muted { color: var(--c-muted); }
+  .muted-soft { color: var(--c-muted-soft); }
 
-  .app-list { display: flex; flex-direction: column; gap: 10px; }
+  .app-list { display: flex; flex-direction: column; gap: var(--s-xs); }
   .app-item {
     display: flex; justify-content: space-between; align-items: center;
-    background: rgba(var(--accent-rgb), 0.04); border: 1px solid rgba(115, 120, 124, 0.15);
-    border-radius: 12px; padding: 14px 18px; text-decoration: none; color: inherit;
-    transition: all 0.2s;
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--r-lg);
+    padding: 12px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.05s;
   }
-  .app-item:hover {
-    border-color: var(--accent); background: rgba(var(--accent-rgb), 0.08);
-  }
-  .app-name { font-size: 14px; font-weight: 700; }
-  .app-port { font-size: 11px; color: var(--muted); }
-  .app-badge {
-    font-size: 10px; font-weight: 800; text-transform: uppercase;
-    padding: 3px 8px; border-radius: 6px; background: rgba(115, 120, 124, 0.12);
-    color: var(--muted);
-  }
-  .app-badge.active {
-    background: rgba(135, 154, 119, 0.15); color: var(--success);
-  }
+  .app-item:hover { border-color: var(--c-ink); text-decoration: none; }
+  .app-name { font: 600 14px/1.4 var(--font-body); color: var(--c-ink); }
+  .app-port { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
 
-  .selector-card {
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .control-label { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font: 500 13px/1.4 var(--font-body); color: var(--c-muted); }
   select {
-    height: 44px; padding: 0 12px; border-radius: 8px;
-    border: 1px solid rgba(115, 120, 124, 0.2);
-    background: var(--surface); color: var(--ink);
-    font-size: 14px; outline: none; transition: border 0.2s;
-    font-family: inherit;
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    background: var(--c-canvas);
+    color: var(--c-ink);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--r-md);
+    font: 400 14px/1.4 var(--font-body);
   }
-  select:focus { border-color: var(--accent); }
+  select:focus { outline: none; border-color: var(--c-ink); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
 
-  .terminal-shell {
-    background: #000000; border: 1px solid rgba(var(--accent-rgb), 0.2);
-    border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 36px; padding: 0 16px;
+    background: var(--c-primary);
+    color: var(--c-on-dark);
+    border: 1px solid var(--c-primary);
+    border-radius: var(--r-md);
+    font: 600 13px/1 var(--font-body);
+    cursor: pointer;
+    transition: background 0.15s;
   }
-  .terminal-header {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,0.03); padding: 12px 18px;
+  .btn:hover { background: var(--c-primary-active); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-sm { height: 32px; padding: 0 14px; font-size: 12px; }
+
+  /* Terminal block */
+  .terminal {
+    background: var(--c-surface-dark);
+    color: var(--c-on-dark);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  }
+  .terminal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--c-surface-dark-elev);
     border-bottom: 1px solid rgba(255,255,255,0.06);
   }
-  .terminal-info { display: flex; align-items: center; gap: 12px; }
+  .terminal-head .btn {
+    background: var(--c-canvas); color: var(--c-ink); border-color: var(--c-canvas);
+  }
+  .terminal-head .btn:hover { background: #f0f0f0; }
+  .terminal-info { display: flex; align-items: center; gap: 10px; }
   .method-tag {
-    font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;
+    font: 600 11px/1 var(--font-body);
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
   }
-  .method-GET { background: rgba(135, 154, 119, 0.2); color: var(--success); }
-  .method-POST { background: rgba(201, 173, 147, 0.2); color: var(--accent); }
-  .url-text { font-size: 13px; color: #fff; font-family: monospace; }
-  .send-btn {
-    height: 32px; padding: 0 14px; background: var(--accent);
-    color: #000000; border: none; border-radius: 6px; font-size: 11px;
-    font-weight: 800; cursor: pointer; transition: all 0.2s;
-    font-family: inherit;
-  }
-  .send-btn:hover:not(:disabled) { background: #fff; }
-  .send-btn:disabled { opacity: 0.6; cursor: progress; }
+  .method-GET { background: rgba(52, 211, 153, 0.2); color: var(--c-badge-emerald); }
+  .method-POST { background: rgba(251, 146, 60, 0.2); color: var(--c-badge-orange); }
+  .method-PUT { background: rgba(139, 92, 246, 0.2); color: var(--c-badge-violet); }
+  .method-DELETE { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  .url-text { font-family: var(--font-mono); font-size: 13px; color: var(--c-on-dark); }
 
-  .terminal-details {
-    display: flex; gap: 20px; background: rgba(255,255,255,0.01);
-    padding: 8px 18px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  .terminal-meta {
+    display: flex; gap: 24px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--c-on-dark-soft);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
   }
-  .terminal-details .stat-item { font-size: 12px; display: flex; gap: 6px; }
-  .terminal-details .label { color: #73787c; }
-  .terminal-details .value { font-weight: 700; color: #fff; }
-  .terminal-details .value.success { color: var(--success); }
-  .terminal-details .value.error { color: var(--error); }
+  .terminal-meta strong { color: var(--c-on-dark); font-weight: 600; }
+  .terminal-meta strong.ok { color: var(--c-badge-emerald); }
+  .terminal-meta strong.err { color: #f87171; }
 
   .terminal-body {
-    padding: 18px; min-height: 280px; max-height: 480px; overflow: auto;
-    font-family: monospace; font-size: 13px; background: #000000; color: #c5c6c7;
+    padding: 16px;
+    min-height: 280px;
+    max-height: 520px;
+    overflow: auto;
+    font: 400 13px/1.6 var(--font-mono);
+    color: #d4d4d8;
   }
-  pre { margin: 0; white-space: pre-wrap; }
-  code { font-family: inherit; }
-
-  .loading-state {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 12px; height: 200px; color: var(--muted);
-  }
+  .terminal-body pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+  .loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 64px 0; color: var(--c-on-dark-soft); }
   .spinner {
-    width: 24px; height: 24px; border: 2px solid rgba(201, 173, 147, 0.2);
-    border-top-color: var(--accent); border-radius: 50%;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top-color: var(--c-on-dark);
+    border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  footer { text-align: center; padding: 48px; font-size: 13px; color: var(--muted); border-top: 1px solid rgba(var(--accent-rgb), 0.15); }
-  footer a { color: var(--ink); text-decoration: none; transition: color 0.2s; font-weight: 600; margin: 0 10px; }
-  footer a:hover { color: var(--accent); }
+  /* Footer */
+  .site-footer {
+    background: var(--c-surface-dark);
+    color: var(--c-on-dark-soft);
+    margin-top: var(--s-xxl);
+  }
+  .site-footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 64px var(--s-xl) var(--s-xl);
+    display: grid;
+    grid-template-columns: 1.2fr 2fr;
+    gap: var(--s-xxl);
+  }
+  .site-footer .brand, .site-footer .brand-dot { color: var(--c-on-dark); }
+  .site-footer .brand-dot { background: var(--c-on-dark); }
+  .footer-tag { margin-top: var(--s-sm); font-size: 14px; color: var(--c-on-dark-soft); max-width: 280px; }
+  .footer-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-lg); }
+  .footer-col h4 { font: 600 13px/1.4 var(--font-body); color: var(--c-on-dark); margin: 0 0 var(--s-md); }
+  .footer-col a {
+    display: block;
+    color: var(--c-on-dark-soft);
+    font-size: 14px;
+    padding: 4px 0;
+    text-decoration: none;
+  }
+  .footer-col a:hover { color: var(--c-on-dark); }
+  .site-footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    padding: var(--s-lg) var(--s-xl);
+    border-top: 1px solid var(--c-surface-dark-elev);
+    text-align: center;
+    font-size: 13px;
+  }
+
+  @media (max-width: 768px) {
+    .top-nav-inner { padding: 0 var(--s-md); }
+    main { padding: var(--s-md); }
+    .site-footer-inner { grid-template-columns: 1fr; padding: 48px var(--s-md) var(--s-md); }
+    .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>

@@ -63,7 +63,7 @@
           <form on:submit|preventDefault={create} class="new-form">
             <!-- svelte-ignore a11y-autofocus -->
             <input bind:value={newName} placeholder="New workspace name" autofocus />
-            <button type="submit">Create</button>
+            <button type="submit" class="btn btn-sm">Create</button>
           </form>
         {:else}
           <button class="item" on:click={() => (creating = true)}><span>+ New workspace</span></button>
@@ -75,16 +75,45 @@
 
 <style>
   .ws { position: relative; }
-  .ws-btn { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-  .name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 240px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 6px; z-index: 50; }
-  .item { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; color: var(--ink); font-size: 13px; cursor: pointer; text-align: left; }
-  .item:hover { background: var(--surface); }
-  .item.active { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); font-weight: 600; }
-  .role { font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.06em; }
-  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .ws-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    border-radius: var(--r-md);
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
+    color: var(--c-ink);
+    font: 500 13px/1.4 var(--font-body);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .ws-btn:hover { border-color: var(--c-ink); background: var(--c-surface-soft); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-brand-accent); }
+  .name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .menu {
+    position: absolute; top: calc(100% + 6px); left: 0;
+    min-width: 240px;
+    background: var(--c-canvas);
+    border: 1px solid var(--c-hairline);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 6px;
+    z-index: 50;
+  }
+  .item {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--r-md);
+    color: var(--c-ink);
+    font: 500 13px/1.4 var(--font-body);
+    cursor: pointer; text-align: left;
+    transition: background 0.15s;
+  }
+  .item:hover { background: var(--c-surface-soft); }
+  .item.active { background: var(--c-surface-card); font-weight: 600; }
+  .role { font-size: 11px; font-weight: 500; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .divider { height: 1px; background: var(--c-hairline-soft); margin: 6px 0; }
   .new-form { display: flex; gap: 6px; padding: 6px 4px; }
-  .new-form input { flex: 1; height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; background: var(--bg); color: var(--ink); }
-  .new-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--accent); color: #000000; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .new-form input { flex: 1; height: 32px; padding: 0 10px; font-size: 13px; border-radius: var(--r-md); }
 </style>

@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+// deno-lint-ignore no-sloppy-imports
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, url }) => {

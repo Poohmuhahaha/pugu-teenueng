@@ -57,3 +57,14 @@ lifeos_minio
 
 # ── Sentry sourcemaps upload ──────────────
 .sentryclirc
+
+# ── Binary marketing artifacts (keep on disk, not in repo) ─
+/LifeOS_*.pdf
+/*_Pitch_Deck.pdf
+/*_Brand_Guidelines.pdf
+
+# ── Misc ──────────────────────────────────
+*.log
+*.tsbuildinfo
+.deno
+.cache

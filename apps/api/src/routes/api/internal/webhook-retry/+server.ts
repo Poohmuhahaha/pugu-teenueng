@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 import { db } from '$lib/server/db';
 
 const MAX_ATTEMPTS = 5;

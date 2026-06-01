@@ -19,29 +19,32 @@
   }
 </script>
 
-<div class="shell">
-  <form class="card" on:submit|preventDefault={submit}>
-    <h1>Sign in to LifeOS</h1>
-    <label>Email<input type="email" bind:value={email} required /></label>
-    <label>Password<input type="password" bind:value={password} required /></label>
-    {#if err}<p class="err">{err}</p>{/if}
-    <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
-    <p class="alt">New? <a href="/signup">Create an account</a> · <a href="/forgot">Forgot?</a></p>
-  </form>
-</div>
+<svelte:head><title>Sign in · LifeOS</title></svelte:head>
 
-<style>
-  .shell { min-height: 100vh; display: grid; place-items: center; background: var(--bg); }
-  .card { width: 100%; max-width: 360px; padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
-  h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; color: var(--ink); letter-spacing: -0.02em; }
-  label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; }
-  input { height: 42px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14px; transition: all 0.2s; }
-  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15); }
-  button { height: 42px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); background: var(--accent); color: #000000; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  button:hover:not(:disabled) { background: #554940; color: #ffffff; border-color: transparent; }
-  button:disabled { opacity: 0.6; cursor: progress; }
-  .err { color: #dc2626; font-size: 13px; margin: 0; }
-  .alt { font-size: 13px; color: var(--muted); text-align: center; margin: 0; }
-  .alt a { color: var(--accent); font-weight: 600; text-decoration: none; }
-  .alt a:hover { text-decoration: underline; }
-</style>
+<div class="auth-shell">
+  <div class="auth-card">
+    <a class="auth-brand" href="/">
+      <span class="brand-dot"></span>
+      LifeOS
+    </a>
+    <h1>Sign in</h1>
+    <p class="auth-sub">Welcome back. Enter your credentials to continue.</p>
+
+    <form on:submit|preventDefault={submit}>
+      <div class="field">
+        <label class="field-label" for="email">Email</label>
+        <input id="email" type="email" bind:value={email} required autocomplete="email" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="password">Password</label>
+        <input id="password" type="password" bind:value={password} required autocomplete="current-password" />
+      </div>
+      {#if err}<p class="field-error">{err}</p>{/if}
+      <button type="submit" class="btn btn-block" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+    </form>
+
+    <p class="auth-foot">
+      New here? <a href="/signup">Create an account</a> · <a href="/forgot">Forgot password?</a>
+    </p>
+  </div>
+</div>

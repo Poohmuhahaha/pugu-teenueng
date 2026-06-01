@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+
   let password = '';
   let confirm = '';
   let token = '';
@@ -29,30 +30,33 @@
   }
 </script>
 
-<div class="shell">
-  <form class="card" on:submit|preventDefault={submit}>
-    <h1>Set a new password</h1>
-    {#if done}
-      <p style="color: var(--accent-kpi, #879a77); font-size: 14px; font-weight: 600; margin: 0">Password updated. You can sign in now.</p>
-      <a href="/login" class="primary" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center;">Sign in</a>
-    {:else}
-      <label>New password (min 8)<input type="password" bind:value={password} required minlength="8" /></label>
-      <label>Confirm<input type="password" bind:value={confirm} required minlength="8" /></label>
-      {#if err}<p class="err">{err}</p>{/if}
-      <button type="submit" disabled={loading || !token}>{loading ? 'Updating…' : 'Update password'}</button>
-    {/if}
-  </form>
-</div>
+<svelte:head><title>Set new password · LifeOS</title></svelte:head>
 
-<style>
-  .shell { min-height: 100vh; display: grid; place-items: center; background: var(--bg); }
-  .card { width: 100%; max-width: 360px; padding: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
-  h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; color: var(--ink); letter-spacing: -0.02em; }
-  label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; }
-  input { height: 42px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14px; transition: all 0.2s; }
-  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.15); }
-  button, .primary { height: 42px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); background: var(--accent); color: #000000; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 20px; transition: all 0.2s; }
-  button:hover:not(:disabled), .primary:hover { background: #554940; color: #ffffff; border-color: transparent; }
-  button:disabled { opacity: 0.6; cursor: progress; }
-  .err { color: #dc2626; font-size: 13px; margin: 0; }
-</style>
+<div class="auth-shell">
+  <div class="auth-card">
+    <a class="auth-brand" href="/">
+      <span class="brand-dot"></span>
+      LifeOS
+    </a>
+    <h1>Set a new password</h1>
+    <p class="auth-sub">Choose something memorable. Minimum 8 characters.</p>
+
+    {#if done}
+      <div class="badge badge-success" style="align-self: flex-start">Password updated. You can sign in now.</div>
+      <a href="/login" class="btn btn-block mt-md">Sign in</a>
+    {:else}
+      <form on:submit|preventDefault={submit}>
+        <div class="field">
+          <label class="field-label" for="pw">New password</label>
+          <input id="pw" type="password" bind:value={password} required minlength="8" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="confirm">Confirm</label>
+          <input id="confirm" type="password" bind:value={confirm} required minlength="8" autocomplete="new-password" />
+        </div>
+        {#if err}<p class="field-error">{err}</p>{/if}
+        <button type="submit" class="btn btn-block" disabled={loading || !token}>{loading ? 'Updating…' : 'Update password'}</button>
+      </form>
+    {/if}
+  </div>
+</div>

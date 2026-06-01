@@ -34,7 +34,7 @@
     }
     collections = typesRes.data.map((t: { slug: string; name: string }) => ({ slug: t.slug, name: t.name }));
 
-    const palette = ['#c9ad93', '#879a77', '#b36b53', '#738c9c', '#c29b63', '#5b7053', '#695a50', '#a65f46'];
+    const palette = ['#8b5cf6', '#34d399', '#fb923c', '#3b82f6', '#ec4899', '#10b981', '#6366f1', '#f59e0b'];
     collections.forEach((c, i) => (groupColors[c.slug] = palette[i % palette.length]));
 
     const allEntries: Entry[] = [];

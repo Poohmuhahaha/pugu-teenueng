@@ -89,20 +89,30 @@
 {/if}
 
 <style>
-  h1 { font-size: 28px; letter-spacing: -0.02em; margin: 8px 0 24px; }
-  h2 { font-size: 14px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.06em; margin: 0 0 12px; }
-  .fields { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
-  .field { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-  .label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-  .value { font-size: 14px; white-space: pre-wrap; }
-  :global(.wikilink) { color: var(--accent); font-weight: 600; cursor: pointer; background: rgba(var(--accent-rgb), 0.12); padding: 2px 6px; border-radius: 4px; text-decoration: none; border-bottom: 1px dashed var(--accent); transition: all 0.2s; }
-  :global(.wikilink:hover) { background: rgba(var(--accent-rgb), 0.24); }
-  .refs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 24px; border-top: 1px solid var(--border); }
-  .ref { padding: 6px 0; font-size: 13px; }
-  .ref a { color: var(--accent); text-decoration: none; }
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.04em; margin: 8px 0 32px; color: var(--ink); }
+  h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--muted); letter-spacing: 0.05em; margin: 0 0 16px; }
+  .fields { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px; }
+  .field {
+    display: grid; grid-template-columns: 180px 1fr; gap: 16px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; }
+  .value { font-size: 14px; white-space: pre-wrap; color: var(--body); }
+  :global(.wikilink) {
+    color: var(--brand-accent); font-weight: 600; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 6px; text-decoration: none;
+    transition: all 0.2s;
+  }
+  :global(.wikilink:hover) { background: var(--border-soft); border-color: var(--muted); }
+  .refs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .ref { padding: 8px 0; font-size: 13px; display: flex; align-items: center; border-bottom: 1px dashed var(--border-soft); }
+  .ref:last-child { border-bottom: none; }
+  .ref a { color: var(--brand-accent); text-decoration: none; font-weight: 600; }
   .ref a:hover { text-decoration: underline; }
-  .ref .context { color: var(--muted); margin-left: 8px; font-size: 12px; }
-  .unresolved { color: var(--muted); }
-  .empty { color: var(--muted); font-size: 13px; }
-  .empty code { background: rgba(var(--accent-rgb), 0.12); padding: 2px 6px; border-radius: 4px; }
+  .ref .context { color: var(--muted-soft); margin-left: 8px; font-size: 12px; font-style: italic; }
+  .unresolved { color: var(--muted); font-style: italic; }
+  .empty { color: var(--muted-soft); font-size: 13px; margin: 0; }
+  .empty code { background: var(--surface); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
 </style>

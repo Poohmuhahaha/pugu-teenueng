@@ -3,7 +3,7 @@
 > Headless productivity OS you can self-host — Strapi for personal life management.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![pnpm](https://img.shields.io/badge/pnpm-9.x-orange)](https://pnpm.io)
+[![Deno](https://img.shields.io/badge/Deno-2.x-blue)](https://deno.com)
 [![SvelteKit](https://img.shields.io/badge/SvelteKit-4.x-red)](https://kit.svelte.dev)
 
 Combines what people leave Notion + Obsidian to find: **knowledge graph**, **block-based pages**, **database views**, **local-first sync**, and a **public REST API** so your data is actually yours.
@@ -88,10 +88,7 @@ lifeos/
 ## Local Development
 
 ```bash
-pnpm install
-cp .env.example .env
-pnpm --filter @lifeos/api exec prisma migrate dev --name init
-pnpm dev   # starts all 4 apps in parallel
+deno task setup-dev   # sets up environment, database, and starts dev servers
 ```
 
 ---

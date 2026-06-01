@@ -31,17 +31,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile=false
-      - run: pnpm --filter @lifeos/api exec prisma generate
-      - run: pnpm --filter @lifeos/core build
-      - run: pnpm --filter @lifeos/sdk build
-      - run: pnpm --filter @lifeos/api build
-      - run: pnpm --filter @lifeos/admin build
-      - run: pnpm --filter @lifeos/web build
-      - run: pnpm --filter @lifeos/landing build
-      - run: pnpm --filter @lifeos/api test
+          deno-version: v2.x
+
+      - name: Generate Prisma Client
+        run: deno run -A npm:prisma generate --schema=apps/api/prisma/schema.prisma
+
+      - name: Patch Prisma Client for CommonJS compat
+        run: deno run -A scripts/patch-prisma.js
+
+      - name: Build Monorepo Workspace
+        run: deno task build
+
+      - name: Run Tests
+        run: deno task test

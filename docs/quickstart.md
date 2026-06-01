@@ -25,24 +25,20 @@ You'll get:
 Then bootstrap the database and seed:
 
 ```bash
-docker compose exec api npx prisma migrate deploy
-docker compose exec api npm run db:seed   # creates pooh@lifeos.dev / changeme123
+docker compose exec api deno run -A npm:prisma migrate deploy --schema=prisma/schema.prisma
+docker compose exec api deno task db:seed   # creates pooh@lifeos.dev / changeme123
 ```
 
 Open http://localhost:3001 and sign in.
 
-## Option B — Node directly (for development)
+## Option B — Deno directly (for development)
 
-You need Node 20 + pnpm 9 + a Postgres instance.
+You need Deno 2 + a Postgres instance.
 
 ```bash
 git clone https://github.com/Poohmuhahaha/lifeos.git
 cd lifeos
-pnpm install
-cp .env.example .env  # set DATABASE_URL + secrets
-pnpm --filter @lifeos/api exec prisma migrate dev --name init
-pnpm --filter @lifeos/api db:seed
-pnpm dev   # all 4 apps in parallel
+deno task setup-dev   # sets up environment, database, and runs all dev servers in parallel
 ```
 
 | App | Port | URL |

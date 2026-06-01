@@ -184,16 +184,16 @@
     color: var(--border);
   }
   .breadcrumbs .current {
-    color: var(--accent);
+    color: var(--ink);
     font-weight: 500;
   }
 
   /* Headers */
   h1 {
     font-size: 32px;
-    font-weight: 800;
+    font-weight: 600;
     margin: 0 0 8px 0;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     color: var(--ink);
   }
   .subtitle {
@@ -233,7 +233,7 @@
   }
   .search-input {
     width: 100%;
-    background: var(--surface);
+    background: var(--canvas);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px 14px 10px 40px;
@@ -244,8 +244,7 @@
     transition: all 0.2s;
   }
   .search-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
+    border-color: var(--ink);
   }
   .clear-search {
     position: absolute;
@@ -285,7 +284,7 @@
     transition: color 0.2s;
   }
   .admin-link:hover {
-    color: var(--accent);
+    color: var(--brand-accent);
   }
   .external-icon {
     width: 12px;
@@ -296,7 +295,7 @@
   .collections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 20px;
+    gap: 24px;
   }
 
   /* Card */
@@ -314,9 +313,9 @@
     min-height: 220px;
   }
   .collection-card:hover {
-    border-color: var(--accent);
+    border-color: var(--muted);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-lg);
   }
 
   .collection-meta {
@@ -326,17 +325,18 @@
     font-family: monospace;
     font-size: 12px;
     color: var(--muted);
-    background: rgba(var(--accent-rgb), 0.1);
+    background: var(--canvas);
+    border: 1px solid var(--border);
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 600;
   }
   .collection-title {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     margin: 0;
     color: var(--ink);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.03em;
   }
 
   .card-body {
@@ -347,7 +347,7 @@
     font-size: 11px;
     text-transform: uppercase;
     color: var(--muted);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.05em;
     margin-bottom: 10px;
   }
@@ -360,10 +360,10 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: var(--bg);
+    background: var(--canvas);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 8px;
+    border-radius: 9999px;
+    padding: 4px 10px;
     font-size: 11px;
   }
   .field-name {
@@ -374,11 +374,11 @@
     color: var(--muted);
     font-size: 10px;
     border-left: 1px solid var(--border);
-    padding-left: 4px;
+    padding-left: 6px;
   }
   .no-fields {
     font-size: 13px;
-    color: var(--muted);
+    color: var(--muted-soft);
     margin: 0;
     font-style: italic;
   }
@@ -395,10 +395,9 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: gap 0.2s, color 0.2s;
+    transition: gap 0.2s;
   }
   .collection-card:hover .explore-link {
-    color: var(--accent);
     gap: 10px;
   }
   .arrow-icon {
@@ -430,7 +429,7 @@
     width: 28px;
     height: 28px;
     border: 2px solid var(--border);
-    border-top-color: var(--accent);
+    border-top-color: var(--ink);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -440,15 +439,15 @@
 
   /* Error state */
   .error-state p {
-    color: #ef4444;
+    color: var(--brand-accent);
     font-weight: 500;
   }
   .error-icon {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background: var(--border);
+    color: var(--ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -456,8 +455,8 @@
     font-size: 18px;
   }
   .retry-btn, .clear-btn, .create-btn {
-    background: var(--ink);
-    color: var(--bg);
+    background: var(--primary);
+    color: var(--canvas);
     border: none;
     padding: 8px 18px;
     border-radius: 8px;
@@ -465,16 +464,17 @@
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: background 0.2s;
   }
   .retry-btn:hover, .clear-btn:hover, .create-btn:hover {
-    opacity: 0.9;
+    background: var(--primary-active);
   }
 
   /* Empty state */
   .empty-state h3 {
     margin: 0;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
+    color: var(--ink);
   }
 </style>

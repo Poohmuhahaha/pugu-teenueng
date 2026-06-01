@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { db } from '$lib/server/db';
 import { resolveActor, requireRole } from '$lib/server/auth';
 import { WebhookCreate } from '@lifeos/core';

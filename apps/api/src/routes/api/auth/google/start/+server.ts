@@ -1,5 +1,5 @@
 import { redirect, error } from '@sveltejs/kit';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { buildAuthUrl, isConfigured } from '$lib/server/oauth';
 
 export async function GET({ cookies }) {

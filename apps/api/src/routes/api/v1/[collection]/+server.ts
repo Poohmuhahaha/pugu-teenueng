@@ -22,10 +22,9 @@ export async function GET(event) {
 
   const q = parseQuery(event.url);
 
-  // Filtering on JSONB: Prisma supports `path` filter. Build a Prisma-compatible where.
-  // For simplicity we evaluate filters in-memory after fetching by content-type.
-  // Replace with raw SQL + JSONB path queries when scale demands.
-  const where = { contentTypeId: contentType.id, deletedAt: null };
+  // Filtering on JSONB: parseQuery emits Prisma-compatible JSON-path clauses
+  // under q.where.AND. Spread them into the base where so they actually apply.
+  const where: Record<string, unknown> = { contentTypeId: contentType.id, deletedAt: null, ...q.where };
   const orderBy = q.orderBy
     .map((o) => ({ [o.field]: o.dir }))
     .filter((o) =>

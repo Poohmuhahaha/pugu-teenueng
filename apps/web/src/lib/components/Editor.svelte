@@ -51,7 +51,7 @@
     for (const node of doc.content ?? []) {
       const type = node.type as string;
       const content = collectText(node);
-      const id = Math.random().toString(36).slice(2);
+      const id = crypto.randomUUID();
       switch (type) {
         case 'heading':
           blocks.push({ id, type: 'heading', attrs: { level: (node.attrs as { level?: number })?.level ?? 1 }, content });

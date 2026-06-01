@@ -42,27 +42,37 @@ function castValue(v: string): unknown {
 export function parseQuery(url: URL): ParsedQuery {
   const sp = url.searchParams;
 
-  // Filters → build a JSONB path query for ContentEntry.data
-  const where: Record<string, unknown> = {};
+  // Filters → build a JSONB path query for ContentEntry.data.
+  // Prisma JSON filters use the shape: { data: { path: ['field'], <op>: value } }.
+  // We accumulate one AND clause per filter so multiple filters on different fields compose.
+  const FIELD_NAME = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+  const andClauses: Array<Record<string, unknown>> = [];
+  const seenInKeys = new Set<string>();
   for (const [key, value] of sp.entries()) {
     const m = key.match(/^filters\[([^\]]+)\]\[(\$\w+)\]$/);
     if (!m) continue;
     const [, field, op] = m;
     if (!ALLOWED_OPS.has(op as FilterOp)) continue;
+    // Strict identifier whitelist — field names get used as JSON path keys.
+    if (!FIELD_NAME.test(field)) continue;
     if (op === '$in') {
+      // Deduplicate: getAll() returns all values for the key in one shot.
+      if (seenInKeys.has(key)) continue;
+      seenInKeys.add(key);
       const all = sp.getAll(key).map(castValue);
-      where[`data.${field}`] = { in: all };
+      andClauses.push({ data: { path: [field], array_contains: all } });
     } else if (op === '$null') {
-      where[`data.${field}`] = value === 'true' ? { equals: null } : { not: null };
+      andClauses.push({ data: value === 'true' ? { path: [field], equals: null } : { path: [field], not: null } });
     } else if (op === '$contains') {
-      where[`data.${field}`] = { contains: castValue(value) };
+      andClauses.push({ data: { path: [field], string_contains: String(castValue(value)) } });
     } else {
       const opMap: Record<string, string> = {
         $eq: 'equals', $ne: 'not', $gt: 'gt', $gte: 'gte', $lt: 'lt', $lte: 'lte',
       };
-      where[`data.${field}`] = { [opMap[op]]: castValue(value) };
+      andClauses.push({ data: { path: [field], [opMap[op]]: castValue(value) } });
     }
   }
+  const where: Record<string, unknown> = andClauses.length ? { AND: andClauses } : {};
 
   const orderBy: ParsedQuery['orderBy'] = [];
   const sortRaw = sp.get('sort');
@@ -82,8 +92,8 @@ export function parseQuery(url: URL): ParsedQuery {
 
   const fieldsRaw = sp.get('fields');
   // Strict identifier whitelist — these names get used as object keys when
-  // projecting, so reject anything that isn't a plain identifier.
-  const FIELD_NAME = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+  // projecting, so reject anything that isn't a plain identifier. Reuses the
+  // FIELD_NAME regex declared above for filter-key validation.
   const fields = fieldsRaw
     ? fieldsRaw
         .split(',')

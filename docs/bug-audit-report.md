@@ -115,3 +115,56 @@ This report is Agent 3's independent verification.
   - `apps/api/src/routes/api/v1/[collection]/+server.ts` — JSONB filter wiring is missing and the stale "in-memory filter" comment hides it.
   - `apps/api/src/lib/server/sessions.ts` — error swallowing in `touchSession` undercuts B-002's stated benefit.
   - `apps/api/src/lib/server/workspace.ts` — re-examine the race model (same-user vs cross-user) before patching.
+
+---
+
+# Bug Audit Cycle 2 — 2026-06-01
+
+Agent 1.2 found 2 bugs, Agent 2.2 fixed 2, deferred 0.
+
+**Commit**: [9d24652](https://github.com/Poohmuhahaha/lifeos/commit/9d24652)
+**Tests**: pass (25/25 in apps/api)
+**Build**: pass (apps/api vite build clean; apps/web vite build clean)
+
+## Summary
+
+| Severity | Found | Fixed | Verified | Partial | Wrong | Deferred |
+|----------|-------|-------|----------|---------|-------|----------|
+| P0       | 0     | 0     | 0        | 0       | 0     | 0        |
+| P1       | 1     | 1     | 0        | 1       | 0     | 0        |
+| P2       | 1     | 1     | 1        | 0       | 0     | 0        |
+| P3       | 0     | 0     | 0        | 0       | 0     | 0        |
+| **All**  | **2** | **2** | **1**    | **1**   | **0** | **0**    |
+
+(B-013 is graded Partial because the `$in` operator is wired to Prisma's `array_contains`, which has different semantics than Strapi `$in`. Other operators in the same fix verify cleanly.)
+
+## Verification details
+
+### B-013 — Query where-clause silently ignored (P1)
+- **Status**: Partial
+- **What Agent 2.2 changed**: `apps/api/src/lib/server/query.ts` rebuilds the filter-to-where converter to emit Prisma JSON-path clauses (`{ data: { path: [field], <op>: value } }`) accumulated under `AND`, hoists the `FIELD_NAME` whitelist so filter keys are now subject to the same regex as `?fields=`, and deduplicates `$in` keys; `apps/api/src/routes/api/v1/[collection]/+server.ts` spreads `q.where` into the base `where` so the clauses actually reach Prisma.
+- **Why this resolves the bug**: `?filters[...]` parameters are no longer parsed-then-discarded — they reach Postgres via Prisma's JSON-path filters and constrain the result set. Field-name whitelist closes the same prototype-pollution / dotted-path foot-gun B-011 closed for `?fields=`. The JSON-path shape matches the project's existing usage (see `apps/api/prisma/seed.ts:116`) and the `ContentEntry.data Json` schema column.
+- **Residual concern**: The `$in` operator maps to Prisma's `array_contains`, which has different semantics from Strapi-style `$in`. `array_contains: ['high', 'med']` asks Postgres "is `data.priority` a JSON array containing both 'high' AND 'med'" — but Strapi `$in` means "is `data.priority` one of these scalars (OR)." For scalar JSON fields (the common case), this returns zero rows instead of the union. The correct shape is `{ OR: values.map(v => ({ data: { path: [field], equals: v } })) }`. All other operators (`$eq`, `$ne`, `$gt/gte/lt/lte`, `$contains`, `$null`) verify cleanly. No crafted payload appears to produce an opaque Prisma throw: numeric ops on string JSON fields return zero rows rather than 500, and `String(castValue(v))` always coerces `$contains` to a string. The stale "we evaluate filters in-memory after fetching" comment from cycle 1's residual list is now replaced with an accurate comment — good.
+
+### B-014 — Math.random for block IDs (P2)
+- **Status**: Verified
+- **What Agent 2.2 changed**: `apps/web/src/lib/components/Editor.svelte:54` swaps `Math.random().toString(36).slice(2)` for `crypto.randomUUID()` inside `docToBlocks`.
+- **Why this resolves the bug**: `docToBlocks` is invoked only from TipTap's `onUpdate` and from a function reading `editor.getJSON()` — both code paths run after `onMount`, so they execute in the browser, where `window.crypto.randomUUID()` is available on all evergreen targets (Chrome 92+, FF 95+, Safari 15.4+). UUIDs are 122 bits of entropy vs. ~32 bits from the previous `Math.random` slice, eliminating realistic collision risk inside one document's block set.
+- **Residual concern**: None. SvelteKit SSR doesn't invoke this path (TipTap mounts client-side), so the lack of a `node:crypto` import is fine. If someone ever refactors `docToBlocks` to run server-side, the same identifier resolves to Node's global `crypto.randomUUID()` on Node 19+ — current project Node is 22.x — so it would still work; worth a comment if the refactor lands but not blocking.
+
+## New bugs surfaced during verification
+
+- **B-015 (P2) — `$in` filter has wrong semantics**: As described in B-013's residual concern. `filters[priority][$in]=high&filters[priority][$in]=med` returns zero matches against a scalar JSON field because `array_contains: ['high','med']` requires the stored value to itself be a `["high","med",...]` array containing both. Fix shape: replace the `$in` branch with `andClauses.push({ OR: all.map((v) => ({ data: { path: [field], equals: v } })) })`. Low blast radius (no callers in tree yet wire `$in`), but contracts say it's supported.
+
+## Carry-over status from cycle 1
+
+- **C-B (touchSession swallows DB errors)**: Still applicable. `apps/api/src/lib/server/sessions.ts:24` still ends with `.catch(() => {})`. No code change since cycle 1. The cycle-1 await fix landed, but the inner error swallow remains — session-write failures are still invisible to logs.
+- **C-C (B-006 partial — duplicate workspace on same-user race)**: Still applicable. `apps/api/src/lib/server/workspace.ts:40-56` is unchanged from cycle 1. On a P2002 from concurrent same-user signup, the catch branch still falls through to `db.workspace.create({ slug: baseSlug-<random> })` without re-checking `findFirst({ userId, role: 'owner' })`, so the user can end up owning two workspaces.
+- **C-D (PUBLIC_WEB_URL not documented)**: Still applicable. `grep -r PUBLIC_WEB_URL docs/` returns only this audit report — `docs/self-host.md` and `docs/quickstart.md` still lack the env-var entry.
+
+## Recommendations for cycle 3
+
+- **Fix B-015 ($in → OR-of-equals)**: 4-line change in `query.ts`. Cleanest follow-up. Worth pairing with a unit test that hits each operator branch of `parseQuery` so this class of regression is caught earlier.
+- **Address C-B/C-C/C-D**: Three small, well-understood follow-ups from cycle 1. Each is <10 lines plus tests/docs. Bundling them into a single "tech-debt: cycle 1 carry-overs" commit would clear the backlog cleanly.
+- **Add a `parseQuery` test file**: This module is now the second-most-foot-gun-prone file in the API (after the webhook handler) and has zero direct unit coverage. A 5-case test (one per operator family + the field-name whitelist) would be cheap and load-bearing.
+- **Verdict**: Cycle 3 is **worthwhile** but small — one real bug (B-015) plus three known carry-overs. After that, signal is likely thin enough to stop and shift to test coverage.

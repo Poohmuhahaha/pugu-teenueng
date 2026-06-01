@@ -12,6 +12,7 @@
     "npm:bcryptjs@^2.4.3": "2.4.3",
     "npm:jose@^5.9.6": "5.10.0",
     "npm:lru-cache@11": "11.5.0",
+    "npm:marked@14": "14.1.4",
     "npm:marked@^14.1.4": "14.1.4",
     "npm:prisma@*": "5.22.0",
     "npm:prisma@^5.22.0": "5.22.0",
@@ -1204,6 +1205,20 @@
             "npm:vite@^5.4.0",
             "npm:vitest@^2.1.0",
             "npm:zod@^3.23.8"
+          ]
+        }
+      },
+      "apps/docs": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@sveltejs/adapter-static@3",
+            "npm:@sveltejs/kit@^2.15.0",
+            "npm:@sveltejs/vite-plugin-svelte@3",
+            "npm:@types/node@22",
+            "npm:marked@14",
+            "npm:svelte@^4.2.19",
+            "npm:typescript@^5.6.0",
+            "npm:vite@^5.4.0"
           ]
         }
       },

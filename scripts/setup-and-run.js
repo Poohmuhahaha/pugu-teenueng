@@ -55,6 +55,7 @@ console.log('🔥 Starting LifeOS development services...');
 const apps = [
   '@lifeos/admin',
   '@lifeos/api',
+  '@lifeos/docs',
   '@lifeos/landing',
   '@lifeos/web'
 ];

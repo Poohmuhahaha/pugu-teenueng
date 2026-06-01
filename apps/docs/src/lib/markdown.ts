@@ -1,5 +1,6 @@
 import { marked, Renderer } from 'marked';
 import type { Tokens } from 'marked';
+import { base } from '$app/paths';
 
 /**
  * Render markdown to HTML + extract a table of contents.
@@ -54,7 +55,7 @@ function rewriteHref(href: string): string {
   if (match) {
     const slug = match[1];
     const hash = match[2] ?? '';
-    return `/${slug}${hash}`;
+    return `${base}/${slug}${hash}`;
   }
   return href;
 }

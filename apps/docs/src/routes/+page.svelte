@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import { SECTIONS } from '$lib/sections';
 </script>
 
@@ -17,7 +18,7 @@
       production pipelines.
     </p>
     <div class="cta-row">
-      <a class="btn" href="/quickstart">Get started in 10 minutes →</a>
+      <a class="btn" href={base + '/quickstart'}>Get started in 10 minutes →</a>
       <a class="btn btn-secondary" href="https://github.com/Poohmuhahaha/lifeos" target="_blank" rel="noopener">★ GitHub</a>
     </div>
   </header>
@@ -32,7 +33,7 @@
         <ul>
           {#each section.pages as p (p.slug)}
             <li>
-              <a href={`/${p.slug}`}>
+              <a href={`${base}/${p.slug}`}>
                 <span class="page-title">{p.title}</span>
                 <span class="page-desc">{p.description}</span>
               </a>

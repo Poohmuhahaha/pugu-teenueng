@@ -2,10 +2,15 @@
   import '@lifeos/ui/design.css';
   import './docs.css';
   import { page } from '$app/stores';
+  import { base } from '$app/paths';
   import { SECTIONS } from '$lib/sections';
 
+  // Strip the base prefix from the current URL so activeSlug compares cleanly
+  // against the slug stored in sections.ts. With paths.base = '/docs', the
+  // pathname for the homepage is '/docs' (or '/docs/'), not '/'.
   $: pathname = $page.url.pathname;
-  $: activeSlug = pathname === '/' ? '' : pathname.replace(/^\/+|\/+$/g, '');
+  $: stripped = pathname.replace(new RegExp(`^${base}`), '') || '/';
+  $: activeSlug = stripped === '/' ? '' : stripped.replace(/^\/+|\/+$/g, '');
 
   // Mobile sidebar
   let menuOpen = false;
@@ -30,7 +35,7 @@
           {/if}
         </svg>
       </button>
-      <a class="brand" href="/">
+      <a class="brand" href={base + '/'}>
         <span class="brand-dot"></span>
         LifeOS
         <span class="brand-tag">Docs</span>
@@ -44,8 +49,8 @@
       <span class="kbd">⌘ K</span>
     </div>
     <nav class="nav-links">
-      <a href="/" class:active={pathname === '/'}>Docs</a>
-      <a href="/api" class:active={pathname.startsWith('/api')}>API</a>
+      <a href={base + '/'} class:active={stripped === '/'}>Docs</a>
+      <a href={base + '/api'} class:active={stripped.startsWith('/api')}>API</a>
       <a href="https://github.com/Poohmuhahaha/lifeos" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
@@ -61,7 +66,7 @@
             {#each section.pages as p (p.slug)}
               <li>
                 <a
-                  href={`/${p.slug}`}
+                  href={`${base}/${p.slug}`}
                   class:active={activeSlug === p.slug}
                   on:click={closeMenu}
                 >{p.title}</a>
@@ -85,7 +90,7 @@
 <footer class="site-footer">
   <div class="site-footer-inner">
     <div>
-      <a class="brand" href="/">
+      <a class="brand" href={base + '/'}>
         <span class="brand-dot"></span>
         LifeOS
       </a>
@@ -94,10 +99,10 @@
     <div class="footer-cols">
       <div class="footer-col">
         <h4>Docs</h4>
-        <a href="/quickstart">Quickstart</a>
-        <a href="/self-host">Self-host</a>
-        <a href="/api">REST API</a>
-        <a href="/webhooks">Webhooks</a>
+        <a href={base + '/quickstart'}>Quickstart</a>
+        <a href={base + '/self-host'}>Self-host</a>
+        <a href={base + '/api'}>REST API</a>
+        <a href={base + '/webhooks'}>Webhooks</a>
       </div>
       <div class="footer-col">
         <h4>Product</h4>
@@ -107,8 +112,8 @@
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
-        <a href="/privacy-policy">Privacy</a>
-        <a href="/terms-of-service">Terms</a>
+        <a href={base + '/privacy-policy'}>Privacy</a>
+        <a href={base + '/terms-of-service'}>Terms</a>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { base } from '$app/paths';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -46,7 +47,7 @@
 <div class="doc-page">
   <article class="doc-article">
     <nav class="doc-crumbs" aria-label="Breadcrumb">
-      <a href="/">Docs</a>
+      <a href={base + '/'}>Docs</a>
       <span class="sep">/</span>
       <span class="muted">{page.section.title}</span>
       <span class="sep">/</span>
@@ -66,7 +67,7 @@
 
     <nav class="doc-pagination" aria-label="Page navigation">
       {#if prev}
-        <a class="doc-pagelink prev" href={`/${prev.slug}`}>
+        <a class="doc-pagelink prev" href={`${base}/${prev.slug}`}>
           <span class="meta">← Previous</span>
           <span class="target">{prev.title}</span>
         </a>
@@ -74,7 +75,7 @@
         <span></span>
       {/if}
       {#if next}
-        <a class="doc-pagelink next" href={`/${next.slug}`}>
+        <a class="doc-pagelink next" href={`${base}/${next.slug}`}>
           <span class="meta">Next →</span>
           <span class="target">{next.title}</span>
         </a>

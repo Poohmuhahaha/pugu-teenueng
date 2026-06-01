@@ -60,7 +60,10 @@ export function parseQuery(url: URL): ParsedQuery {
       if (seenInKeys.has(key)) continue;
       seenInKeys.add(key);
       const all = sp.getAll(key).map(castValue);
-      andClauses.push({ data: { path: [field], array_contains: all } });
+      // $in means "field value matches ANY of these" — Prisma's array_contains
+      // checks the OPPOSITE (the stored JSON array contains a value), which is
+      // wrong here. Expand to an OR of scalar equality checks.
+      andClauses.push({ OR: all.map((v) => ({ data: { path: [field], equals: v } })) });
     } else if (op === '$null') {
       andClauses.push({ data: value === 'true' ? { path: [field], equals: null } : { path: [field], not: null } });
     } else if (op === '$contains') {

@@ -59,6 +59,7 @@ LifeOS picks up the following env vars when present:
 |---|---|
 | `SENTRY_DSN` | Forward unhandled errors to Sentry (lazy load — zero cost when unset) |
 | `FEATURES` | JSON object of feature flags read by `isEnabled(flag)` |
+| `PUBLIC_WEB_URL` | Public origin of the web app (e.g. `https://app.lifeos.com`). The CLI device-code flow uses this to build the `verification_uri` it shows the user. Required in production — without it the API falls back to a dev-only `:3000 → :5176` swap, so CLI users land on the API host instead of the web app. |
 
 ### 6. Stripe billing (optional)
 

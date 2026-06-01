@@ -28,7 +28,9 @@ export async function GET(event) {
   const orderBy = q.orderBy
     .map((o) => ({ [o.field]: o.dir }))
     .filter((o) =>
-      // only sort on real ContentEntry columns; field sorts on JSON data handled in-memory
+      // Only sort on real ContentEntry columns. Sort keys that target JSON
+      // fields under `data` are silently dropped — Prisma can't push them down
+      // and we no longer support in-memory sorting for paged queries.
       ['createdAt', 'updatedAt', 'id'].includes(Object.keys(o)[0])
     );
 

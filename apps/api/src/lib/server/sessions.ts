@@ -18,10 +18,13 @@ export async function recordSession(userId: number, jwt: string, ua: string | nu
 
 export async function touchSession(jwt: string): Promise<void> {
   const tokenHash = hashToken(jwt);
+  // Fire-and-forget on the hot request path — we don't want a transient DB
+  // hiccup to fail the user's request — but log to stderr so failures are
+  // visible in production logs instead of silently swallowed.
   await db.session.updateMany({
     where: { tokenHash, revokedAt: null },
     data: { lastSeenAt: new Date() },
-  }).catch(() => {});
+  }).catch((err) => { console.error('[sessions.touch] update failed:', err); });
 }
 
 export async function isSessionRevoked(jwt: string): Promise<boolean> {

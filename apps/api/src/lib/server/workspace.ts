@@ -40,19 +40,33 @@ export async function ensurePersonalWorkspace(userId: number, userName: string):
   } catch (e: unknown) {
     const code = (e as { code?: string } | null)?.code;
     if (code !== 'P2002') throw e;
-    const suffix = randomBytes(3).toString('hex');
-    ws = await db.workspace.create({
-      data: {
-        name: `${userName}'s Workspace`,
-        slug: `${baseSlug}-${suffix}`,
-        members: {
-          create: {
-            userId,
-            role: 'owner',
+    // P2002 here can mean two things:
+    //   (a) a concurrent request for the SAME user already created their
+    //       workspace — in which case we must NOT create a second one.
+    //   (b) two different users genuinely collide on the same slug — only
+    //       then do we want a suffixed slug.
+    // Re-run the ownership guard first to distinguish.
+    const ownedNow = await db.workspaceMember.findFirst({
+      where: { userId, role: 'owner' },
+      include: { workspace: true },
+    });
+    if (ownedNow?.workspace) {
+      ws = ownedNow.workspace;
+    } else {
+      const suffix = randomBytes(3).toString('hex');
+      ws = await db.workspace.create({
+        data: {
+          name: `${userName}'s Workspace`,
+          slug: `${baseSlug}-${suffix}`,
+          members: {
+            create: {
+              userId,
+              role: 'owner',
+            },
           },
         },
-      },
-    });
+      });
+    }
   }
 
   // Create a default free subscription

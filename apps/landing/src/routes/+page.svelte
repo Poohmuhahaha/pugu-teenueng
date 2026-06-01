@@ -1,60 +1,216 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
-  import { reveal, staggerChildren, springPress, animate, prefersReducedMotion, EASING } from '@lifeos/ui/motion';
+  import { reveal, staggerChildren, springPress, animate, inView, stagger, prefersReducedMotion, EASING } from '@lifeos/ui/motion';
 
   let email = '';
   let submitted = false;
   let submitting = false;
   let locale: Locale = 'en';
 
-  let heroCopyEl: HTMLElement;
+  let eyebrowEl: HTMLElement;
+  let headlineEl: HTMLElement;
+  let ledeEl: HTMLElement;
+  let bulletsEl: HTMLElement;
+  let formEl: HTMLElement;
+  let microcopyEl: HTMLElement;
+  let heroCtaRowEl: HTMLElement;
   let mockupCardEl: HTMLElement;
+  let heroSectionEl: HTMLElement;
+
+  let detachListeners: Array<() => void> = [];
 
   onMount(() => {
     locale = detectLocale();
+    if (prefersReducedMotion()) return;
 
-    // Hero: stagger the headline / lede / bullets / form on first paint.
-    if (heroCopyEl) {
-      staggerChildren(heroCopyEl, ':scope > *', { gap: 0.08, duration: 0.55, y: 24 });
-    }
-
-    // Hero mockup card: scale-in once, then loop a subtle "checkbox tick" + badge pulse
-    // every 4s so the page feels alive without being noisy.
-    if (mockupCardEl && !prefersReducedMotion()) {
-      animate(
-        mockupCardEl,
-        { opacity: [0, 1], transform: ['translateY(20px) scale(0.96)', 'translateY(0) scale(1)'] },
-        { duration: 0.7, easing: EASING.entrance, delay: 0.25 },
-      );
-      startMockupLoop();
-    }
+    startHeroAnimation();
+    startMockupLoop();
+    startParallax();
   });
 
-  function startMockupLoop() {
+  onDestroy(() => {
+    for (const off of detachListeners) off();
+    detachListeners = [];
+  });
+
+  // === Dramatic hero entrance ===
+  // Headline animates word-by-word with rotation + y; subsequent rows fade in with
+  // tight gaps. The mockup card tilts in from the right with perspective + 3D rotation
+  // before settling.
+  function startHeroAnimation(): void {
+    // Word-wrap the headline so we can animate each word independently.
+    if (headlineEl) {
+      const text = headlineEl.textContent ?? '';
+      // Preserve the `.accent` span by splitting on the rendered children.
+      const original = headlineEl.innerHTML;
+      const splitHTML = splitIntoWords(original);
+      headlineEl.innerHTML = splitHTML;
+      const words = Array.from(headlineEl.querySelectorAll('.hero-word')) as HTMLElement[];
+      // Set starting state immediately so there's no flash of un-animated text.
+      for (const w of words) {
+        w.style.opacity = '0';
+        w.style.transform = 'translateY(48px) rotate(-2deg)';
+        w.style.willChange = 'opacity, transform';
+      }
+      animate(
+        words,
+        { opacity: [0, 1], transform: ['translateY(48px) rotate(-2deg)', 'translateY(0) rotate(0)'] },
+        { duration: 0.85, easing: EASING.entrance, delay: stagger(0.06, { start: 0.05 }) },
+      ).finished.then(() => {
+        for (const w of words) w.style.willChange = '';
+      });
+      void text;
+    }
+
+    // The supporting copy below the headline — eyebrow, lede, bullets, form,
+    // microcopy + cta-row — comes in after the headline finishes, faster + tighter.
+    const supportTargets = [eyebrowEl, ledeEl, bulletsEl, formEl, microcopyEl, heroCtaRowEl].filter(Boolean) as HTMLElement[];
+    if (supportTargets.length) {
+      for (const el of supportTargets) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.willChange = 'opacity, transform';
+      }
+      animate(
+        supportTargets,
+        { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0)'] },
+        { duration: 0.55, easing: EASING.entrance, delay: stagger(0.07, { start: 0.45 }) },
+      ).finished.then(() => {
+        for (const el of supportTargets) el.style.willChange = '';
+      });
+    }
+
+    // Mockup card: starts off-screen-right with perspective tilt, swings into place.
+    if (mockupCardEl) {
+      mockupCardEl.style.opacity = '0';
+      mockupCardEl.style.transformStyle = 'preserve-3d';
+      mockupCardEl.style.transform = 'perspective(1200px) translate3d(80px, 30px, -60px) rotateY(-18deg) rotateX(6deg)';
+      mockupCardEl.style.willChange = 'opacity, transform';
+      animate(
+        mockupCardEl,
+        {
+          opacity: [0, 1],
+          transform: [
+            'perspective(1200px) translate3d(80px, 30px, -60px) rotateY(-18deg) rotateX(6deg)',
+            'perspective(1200px) translate3d(0, 0, 0) rotateY(0) rotateX(0)',
+          ],
+        },
+        { duration: 1.1, easing: EASING.entrance, delay: 0.35 },
+      ).finished.then(() => {
+        mockupCardEl.style.willChange = '';
+        mockupCardEl.style.transform = '';
+      });
+
+      // Internal mockup content also staggers in slightly behind the card.
+      const innerRows = mockupCardEl.querySelectorAll('.mock-row, .mock-block .badge') as NodeListOf<HTMLElement>;
+      for (const r of innerRows) {
+        r.style.opacity = '0';
+        r.style.transform = 'translateY(10px)';
+      }
+      animate(
+        Array.from(innerRows),
+        { opacity: [0, 1], transform: ['translateY(10px)', 'translateY(0)'] },
+        { duration: 0.4, easing: EASING.entrance, delay: stagger(0.05, { start: 0.85 }) },
+      );
+    }
+  }
+
+  function splitIntoWords(html: string): string {
+    // Wraps each visible word in a <span class="hero-word"> while preserving
+    // nested elements (.accent span). Simple state-machine walk over the HTML.
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+    const root = doc.body.firstElementChild as HTMLElement;
+    const out: string[] = [];
+    function walk(node: Node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const words = (node.textContent ?? '').split(/(\s+)/);
+        for (const w of words) {
+          if (!w) continue;
+          if (/^\s+$/.test(w)) { out.push(w); continue; }
+          out.push(`<span class="hero-word" style="display:inline-block;will-change:opacity,transform">${escapeHtml(w)}</span>`);
+        }
+        return;
+      }
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+        const attrs = Array.from(el.attributes).map((a) => `${a.name}="${escapeHtml(a.value)}"`).join(' ');
+        out.push(`<${tag}${attrs ? ' ' + attrs : ''}>`);
+        for (const child of Array.from(el.childNodes)) walk(child);
+        out.push(`</${tag}>`);
+      }
+    }
+    for (const child of Array.from(root.childNodes)) walk(child);
+    return out.join('');
+  }
+
+  function escapeHtml(s: string): string {
+    return s.replace(/[&<>"']/g, (c) =>
+      c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;',
+    );
+  }
+
+  // === Mockup loop — stronger pulses ===
+  function startMockupLoop(): void {
     let cancelled = false;
     const tick = async () => {
       while (!cancelled) {
-        await new Promise((r) => setTimeout(r, 3200));
+        await new Promise((r) => setTimeout(r, 2400));
         if (cancelled || !mockupCardEl) return;
         const checks = mockupCardEl.querySelectorAll('.mock-line:not(.done) .check');
         const badges = mockupCardEl.querySelectorAll('.mock-block .badge');
-        // Pulse a random badge
         if (badges.length) {
           const target = badges[Math.floor(Math.random() * badges.length)] as HTMLElement;
-          animate(target, { transform: ['scale(1)', 'scale(1.12)', 'scale(1)'] }, { duration: 0.55 });
+          animate(
+            target,
+            { transform: ['scale(1) rotate(0)', 'scale(1.25) rotate(-4deg)', 'scale(1) rotate(0)'] },
+            { duration: 0.7, easing: EASING.spring },
+          );
         }
-        // Wiggle (don't actually toggle) an unchecked checkbox so the page feels alive
         if (checks.length) {
           const c = checks[Math.floor(Math.random() * checks.length)] as HTMLElement;
-          animate(c, { transform: ['scale(1)', 'scale(1.18)', 'scale(1)'] }, { duration: 0.45 });
+          animate(
+            c,
+            { transform: ['scale(1)', 'scale(1.3)', 'scale(1)'] },
+            { duration: 0.55, easing: EASING.spring },
+          );
         }
       }
     };
     void tick();
-    // Pause loop when the tab isn't visible
-    const onVis = () => { cancelled = document.hidden; if (!cancelled) void tick(); };
+    const onVis = () => { if (document.hidden) cancelled = true; else { cancelled = false; void tick(); } };
     document.addEventListener('visibilitychange', onVis);
+    detachListeners.push(() => { cancelled = true; document.removeEventListener('visibilitychange', onVis); });
+  }
+
+  // === Scroll-linked parallax on the mockup card ===
+  // As the user scrolls past the hero, the mockup floats upward slightly faster
+  // than the page (creates depth between copy and card). Pure transform; off
+  // when reduced-motion or when card is offscreen.
+  function startParallax(): void {
+    if (!mockupCardEl || !heroSectionEl) return;
+    let ticking = false;
+    const apply = () => {
+      const rect = heroSectionEl.getBoundingClientRect();
+      // Only run while the hero is still in viewport range
+      if (rect.bottom < -200 || rect.top > window.innerHeight) {
+        ticking = false;
+        return;
+      }
+      const progress = -rect.top / window.innerHeight; // 0 at top, grows as we scroll
+      const y = Math.max(-80, Math.min(0, -progress * 60));
+      mockupCardEl.style.transform = `translateY(${y}px)`;
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    detachListeners.push(() => window.removeEventListener('scroll', onScroll));
   }
 
   function switchLocale(l: Locale) {
@@ -114,20 +270,20 @@
 </header>
 
 <main>
-  <section class="hero">
+  <section class="hero" bind:this={heroSectionEl}>
     <div class="hero-grid">
-      <div class="hero-copy" bind:this={heroCopyEl}>
-        <span class="eyebrow">{t('landing.eyebrow', locale)}</span>
-        <h1>
+      <div class="hero-copy">
+        <span class="eyebrow" bind:this={eyebrowEl}>{t('landing.eyebrow', locale)}</span>
+        <h1 bind:this={headlineEl}>
           {t('landing.headline.left', locale)} <span class="accent">{t('landing.headline.right', locale)}</span>
         </h1>
-        <p class="lede">{t('landing.lede', locale)}</p>
-        <ul class="hero-bullets">
+        <p class="lede" bind:this={ledeEl}>{t('landing.lede', locale)}</p>
+        <ul class="hero-bullets" bind:this={bulletsEl}>
           <li>{t('landing.hero.bullet.1', locale)}</li>
           <li>{t('landing.hero.bullet.2', locale)}</li>
           <li>{t('landing.hero.bullet.3', locale)}</li>
         </ul>
-        <form class="waitlist" on:submit|preventDefault={joinWaitlist}>
+        <form class="waitlist" on:submit|preventDefault={joinWaitlist} bind:this={formEl}>
           <input
             class="text-input"
             type="email"
@@ -143,8 +299,8 @@
               : t('landing.cta', locale)}
           </button>
         </form>
-        <p class="microcopy">{t('landing.microcopy', locale)}</p>
-        <div class="hero-cta-row">
+        <p class="microcopy" bind:this={microcopyEl}>{t('landing.microcopy', locale)}</p>
+        <div class="hero-cta-row" bind:this={heroCtaRowEl}>
           <a class="text-link" href="https://github.com/Poohmuhahaha/lifeos" target="_blank" rel="noopener">★ {t('landing.cta.secondary', locale)}</a>
         </div>
       </div>

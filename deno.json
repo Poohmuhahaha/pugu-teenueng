@@ -13,7 +13,8 @@
   "nodeModulesDir": "auto",
   "imports": {
     "custom-prisma-client": "./apps/api/node_modules/custom-prisma-client/index.js",
-    "marked": "npm:marked@^14.1.4"
+    "marked": "npm:marked@^14.1.4",
+    "motion": "npm:motion@^12.40.0"
   },
   "tasks": {
     "setup-dev": "deno run --unstable-detect-cjs -A scripts/setup-and-run.js",

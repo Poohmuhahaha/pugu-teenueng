@@ -1,6 +1,16 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { base } from '$app/paths';
+  import { reveal, staggerChildren, springPress } from '@lifeos/ui/motion';
   import { SECTIONS } from '$lib/sections';
+
+  let heroEl: HTMLElement;
+
+  onMount(() => {
+    if (heroEl) {
+      staggerChildren(heroEl, ':scope > *', { gap: 0.07, duration: 0.5, y: 20 });
+    }
+  });
 </script>
 
 <svelte:head>
@@ -8,7 +18,7 @@
 </svelte:head>
 
 <div class="home">
-  <header class="home-hero">
+  <header class="home-hero" bind:this={heroEl}>
     <span class="eyebrow">Documentation</span>
     <h1>Build with LifeOS.</h1>
     <p class="lede">
@@ -24,8 +34,8 @@
   </header>
 
   <section class="home-grid">
-    {#each SECTIONS as section (section.id)}
-      <article class="home-card">
+    {#each SECTIONS as section, i (section.id)}
+      <article class="home-card" use:reveal={{ delay: i * 0.06, y: 24 }}>
         <header>
           <h2>{section.title}</h2>
           <p>{section.description}</p>
@@ -47,15 +57,15 @@
   <section class="home-foot">
     <h2>Need help?</h2>
     <div class="help-grid">
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/issues" target="_blank" rel="noopener">
+      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/issues" target="_blank" rel="noopener" use:reveal={{ delay: 0 }} use:springPress>
         <h3>File an issue</h3>
         <p>Found a bug or want to suggest a feature? Open it on GitHub.</p>
       </a>
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/discussions" target="_blank" rel="noopener">
+      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/discussions" target="_blank" rel="noopener" use:reveal={{ delay: 0.08 }} use:springPress>
         <h3>Discussions</h3>
         <p>Architecture questions, recipes, show &amp; tell — talk to the community.</p>
       </a>
-      <a class="help-card" href="mailto:support@lifeos.app">
+      <a class="help-card" href="mailto:support@lifeos.app" use:reveal={{ delay: 0.16 }} use:springPress>
         <h3>Email support</h3>
         <p>Paid plans get a 24h SLA. Free tier is best-effort.</p>
       </a>

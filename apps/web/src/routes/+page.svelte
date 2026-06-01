@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { reveal, countUp, springPress } from '@lifeos/ui/motion';
 
   export let params: any = undefined;
 
@@ -54,12 +55,12 @@
     </div>
     <div class="card-soft">
       <div class="kpi-label">Entries</div>
-      <div class="kpi-big">{billing.usage.entries.toLocaleString()}</div>
+      <div class="kpi-big" use:countUp={{ to: billing.usage.entries, format: (n) => n.toLocaleString() }}>0</div>
       <div class="kpi-sub">across {types.length} collection{types.length === 1 ? '' : 's'}</div>
     </div>
     <div class="card-soft">
       <div class="kpi-label">Members</div>
-      <div class="kpi-big">{billing.usage.members}</div>
+      <div class="kpi-big" use:countUp={{ to: billing.usage.members }}>0</div>
       <div class="kpi-sub">workspace seats</div>
     </div>
   </div>
@@ -74,8 +75,8 @@
   </div>
 {:else if types.length > 0}
   <div class="grid">
-    {#each types as t (t.slug)}
-      <a href={`/collections/${t.slug}`} class="card collection-card">
+    {#each types as t, i (t.slug)}
+      <a href={`/collections/${t.slug}`} class="card collection-card" use:reveal={{ delay: i * 0.04, y: 16 }} use:springPress>
         <div class="big">{t.name}</div>
         <div class="sub"><code>/{t.slug}</code></div>
       </a>

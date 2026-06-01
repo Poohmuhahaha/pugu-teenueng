@@ -1,13 +1,61 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
+  import { reveal, staggerChildren, springPress, animate, prefersReducedMotion, EASING } from '@lifeos/ui/motion';
 
   let email = '';
   let submitted = false;
   let submitting = false;
   let locale: Locale = 'en';
 
-  onMount(() => { locale = detectLocale(); });
+  let heroCopyEl: HTMLElement;
+  let mockupCardEl: HTMLElement;
+
+  onMount(() => {
+    locale = detectLocale();
+
+    // Hero: stagger the headline / lede / bullets / form on first paint.
+    if (heroCopyEl) {
+      staggerChildren(heroCopyEl, ':scope > *', { gap: 0.08, duration: 0.55, y: 24 });
+    }
+
+    // Hero mockup card: scale-in once, then loop a subtle "checkbox tick" + badge pulse
+    // every 4s so the page feels alive without being noisy.
+    if (mockupCardEl && !prefersReducedMotion()) {
+      animate(
+        mockupCardEl,
+        { opacity: [0, 1], transform: ['translateY(20px) scale(0.96)', 'translateY(0) scale(1)'] },
+        { duration: 0.7, easing: EASING.entrance, delay: 0.25 },
+      );
+      startMockupLoop();
+    }
+  });
+
+  function startMockupLoop() {
+    let cancelled = false;
+    const tick = async () => {
+      while (!cancelled) {
+        await new Promise((r) => setTimeout(r, 3200));
+        if (cancelled || !mockupCardEl) return;
+        const checks = mockupCardEl.querySelectorAll('.mock-line:not(.done) .check');
+        const badges = mockupCardEl.querySelectorAll('.mock-block .badge');
+        // Pulse a random badge
+        if (badges.length) {
+          const target = badges[Math.floor(Math.random() * badges.length)] as HTMLElement;
+          animate(target, { transform: ['scale(1)', 'scale(1.12)', 'scale(1)'] }, { duration: 0.55 });
+        }
+        // Wiggle (don't actually toggle) an unchecked checkbox so the page feels alive
+        if (checks.length) {
+          const c = checks[Math.floor(Math.random() * checks.length)] as HTMLElement;
+          animate(c, { transform: ['scale(1)', 'scale(1.18)', 'scale(1)'] }, { duration: 0.45 });
+        }
+      }
+    };
+    void tick();
+    // Pause loop when the tab isn't visible
+    const onVis = () => { cancelled = document.hidden; if (!cancelled) void tick(); };
+    document.addEventListener('visibilitychange', onVis);
+  }
 
   function switchLocale(l: Locale) {
     setLocale(l);
@@ -68,7 +116,7 @@
 <main>
   <section class="hero">
     <div class="hero-grid">
-      <div class="hero-copy">
+      <div class="hero-copy" bind:this={heroCopyEl}>
         <span class="eyebrow">{t('landing.eyebrow', locale)}</span>
         <h1>
           {t('landing.headline.left', locale)} <span class="accent">{t('landing.headline.right', locale)}</span>
@@ -87,7 +135,7 @@
             placeholder={t('landing.cta.placeholder', locale)}
             required
           />
-          <button class="button-primary" type="submit" disabled={submitting}>
+          <button class="button-primary" type="submit" disabled={submitting} use:springPress>
             {submitted
               ? t('landing.cta.done', locale)
               : submitting
@@ -101,7 +149,7 @@
         </div>
       </div>
       <div class="hero-mockup" aria-hidden="true">
-        <div class="mockup-card">
+        <div class="mockup-card" bind:this={mockupCardEl} style="opacity:0">
           <div class="mockup-head">
             <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
             <span class="mockup-title">today.md</span>
@@ -123,30 +171,30 @@
   </section>
 
   <section class="trust-band" aria-labelledby="trust-head">
-    <h2 class="trust-head" id="trust-head">{t('landing.section.trust', locale)}</h2>
+    <h2 class="trust-head" id="trust-head" use:reveal>{t('landing.section.trust', locale)}</h2>
     <div class="trust-grid">
-      <div class="trust-item">
+      <div class="trust-item" use:reveal={{ delay: 0.0 }}>
         <span class="trust-icon" aria-hidden="true">⌘</span>
         <div>
           <h3>{t('landing.trust.opensource.title', locale)}</h3>
           <p>{t('landing.trust.opensource.desc', locale)}</p>
         </div>
       </div>
-      <div class="trust-item">
+      <div class="trust-item" use:reveal={{ delay: 0.08 }}>
         <span class="trust-icon" aria-hidden="true">▣</span>
         <div>
           <h3>{t('landing.trust.selfhost.title', locale)}</h3>
           <p>{t('landing.trust.selfhost.desc', locale)}</p>
         </div>
       </div>
-      <div class="trust-item">
+      <div class="trust-item" use:reveal={{ delay: 0.16 }}>
         <span class="trust-icon" aria-hidden="true">⊕</span>
         <div>
           <h3>{t('landing.trust.e2ee.title', locale)}</h3>
           <p>{t('landing.trust.e2ee.desc', locale)}</p>
         </div>
       </div>
-      <div class="trust-item">
+      <div class="trust-item" use:reveal={{ delay: 0.24 }}>
         <span class="trust-icon" aria-hidden="true">{'</>'}</span>
         <div>
           <h3>{t('landing.trust.api.title', locale)}</h3>
@@ -161,32 +209,32 @@
       <h2>{t('landing.section.features', locale)}</h2>
     </div>
     <div class="grid">
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-graph" aria-hidden="true"></span>
         <h3>{t('landing.feature.graph.title', locale)}</h3>
         <p>{@html t('landing.feature.graph.desc', locale)}</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-editor" aria-hidden="true"></span>
         <h3>{t('landing.feature.editor.title', locale)}</h3>
         <p>{@html t('landing.feature.editor.desc', locale)}</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-db" aria-hidden="true"></span>
         <h3>{t('landing.feature.db.title', locale)}</h3>
         <p>{@html t('landing.feature.db.desc', locale)}</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-local" aria-hidden="true"></span>
         <h3>{t('landing.feature.local.title', locale)}</h3>
         <p>{@html t('landing.feature.local.desc', locale)}</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-api" aria-hidden="true"></span>
         <h3>{t('landing.feature.api.title', locale)}</h3>
         <p>{@html t('landing.feature.api.desc', locale)}</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card" use:reveal={{ y: 24 }}>
         <span class="feature-icon icon-webhooks" aria-hidden="true"></span>
         <h3>{t('landing.feature.webhooks.title', locale)}</h3>
         <p>{@html t('landing.feature.webhooks.desc', locale)}</p>
@@ -199,17 +247,17 @@
       <h2>{t('landing.section.who', locale)}</h2>
     </div>
     <div class="grid">
-      <article class="who-card">
+      <article class="who-card" use:reveal={{ y: 30 }}>
         <div class="who-tag">01</div>
         <h3>{t('landing.who.kw.title', locale)}</h3>
         <p>{t('landing.who.kw.desc', locale)}</p>
       </article>
-      <article class="who-card">
+      <article class="who-card" use:reveal={{ y: 30 }}>
         <div class="who-tag">02</div>
         <h3>{t('landing.who.indie.title', locale)}</h3>
         <p>{t('landing.who.indie.desc', locale)}</p>
       </article>
-      <article class="who-card">
+      <article class="who-card" use:reveal={{ y: 30 }}>
         <div class="who-tag">03</div>
         <h3>{t('landing.who.team.title', locale)}</h3>
         <p>{t('landing.who.team.desc', locale)}</p>
@@ -222,21 +270,21 @@
       <h2>{t('landing.section.how', locale)}</h2>
     </div>
     <ol class="how-steps">
-      <li>
+      <li use:reveal={{ delay: 0.0, y: 24 }}>
         <span class="step-num">1</span>
         <div>
           <h3>{t('landing.how.step1.title', locale)}</h3>
           <p>{t('landing.how.step1.desc', locale)}</p>
         </div>
       </li>
-      <li>
+      <li use:reveal={{ delay: 0.1, y: 24 }}>
         <span class="step-num">2</span>
         <div>
           <h3>{t('landing.how.step2.title', locale)}</h3>
           <p>{t('landing.how.step2.desc', locale)}</p>
         </div>
       </li>
-      <li>
+      <li use:reveal={{ delay: 0.2, y: 24 }}>
         <span class="step-num">3</span>
         <div>
           <h3>{t('landing.how.step3.title', locale)}</h3>
@@ -251,7 +299,7 @@
       <h2>{t('landing.section.pricing', locale)}</h2>
     </div>
     <div class="tiers">
-      <div class="pricing-tier-card">
+      <div class="pricing-tier-card" use:reveal={{ y: 28 }}>
         <div class="tier-name">{t('landing.pricing.free.name', locale)}</div>
         <div class="tier-price">{t('landing.pricing.free.price', locale)} <span>{t('landing.pricing.free.period', locale)}</span></div>
         <ul>
@@ -261,7 +309,7 @@
         </ul>
         <a class="button-secondary" href="https://github.com/Poohmuhahaha/lifeos">Get started</a>
       </div>
-      <div class="pricing-tier-card featured">
+      <div class="pricing-tier-card featured" use:reveal={{ y: 28, scale: 0.96 }}>
         <span class="featured-badge">{locale === 'en' ? 'RECOMMENDED' : 'แนะนำ'}</span>
         <div class="tier-name">{t('landing.pricing.pro.name', locale)}</div>
         <div class="tier-price">{t('landing.pricing.pro.price', locale)} <span>{t('landing.pricing.pro.period', locale)}</span></div>
@@ -273,7 +321,7 @@
         </ul>
         <a class="button-primary on-dark" href="#top">Join waitlist</a>
       </div>
-      <div class="pricing-tier-card">
+      <div class="pricing-tier-card" use:reveal={{ y: 28 }}>
         <div class="tier-name">{t('landing.pricing.studio.name', locale)}</div>
         <div class="tier-price">{t('landing.pricing.studio.price', locale)} <span>{t('landing.pricing.studio.period', locale)}</span></div>
         <ul>
@@ -283,7 +331,7 @@
         </ul>
         <a class="button-secondary" href="#top">Contact us</a>
       </div>
-      <div class="pricing-tier-card">
+      <div class="pricing-tier-card" use:reveal={{ y: 28 }}>
         <div class="tier-name">{t('landing.pricing.selfhost.name', locale)}</div>
         <div class="tier-price">{t('landing.pricing.selfhost.price', locale)} <span>{t('landing.pricing.selfhost.period', locale)}</span></div>
         <ul>
@@ -301,23 +349,23 @@
       <h2>{t('landing.section.faq', locale)}</h2>
     </div>
     <div class="faq-list">
-      <details class="faq-item">
+      <details class="faq-item" use:reveal={{ y: 12, duration: 0.3 }}>
         <summary>{t('landing.faq.q1', locale)}</summary>
         <p>{t('landing.faq.a1', locale)}</p>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" use:reveal={{ y: 12, duration: 0.3 }}>
         <summary>{t('landing.faq.q2', locale)}</summary>
         <p>{t('landing.faq.a2', locale)}</p>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" use:reveal={{ y: 12, duration: 0.3 }}>
         <summary>{t('landing.faq.q3', locale)}</summary>
         <p>{t('landing.faq.a3', locale)}</p>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" use:reveal={{ y: 12, duration: 0.3 }}>
         <summary>{t('landing.faq.q4', locale)}</summary>
         <p>{t('landing.faq.a4', locale)}</p>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" use:reveal={{ y: 12, duration: 0.3 }}>
         <summary>{t('landing.faq.q5', locale)}</summary>
         <p>{t('landing.faq.a5', locale)}</p>
       </details>

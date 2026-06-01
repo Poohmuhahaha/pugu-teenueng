@@ -1,5 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fly, fade } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
+  import { springPress } from '@lifeos/ui/motion';
 
   interface Workspace { id: number; name: string; slug: string; role: string; }
 
@@ -46,13 +49,22 @@
 
 {#if workspaces.length > 0}
   <div class="ws" class:open>
-    <button class="ws-btn" on:click={() => (open = !open)} aria-expanded={open}>
+    <button class="ws-btn" on:click={() => (open = !open)} aria-expanded={open} use:springPress>
       <span class="dot"></span>
       <span class="name">{active?.name ?? 'Choose'}</span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      <svg
+        class="chev"
+        class:open
+        width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      ><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     {#if open}
-      <div class="menu" role="menu">
+      <div
+        class="menu"
+        role="menu"
+        in:fly={{ y: -6, duration: 180, easing: quintOut }}
+        out:fade={{ duration: 100 }}
+      >
         {#each workspaces as w (w.id)}
           <button class="item" class:active={w.id === activeId} on:click={() => switchTo(w.id)}>
             <span>{w.name}</span><span class="role">{w.role}</span>
@@ -88,6 +100,8 @@
   }
   .ws-btn:hover { border-color: var(--c-ink); background: var(--c-surface-soft); }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-brand-accent); }
+  .chev { transition: transform 0.18s ease; }
+  .chev.open { transform: rotate(180deg); }
   .name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .menu {
     position: absolute; top: calc(100% + 6px); left: 0;

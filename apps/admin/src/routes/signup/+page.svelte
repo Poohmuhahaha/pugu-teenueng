@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { springPress } from "@lifeos/ui/motion";
   let name = '';
   let email = '';
   let password = '';
@@ -46,7 +47,7 @@
         <span class="field-hint">At least 8 characters.</span>
       </div>
       {#if err}<p class="field-error">{err}</p>{/if}
-      <button type="submit" class="btn btn-block" disabled={loading}>{loading ? 'Creating…' : 'Create account'}</button>
+      <button type="submit" class="btn btn-block" use:springPress disabled={loading}>{loading ? 'Creating…' : 'Create account'}</button>
     </form>
 
     <p class="auth-foot">Have an account? <a href="/login">Sign in</a></p>

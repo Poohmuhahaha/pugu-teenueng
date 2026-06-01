@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { springPress } from "@lifeos/ui/motion";
   let email = '';
   let password = '';
   let err = '';
@@ -40,7 +41,7 @@
         <input id="password" type="password" bind:value={password} required autocomplete="current-password" />
       </div>
       {#if err}<p class="field-error">{err}</p>{/if}
-      <button type="submit" class="btn btn-block" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+      <button type="submit" class="btn btn-block" use:springPress disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
     </form>
 
     <div class="divider-or"><span>OR</span></div>

@@ -16,3 +16,19 @@ export const TOKENS = {
 } as const;
 
 export type DesignToken = keyof typeof TOKENS;
+
+export {
+  EASING,
+  DURATIONS,
+  prefersReducedMotion,
+  animate,
+  inView,
+  stagger,
+  reveal,
+  staggerChildren,
+  springPress,
+  countUp,
+  pageTransition,
+  type RevealOpts,
+  type CountUpOpts,
+} from './motion.js';

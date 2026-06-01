@@ -14,6 +14,7 @@
     "npm:lru-cache@11": "11.5.0",
     "npm:marked@14": "14.1.4",
     "npm:marked@^14.1.4": "14.1.4",
+    "npm:motion@^12.40.0": "12.40.0",
     "npm:prisma@*": "5.22.0",
     "npm:prisma@^5.22.0": "5.22.0",
     "npm:svelte@^4.2.19": "4.2.20",
@@ -833,6 +834,14 @@
         "picomatch"
       ]
     },
+    "framer-motion@12.40.0": {
+      "integrity": "sha512-uaBd3qC1v3KQqBEjwTUd183K6PbS+j0yR9w9VmEOLWA/tnUcSn8Xa3uck7t4dgpDoUss8xQTcj8W2L07lrnLFg==",
+      "dependencies": [
+        "motion-dom",
+        "motion-utils",
+        "tslib"
+      ]
+    },
     "fsevents@2.3.3": {
       "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
       "os": ["darwin"],
@@ -895,6 +904,22 @@
     },
     "mdn-data@2.0.30": {
       "integrity": "sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA=="
+    },
+    "motion-dom@12.40.0": {
+      "integrity": "sha512-HxU3ZaBwNPVQUBQf1xxgq+7JrPNZvjLVxgbpEZL7RrWJnsxOf0/OM+yrHG9ogLQ31Do/r57Oz2gQWPK+6q62mg==",
+      "dependencies": [
+        "motion-utils"
+      ]
+    },
+    "motion-utils@12.39.0": {
+      "integrity": "sha512-8nadJAJjTtqRkmRF36FoJTrywK9nnFmnPwnSMyxaOCU7GDjN9RTMJIxx9De8ErM+vpPhMccr/6fo5WciyQLnMQ=="
+    },
+    "motion@12.40.0": {
+      "integrity": "sha512-yjrHUrBFW6kQvjJwRsoiPSAhC5tRwRqNGJWmiJ4CrGnbKp0V88AdzkhBmDoqIsIPfarOe0Uddd37Xq43/gIocA==",
+      "dependencies": [
+        "framer-motion",
+        "tslib"
+      ]
     },
     "mrmime@2.0.1": {
       "integrity": "sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ=="
@@ -1068,6 +1093,9 @@
     "totalist@3.0.1": {
       "integrity": "sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ=="
     },
+    "tslib@2.8.1": {
+      "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="
+    },
     "tsx@4.22.3": {
       "integrity": "sha512-mdoNxBC/cSQObGGVQ5Bpn5i+yv7j68gk3Nfm3wFjcJg3Z0Mix9jzAFfP12prmm5eVGmDKtp0yyArrs0Q+8gZHg==",
       "dependencies": [
@@ -1169,7 +1197,8 @@
   },
   "workspace": {
     "dependencies": [
-      "npm:marked@^14.1.4"
+      "npm:marked@^14.1.4",
+      "npm:motion@^12.40.0"
     ],
     "members": {
       "apps/admin": {
@@ -1205,6 +1234,14 @@
             "npm:vite@^5.4.0",
             "npm:vitest@^2.1.0",
             "npm:zod@^3.23.8"
+          ]
+        }
+      },
+      "apps/cli": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@types/node@22",
+            "npm:typescript@^5.6.0"
           ]
         }
       },

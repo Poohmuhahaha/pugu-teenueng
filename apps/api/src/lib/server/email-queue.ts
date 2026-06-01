@@ -72,7 +72,8 @@ async function scheduleRetry(jobId: number, errorMsg: string): Promise<void> {
     });
     return;
   }
-  const backoff = BACKOFFS_SEC[nextAttempt] ?? BACKOFFS_SEC[BACKOFFS_SEC.length - 1];
+  // BACKOFFS_SEC is 0-indexed; nextAttempt starts at 1 after the first failure.
+  const backoff = BACKOFFS_SEC[nextAttempt - 1] ?? BACKOFFS_SEC[BACKOFFS_SEC.length - 1];
   await db.emailJob.update({
     where: { id: jobId },
     data: {

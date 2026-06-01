@@ -81,7 +81,15 @@ export function parseQuery(url: URL): ParsedQuery {
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, rawSize));
 
   const fieldsRaw = sp.get('fields');
-  const fields = fieldsRaw ? fieldsRaw.split(',').map((s) => s.trim()).filter(Boolean) : null;
+  // Strict identifier whitelist — these names get used as object keys when
+  // projecting, so reject anything that isn't a plain identifier.
+  const FIELD_NAME = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+  const fields = fieldsRaw
+    ? fieldsRaw
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0 && FIELD_NAME.test(s))
+    : null;
 
   const populateRaw = sp.get('populate');
   const populate = populateRaw ? populateRaw.split(',').map((s) => s.trim()).filter(Boolean) : [];

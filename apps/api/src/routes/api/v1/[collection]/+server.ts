@@ -25,17 +25,24 @@ export async function GET(event) {
   // Filtering on JSONB: Prisma supports `path` filter. Build a Prisma-compatible where.
   // For simplicity we evaluate filters in-memory after fetching by content-type.
   // Replace with raw SQL + JSONB path queries when scale demands.
-  const entries = await db.contentEntry.findMany({
-    where: { contentTypeId: contentType.id, deletedAt: null },
-    orderBy: q.orderBy.map((o) => ({ [o.field]: o.dir })).filter((o) =>
+  const where = { contentTypeId: contentType.id, deletedAt: null };
+  const orderBy = q.orderBy
+    .map((o) => ({ [o.field]: o.dir }))
+    .filter((o) =>
       // only sort on real ContentEntry columns; field sorts on JSON data handled in-memory
       ['createdAt', 'updatedAt', 'id'].includes(Object.keys(o)[0])
-    ),
-  });
+    );
 
-  const total = entries.length;
-  const start = (q.page - 1) * q.pageSize;
-  const slice = entries.slice(start, start + q.pageSize);
+  // Page at the database layer so we don't load the entire collection into memory.
+  const [total, slice] = await Promise.all([
+    db.contentEntry.count({ where }),
+    db.contentEntry.findMany({
+      where,
+      orderBy,
+      take: q.pageSize,
+      skip: (q.page - 1) * q.pageSize,
+    }),
+  ]);
 
   const projected = slice.map((e) => projectFields(e, q.fields));
   return json({

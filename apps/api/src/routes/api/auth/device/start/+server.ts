@@ -40,10 +40,17 @@ export async function POST(event) {
 
   // Avoid collisions: try a few times before giving up
   let userCode = generateUserCode();
+  let resolved = false;
   for (let i = 0; i < 5; i++) {
     const clash = await db.deviceCode.findUnique({ where: { userCode } });
-    if (!clash) break;
+    if (!clash) {
+      resolved = true;
+      break;
+    }
     userCode = generateUserCode();
+  }
+  if (!resolved) {
+    throw error(500, 'unable to allocate unique user code; please retry');
   }
 
   const expiresAt = new Date(Date.now() + TTL_SEC * 1000);
@@ -51,9 +58,10 @@ export async function POST(event) {
     data: { deviceCode, userCode, expiresAt, status: 'pending' },
   });
 
-  // Build verification URLs based on the request's origin. The browser flow
-  // lives on the web app (apps/web) at /auth/device, not on the API host.
-  const origin = event.url.origin.replace(/:3000$/, ':5176');
+  // Build verification URLs. Prefer PUBLIC_WEB_URL when set (production);
+  // fall back to swapping the dev API port (:3000) for the dev web port
+  // (:5176) so local development continues to work without configuration.
+  const origin = process.env.PUBLIC_WEB_URL ?? event.url.origin.replace(/:3000$/, ':5176');
   const verificationUri = `${origin.replace(/\/$/, '')}/auth/device`;
   const verificationUriComplete = `${verificationUri}?code=${encodeURIComponent(userCode)}`;
 

@@ -59,11 +59,17 @@ export async function POST({ request }) {
       };
       const workspaceId = parseInt(sub.metadata?.workspaceId ?? '0');
       if (!workspaceId) break;
+      const firstItem = sub.items.data[0];
+      if (!firstItem) {
+        // No price item attached — refuse to persist a half-formed subscription
+        // (writing `stripePriceId: undefined` would silently clobber the column).
+        throw error(400, 'subscription event has no items');
+      }
       await db.subscription.upsert({
         where: { workspaceId },
         update: {
           stripeSubscriptionId: sub.id,
-          stripePriceId: sub.items.data[0]?.price.id,
+          stripePriceId: firstItem.price.id,
           status: sub.status,
           plan: sub.metadata?.plan ?? 'personal',
           currentPeriodEnd: new Date(sub.current_period_end * 1000),
@@ -72,7 +78,7 @@ export async function POST({ request }) {
         create: {
           workspaceId,
           stripeSubscriptionId: sub.id,
-          stripePriceId: sub.items.data[0]?.price.id,
+          stripePriceId: firstItem.price.id,
           status: sub.status,
           plan: sub.metadata?.plan ?? 'personal',
           currentPeriodEnd: new Date(sub.current_period_end * 1000),

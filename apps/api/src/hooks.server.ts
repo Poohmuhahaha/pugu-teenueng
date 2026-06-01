@@ -29,8 +29,8 @@ export const handle: Handle = async ({ event, resolve }) => {
       if (isApi) return new Response('Session revoked', { status: 401 });
       return new Response(null, { status: 303, headers: { Location: '/login?reason=revoked' } });
     }
-    // Touch lastSeenAt asynchronously; don't block request
-    touchSession(token);
+    // Touch lastSeenAt; awaited so errors surface and the update reliably lands.
+    await touchSession(token);
   }
   return resolve(event);
 };

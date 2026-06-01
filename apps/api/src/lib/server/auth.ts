@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'node:crypto';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { db } from './db';
 import type { Role } from '@lifeos/core';
@@ -158,7 +159,9 @@ async function resolveBySession(userId: number, workspaceSlug?: string, activeWo
 }
 
 export function generateApiKey(): { full: string; prefix: string; secret: string } {
-  const prefix = 'lk_' + Math.random().toString(36).slice(2, 10);
-  const secret = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  // Use crypto.randomBytes for cryptographically strong entropy.
+  // Storage format unchanged: prefix indexed for lookup, secret bcrypt-hashed.
+  const prefix = 'lk_' + randomBytes(6).toString('hex');
+  const secret = randomBytes(24).toString('hex');
   return { full: `${prefix}.${secret}`, prefix, secret };
 }

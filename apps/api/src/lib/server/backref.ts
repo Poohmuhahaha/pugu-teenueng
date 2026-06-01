@@ -30,7 +30,6 @@ export async function rebuildBackrefs(entryId: number): Promise<{ resolved: numb
   await db.backref.deleteMany({ where: { fromEntryId: entryId } });
   if (links.length === 0) return { resolved: 0, unresolved: 0 };
 
-  const targets = [...new Set(links.map((l) => l.target.toLowerCase()))];
   // Resolution heuristic: look up entries in the same workspace with a `title` field.
   const candidates = await db.contentEntry.findMany({
     where: {
@@ -63,6 +62,5 @@ export async function rebuildBackrefs(entryId: number): Promise<{ resolved: numb
       },
     });
   }
-  void targets;
   return { resolved, unresolved };
 }

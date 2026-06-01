@@ -37,10 +37,14 @@ export async function POST(event) {
   if (row.status !== 'pending') throw error(409, `device code is ${row.status}`);
 
   const newStatus = body.data.decision === 'approve' ? 'approved' : 'denied';
-  await db.deviceCode.update({
-    where: { id: row.id },
+  // Conditional update guards against two concurrent approvals racing to
+  // overwrite each other's userId. updateMany with status: 'pending' in the
+  // where clause turns this into a single atomic statement.
+  const result = await db.deviceCode.updateMany({
+    where: { id: row.id, status: 'pending' },
     data: { status: newStatus, userId: body.data.decision === 'approve' ? actor.userId : null },
   });
+  if (result.count === 0) throw error(409, 'device code is no longer pending');
 
   return json({ ok: true, status: newStatus });
 }

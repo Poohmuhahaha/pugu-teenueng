@@ -2,6 +2,7 @@
   "workspace": [
     "./apps/admin",
     "./apps/api",
+    "./apps/cli",
     "./apps/docs",
     "./apps/landing",
     "./apps/web",

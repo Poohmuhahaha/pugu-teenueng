@@ -1,0 +1,29 @@
+{
+  "name": "@lifeos/cli",
+  "version": "0.1.0",
+  "description": "Life Command — the LifeOS CLI. Authenticate, browse workspaces, capture entries, query the API.",
+  "type": "module",
+  "bin": {
+    "life": "./bin/life.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node ./bin/life.js",
+    "lint": "echo \"todo: eslint\""
+  },
+  "keywords": ["lifeos", "cli", "headless-cms", "productivity"],
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

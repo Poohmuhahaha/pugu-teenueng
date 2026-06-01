@@ -21,6 +21,7 @@ model User {
   createdEntries ContentEntry[]    @relation("EntryCreator")
   tokens         AuthToken[]
   sessions       Session[]
+  deviceCodes    DeviceCode[]
 }
 
 model AuthToken {
@@ -70,6 +71,32 @@ model EmailJob {
 
   @@index([nextRunAt, sentAt, abandonedAt])
   @@index([recipient])
+}
+
+/// Device-code authorization grants — the CLI prints a short user_code,
+/// the user approves it in the browser, then the CLI exchanges device_code
+/// for a session JWT. RFC 8628-style flow, simplified for first-party clients.
+model DeviceCode {
+  id           Int       @id @default(autoincrement())
+  /// Long random opaque value held by the CLI; never displayed to the human.
+  deviceCode   String    @unique
+  /// SHORT (8-char) human-readable code shown in the CLI and the browser confirm screen.
+  userCode     String    @unique
+  /// Filled in once a logged-in user approves the request.
+  userId       Int?
+  user         User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// One of: 'pending' | 'approved' | 'denied' | 'expired'
+  status       String    @default("pending")
+  /// When the device code becomes invalid.
+  expiresAt    DateTime
+  /// Last poll time — used to enforce a minimum interval (slow_down response).
+  lastPollAt   DateTime?
+  /// Marked once the CLI has successfully polled and received a token.
+  /// Prevents the same device code from being exchanged twice.
+  consumedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([status, expiresAt])
 }
 
 model WaitlistEntry {

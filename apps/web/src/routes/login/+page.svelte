@@ -14,7 +14,10 @@
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) { err = await res.text(); return; }
-      window.location.href = '/';
+      const sp = new URLSearchParams(window.location.search);
+      const ret = sp.get('return');
+      // Only honor relative returns so we can't be tricked into bouncing to evil.com.
+      window.location.href = ret && ret.startsWith('/') && !ret.startsWith('//') ? ret : '/';
     } finally { loading = false; }
   }
 </script>

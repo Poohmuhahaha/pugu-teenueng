@@ -35,6 +35,12 @@ export const SECTIONS: DocSection[] = [
         description: 'Get a working LifeOS in 10 minutes — Docker, Node, or Kubernetes.',
         file: 'quickstart.md',
       },
+      {
+        slug: 'cli',
+        title: 'Life Command (CLI)',
+        description: 'Install life, authenticate, capture notes, drive the API from your terminal.',
+        file: 'cli.md',
+      },
     ],
   },
   {

@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
-  import { springPress } from '@lifeos/ui/motion';
 
   interface Workspace { id: number; name: string; slug: string; role: string; }
 
@@ -49,7 +48,7 @@
 
 {#if workspaces.length > 0}
   <div class="ws" class:open>
-    <button class="ws-btn" on:click={() => (open = !open)} aria-expanded={open} use:springPress>
+    <button class="ws-btn" on:click={() => (open = !open)} aria-expanded={open}>
       <span class="dot"></span>
       <span class="name">{active?.name ?? 'Choose'}</span>
       <svg

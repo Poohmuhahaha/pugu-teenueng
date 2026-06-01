@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
-  import { reveal, staggerChildren, springPress, animate, inView, stagger, prefersReducedMotion, EASING } from '@lifeos/ui/motion';
 
   let email = '';
   let submitted = false;
@@ -291,7 +290,7 @@
             placeholder={t('landing.cta.placeholder', locale)}
             required
           />
-          <button class="button-primary" type="submit" disabled={submitting} use:springPress>
+          <button class="button-primary" type="submit" disabled={submitting}>
             {submitted
               ? t('landing.cta.done', locale)
               : submitting

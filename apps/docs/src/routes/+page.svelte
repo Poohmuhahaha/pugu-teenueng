@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
-  import { reveal, staggerChildren, springPress } from '@lifeos/ui/motion';
   import { SECTIONS } from '$lib/sections';
 
   let heroEl: HTMLElement;
@@ -57,15 +56,15 @@
   <section class="home-foot">
     <h2>Need help?</h2>
     <div class="help-grid">
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/issues" target="_blank" rel="noopener" use:reveal={{ delay: 0 }} use:springPress>
+      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/issues" target="_blank" rel="noopener" use:reveal={{ delay: 0 }}>
         <h3>File an issue</h3>
         <p>Found a bug or want to suggest a feature? Open it on GitHub.</p>
       </a>
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/discussions" target="_blank" rel="noopener" use:reveal={{ delay: 0.08 }} use:springPress>
+      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/discussions" target="_blank" rel="noopener" use:reveal={{ delay: 0.08 }}>
         <h3>Discussions</h3>
         <p>Architecture questions, recipes, show &amp; tell — talk to the community.</p>
       </a>
-      <a class="help-card" href="mailto:support@lifeos.app" use:reveal={{ delay: 0.16 }} use:springPress>
+      <a class="help-card" href="mailto:support@lifeos.app" use:reveal={{ delay: 0.16 }}>
         <h3>Email support</h3>
         <p>Paid plans get a 24h SLA. Free tier is best-effort.</p>
       </a>

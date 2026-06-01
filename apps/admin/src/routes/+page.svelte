@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
-  import { reveal, springPress } from '@lifeos/ui/motion';
   import type { ContentTypeField } from '@lifeos/core';
 
   export let params: any = undefined;
@@ -87,15 +86,18 @@
   onMount(loadTypes);
 </script>
 
-<div class="page-head">
-  <div>
-    <h1 class="page-title">Content types</h1>
-    <p class="page-sub">Define the schemas your workspace stores. Each type maps to a REST collection and a typed entry table.</p>
+<header class="hero-head">
+  <span class="eyebrow">Admin · Schemas</span>
+  <div class="hero-row">
+    <div class="hero-text">
+      <h1 class="hero-title">Content types</h1>
+      <p class="hero-sub">Design the schemas your workspace stores. Each type maps to a REST collection, a typed entry table, and a row of permissions you control.</p>
+    </div>
+    <button class="btn btn-lg" on:click={() => (creating = !creating)}>
+      {creating ? 'Cancel' : '+ New type'}
+    </button>
   </div>
-  <button class="btn" on:click={() => (creating = !creating)} use:springPress>
-    {creating ? 'Cancel' : '+ New type'}
-  </button>
-</div>
+</header>
 
 {#if creating}
   <form class="card create-form" on:submit|preventDefault={submit} in:fly={{ y: -8, duration: 200, easing: quintOut }} out:fade={{ duration: 150 }}>
@@ -147,7 +149,7 @@
     {#if err}<div class="form-error">{err}</div>{/if}
     <div class="form-actions">
       <button type="button" class="btn btn-secondary" on:click={() => (creating = false)}>Cancel</button>
-      <button type="submit" class="btn" use:springPress>Create content type</button>
+      <button type="submit" class="btn">Create content type</button>
     </div>
   </form>
 {/if}
@@ -173,13 +175,13 @@
     </div>
     <h3>No content types yet</h3>
     <p>Start by defining a schema — a collection of typed fields. You'll create entries against it from anywhere LifeOS reaches.</p>
-    <button class="btn" on:click={() => (creating = true)} use:springPress>+ Create your first type</button>
+    <button class="btn" on:click={() => (creating = true)}>+ Create your first type</button>
   </div>
 {:else}
   <div class="type-grid">
     {#each types as t, i (t.id)}
       <article class="type-card" use:reveal={{ delay: i * 0.04, y: 12 }}>
-        <a class="type-card-main" href={`/entries?type=${t.slug}`} use:springPress>
+        <a class="type-card-main" href={`/entries?type=${t.slug}`}>
           <div class="type-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
           </div>
@@ -219,6 +221,51 @@
 {/if}
 
 <style>
+  /* === Hero head — matches the landing page's display-title rhythm ===
+     Bigger headline, eyebrow chip, generous spacing. */
+  .hero-head {
+    padding-bottom: var(--s-xl);
+    margin-bottom: var(--s-xl);
+    border-bottom: 1px solid var(--c-hairline-soft);
+  }
+  .eyebrow {
+    display: inline-block;
+    font: 500 12px/1 var(--font-body);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    padding: 5px 12px;
+    background: var(--c-surface-card);
+    border-radius: var(--r-pill);
+    margin-bottom: var(--s-md);
+  }
+  .hero-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--s-lg);
+  }
+  .hero-text { min-width: 0; flex: 1; }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4.5vw, 44px);
+    font-weight: 600;
+    letter-spacing: -1px;
+    line-height: 1.08;
+    color: var(--c-ink);
+    margin: 0 0 var(--s-xs);
+  }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--c-body);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 620px;
+  }
+  @media (max-width: 768px) {
+    .hero-row { flex-direction: column; align-items: stretch; }
+    .hero-title { font-size: 30px; letter-spacing: -0.7px; }
+    .hero-sub { font-size: 15px; }
+  }
+
   /* === Create form === */
   .create-form {
     margin-bottom: var(--s-lg);

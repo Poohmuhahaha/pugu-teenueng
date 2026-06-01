@@ -26,9 +26,13 @@ export {
   stagger,
   reveal,
   staggerChildren,
-  springPress,
   countUp,
   pageTransition,
   type RevealOpts,
   type CountUpOpts,
 } from './motion.js';
+
+// Note: springPress is intentionally not re-exported. Buttons should not
+// animate on press in this design system — use CSS :active for feedback
+// instead. The function still exists in motion.ts if anyone wants it back
+// for non-button surfaces.

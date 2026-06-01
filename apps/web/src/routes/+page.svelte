@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { reveal, countUp, springPress } from '@lifeos/ui/motion';
 
   export let params: any = undefined;
 
@@ -66,26 +65,29 @@
   <title>{activeWs?.workspace.name ?? 'Workspace'} · LifeOS</title>
 </svelte:head>
 
-<div class="page-head">
-  <div class="page-head-text">
-    <h1 class="page-title">
-      {#if activeWs}{activeWs.workspace.name}{:else}Your workspace{/if}
-    </h1>
-    <p class="page-sub">
-      {#if activeWs}
-        <span class="badge badge-muted">{activeWs.role}</span>
-        ·
-        <code>/{activeWs.workspace.slug}</code>
-      {:else}
-        Overview of your subscription, usage, and collections.
-      {/if}
-    </p>
+<header class="hero-head">
+  <span class="eyebrow">Workspace · Overview</span>
+  <div class="hero-row">
+    <div class="hero-text">
+      <h1 class="hero-title">
+        {#if activeWs}{activeWs.workspace.name}{:else}Your workspace{/if}
+      </h1>
+      <p class="hero-sub">
+        {#if activeWs}
+          <span class="badge badge-muted">{activeWs.role}</span>
+          <span class="dot-sep">·</span>
+          <code>/{activeWs.workspace.slug}</code>
+        {:else}
+          Overview of your subscription, usage, and collections.
+        {/if}
+      </p>
+    </div>
+    <div class="hero-actions">
+      <a href="/graph" class="btn btn-secondary">Open graph</a>
+      <a href="/collections" class="btn">Browse collections →</a>
+    </div>
   </div>
-  <div class="page-actions">
-    <a href="/graph" class="btn btn-secondary" use:springPress>Open graph</a>
-    <a href="/collections" class="btn" use:springPress>Browse collections →</a>
-  </div>
-</div>
+</header>
 
 {#if loading}
   <div class="kpi-grid">
@@ -165,7 +167,7 @@
           href={`/collections/${t.slug}`}
           class="collection-card"
           use:reveal={{ delay: i * 0.04, y: 16 }}
-          use:springPress
+         
         >
           <div class="cc-icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
@@ -185,37 +187,58 @@
 </section>
 
 <style>
-  /* === Page head === */
-  .page-head {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    gap: var(--s-md);
+  /* === Hero head — matches landing's display-title rhythm ===
+     Eyebrow chip, generous spacing, big display title. */
+  .hero-head {
+    padding-bottom: var(--s-xl);
     margin-bottom: var(--s-xl);
-    padding-bottom: var(--s-lg);
     border-bottom: 1px solid var(--c-hairline-soft);
   }
-  .page-head-text { min-width: 0; flex: 1; }
-  .page-title {
-    font-family: var(--font-display);
-    font-size: 30px; font-weight: 600; letter-spacing: -0.7px;
-    line-height: 1.15;
-    color: var(--c-ink);
-    margin: 0 0 6px;
-  }
-  .page-sub {
+  .eyebrow {
+    display: inline-block;
+    font: 500 12px/1 var(--font-body);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--c-muted);
-    font-size: 14px;
+    padding: 5px 12px;
+    background: var(--c-surface-card);
+    border-radius: var(--r-pill);
+    margin-bottom: var(--s-md);
+  }
+  .hero-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--s-lg);
+  }
+  .hero-text { min-width: 0; flex: 1; }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4.5vw, 44px);
+    font-weight: 600;
+    letter-spacing: -1px;
+    line-height: 1.08;
+    color: var(--c-ink);
+    margin: 0 0 var(--s-xs);
+  }
+  .hero-sub {
+    color: var(--c-body);
+    font-size: 16px;
     margin: 0;
     display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   }
-  .page-sub code {
+  .dot-sep { color: var(--c-muted-soft); }
+  .hero-sub code {
     font-family: var(--font-mono);
     background: var(--c-surface-card);
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--c-body);
   }
-  .page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  @media (max-width: 768px) {
+    .hero-row { flex-direction: column; align-items: stretch; }
+    .hero-title { font-size: 30px; letter-spacing: -0.7px; }
+  }
 
   /* === KPI cards === */
   .kpi-grid {
@@ -384,7 +407,6 @@
   }
 
   @media (max-width: 768px) {
-    .page-head { flex-direction: column; align-items: flex-start; }
     .kpi-grid { grid-template-columns: 1fr; }
     .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
     .collection-grid { grid-template-columns: 1fr; }

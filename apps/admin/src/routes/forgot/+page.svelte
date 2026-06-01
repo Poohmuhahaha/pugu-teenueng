@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { springPress } from "@lifeos/ui/motion";
   let email = '';
   let sent = false;
   let loading = false;
@@ -44,7 +43,7 @@
           <input id="email" type="email" bind:value={email} required autocomplete="email" />
         </div>
         {#if err}<p class="field-error">{err}</p>{/if}
-        <button type="submit" class="btn btn-block" use:springPress disabled={loading}>{loading ? 'Sending…' : 'Send reset link'}</button>
+        <button type="submit" class="btn btn-block" disabled={loading}>{loading ? 'Sending…' : 'Send reset link'}</button>
       </form>
       <p class="auth-foot">Remembered? <a href="/login">Sign in</a></p>
     {/if}

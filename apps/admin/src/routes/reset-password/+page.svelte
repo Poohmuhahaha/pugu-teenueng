@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { springPress } from "@lifeos/ui/motion";
   import { onMount } from 'svelte';
 
   let password = '';
@@ -56,7 +55,7 @@
           <input id="confirm" type="password" bind:value={confirm} required minlength="8" autocomplete="new-password" />
         </div>
         {#if err}<p class="field-error">{err}</p>{/if}
-        <button type="submit" class="btn btn-block" use:springPress disabled={loading || !token}>{loading ? 'Updating…' : 'Update password'}</button>
+        <button type="submit" class="btn btn-block" disabled={loading || !token}>{loading ? 'Updating…' : 'Update password'}</button>
       </form>
     {/if}
   </div>

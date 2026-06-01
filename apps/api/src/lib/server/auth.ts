@@ -6,6 +6,7 @@ import type { Role } from '@lifeos/core';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'dev-only-secret-change-me-32-chars');
 export const COOKIE_NAME = process.env.COOKIE_NAME ?? 'lifeos_session';
+export const ACTIVE_WS_COOKIE = process.env.ACTIVE_WS_COOKIE ?? 'lifeos_workspace';
 
 export interface SessionPayload {
   uid: number;
@@ -85,7 +86,11 @@ export async function resolveActor(event: RequestEvent, workspaceSlug?: string):
   const cookieTok = event.cookies.get(COOKIE_NAME);
   if (cookieTok) {
     const session = await verifySession(cookieTok);
-    if (session) return await resolveBySession(session.uid, workspaceSlug);
+    if (session) {
+      const activeWs = event.cookies.get(ACTIVE_WS_COOKIE);
+      const activeWsId = activeWs ? parseInt(activeWs, 10) : null;
+      return await resolveBySession(session.uid, workspaceSlug, Number.isFinite(activeWsId) ? activeWsId : null);
+    }
   }
 
   throw error(401, 'Unauthorized');
@@ -119,17 +124,30 @@ async function resolveByApiKey(raw: string, workspaceSlug?: string): Promise<Act
   };
 }
 
-async function resolveBySession(userId: number, workspaceSlug?: string): Promise<Actor> {
-  const member = workspaceSlug
-    ? await db.workspaceMember.findFirst({
-        where: { userId, workspace: { slug: workspaceSlug } },
-        include: { workspace: true },
-      })
-    : await db.workspaceMember.findFirst({
-        where: { userId },
-        orderBy: { createdAt: 'asc' },
-        include: { workspace: true },
-      });
+async function resolveBySession(userId: number, workspaceSlug?: string, activeWorkspaceId?: number | null): Promise<Actor> {
+  let member = null as Awaited<ReturnType<typeof db.workspaceMember.findFirst>> | null;
+
+  if (workspaceSlug) {
+    member = await db.workspaceMember.findFirst({
+      where: { userId, workspace: { slug: workspaceSlug } },
+      include: { workspace: true },
+    });
+  } else if (activeWorkspaceId) {
+    member = await db.workspaceMember.findFirst({
+      where: { userId, workspaceId: activeWorkspaceId },
+      include: { workspace: true },
+    });
+  }
+
+  // Fallback to first workspace (joined date asc) when no slug/active id, or none found
+  if (!member) {
+    member = await db.workspaceMember.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+      include: { workspace: true },
+    });
+  }
+
   if (!member) throw error(403, 'No workspace access');
   return {
     kind: 'user',

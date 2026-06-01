@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { db } from '$lib/server/db';
+import { rateLimit, RateLimits } from '$lib/server/ratelimit';
 
 const Body = z.object({
   email: z.string().email(),
@@ -13,9 +14,11 @@ const Body = z.object({
  * POST /api/v1/waitlist/join — public endpoint, no auth required.
  * Idempotent on email (upsert).
  */
-export async function POST({ request }) {
-  const body = Body.safeParse(await request.json());
+export async function POST(event) {
+  const body = Body.safeParse(await event.request.json());
   if (!body.success) throw error(400, body.error.message);
+
+  await rateLimit(event, { route: 'waitlist.join', ...RateLimits.publicWrite });
 
   const entry = await db.waitlistEntry.upsert({
     where: { email: body.data.email.toLowerCase() },

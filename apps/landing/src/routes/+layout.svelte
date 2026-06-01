@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '../app.css';
+  import '@lifeos/ui/design.css';
 </script>
 
 <slot />

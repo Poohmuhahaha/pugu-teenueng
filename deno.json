@@ -5,7 +5,8 @@
     "./apps/landing",
     "./apps/web",
     "./packages/core",
-    "./packages/sdk"
+    "./packages/sdk",
+    "./packages/ui"
   ],
   "nodeModulesDir": "auto",
   "imports": {

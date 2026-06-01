@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '../app.css';
+  import '@lifeos/ui/design.css';
   import { onMount } from 'svelte';
   import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
   import { page } from '$app/stores';

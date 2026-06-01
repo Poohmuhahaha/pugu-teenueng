@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@lifeos/core": "workspace:*",
-    "@lifeos/sdk": "workspace:*"
+    "@lifeos/sdk": "workspace:*",
+    "@lifeos/ui": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.2.0",

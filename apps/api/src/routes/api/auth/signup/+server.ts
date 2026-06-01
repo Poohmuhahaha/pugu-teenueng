@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { signSession, hashPassword, COOKIE_NAME, COOKIE_OPTIONS } from '$lib/server/auth';
 import { ensurePersonalWorkspace } from '$lib/server/workspace';
 import { sendEmail, emailTemplates } from '$lib/server/email';
+import { rateLimit, RateLimits } from '$lib/server/ratelimit';
 
 const Body = z.object({
   name: z.string().min(1).max(80),
@@ -11,9 +12,12 @@ const Body = z.object({
   password: z.string().min(8).max(200),
 });
 
-export async function POST({ request, cookies }) {
+export async function POST(event) {
+  const { request, cookies } = event;
   const body = Body.safeParse(await request.json());
   if (!body.success) throw error(400, body.error.message);
+
+  await rateLimit(event, { route: 'auth.signup', ...RateLimits.authLinkRequest });
 
   const existing = await db.user.findUnique({ where: { email: body.data.email } });
   if (existing) throw error(409, 'Email already registered');

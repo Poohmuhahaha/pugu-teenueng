@@ -1,6 +1,6 @@
-import type { Role } from '@lifeos/core';
+import type { Role } from '@questpage/core';
 
-export interface LifeOSClientOptions {
+export interface QuestPageClientOptions {
   baseUrl: string;
   apiKey?: string;     // X-API-Key header
   bearerToken?: string; // Authorization: Bearer <jwt>
@@ -40,11 +40,11 @@ export interface ApiKeyInfo {
   revokedAt: string | null;
 }
 
-export class LifeOSClient {
-  private opts: LifeOSClientOptions;
+export class QuestPageClient {
+  private opts: QuestPageClientOptions;
   private f: typeof fetch;
 
-  constructor(opts: LifeOSClientOptions) {
+  constructor(opts: QuestPageClientOptions) {
     this.opts = opts;
     this.f = opts.fetch ?? fetch;
   }
@@ -133,5 +133,5 @@ export class LifeOSClient {
 
 async function asError(res: Response): Promise<Error> {
   const txt = await res.text().catch(() => res.statusText);
-  return new Error(`LifeOS API ${res.status}: ${txt}`);
+  return new Error(`QuestPage API ${res.status}: ${txt}`);
 }

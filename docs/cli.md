@@ -1,17 +1,17 @@
-# Life Command — the LifeOS CLI
+# Dashboard Command — the QuestPage CLI
 
-`life` is the official CLI for LifeOS. Authenticate once, then drive every API surface from your terminal — capture notes, browse collections, manage API keys, run searches.
+`life` is the official CLI for QuestPage. Authenticate once, then drive every API surface from your terminal — capture notes, browse quest boards, manage Workspace Seals, run searches.
 
-> 💡 Install once, use it across every workspace you belong to.
+> 💡 Install once, use it across every tavern you belong to.
 
 ## Install
 
 ```bash
 # npm
-npm install -g @lifeos/cli
+npm install -g @questpage/cli
 
 # bun
-bun add -g @lifeos/cli
+bun add -g @questpage/cli
 
 # from source (in this repo)
 cd apps/cli && npm install && npm run build && npm link
@@ -26,7 +26,7 @@ life version
 
 ## First-time setup
 
-Point the CLI at your LifeOS instance:
+Point the CLI at your QuestPage instance:
 
 ```bash
 export LIFEOS_API_URL=https://api.your-instance.com   # default: http://localhost:3000
@@ -34,17 +34,17 @@ export LIFEOS_API_URL=https://api.your-instance.com   # default: http://localhos
 
 Then authenticate. Pick the flow that matches your context.
 
-### Option A — paste an API key
+### Option A — paste a Workspace Seal
 
 Best for machine accounts and CI runners.
 
-1. Open the admin console → API Keys → "New key". Copy the displayed `lk_…` value (you won't see it again).
+1. Open the admin console → Workspace Seals → "New Seal". Copy the displayed `qs_…` value (you won't see it again).
 2. Run:
 
 ```bash
 life login
 # API URL (http://localhost:3000): https://api.your-instance.com
-# API key: ••••••••••••••••••••••
+# Workspace Seal: ••••••••••••••••••••••
 # ✓ signed in as you@example.com (#1)
 ```
 
@@ -61,22 +61,22 @@ life login --device
 
 Click **Approve** in the browser and the CLI completes the exchange automatically.
 
-> ⚠️ Sessions issued via device flow are pinned to a single workspace (the one active when you approved). Use `life ws use` to switch.
+> ⚠️ Sessions issued via device flow are pinned to a single tavern (the one active when you approved). Use `life ws use` to switch.
 
 ## Day-to-day commands
 
 | Command | What it does |
 |---------|--------------|
-| `life status` | Show signed-in user, workspace, and credential health |
-| `life workspaces` | List workspaces you belong to |
-| `life ws use <id\|slug>` | Switch active workspace (session auth only) |
-| `life types` | List content types in the active workspace |
+| `life status` | Show signed-in user, active tavern, and credential health |
+| `life taverns` | List taverns you belong to |
+| `life ws use <id\|slug>` | Switch active tavern (session auth only) |
+| `life types` | List quest types in the active tavern |
 | `life ls <type> [--page=N] [--size=N] [--fields=a,b]` | List entries |
 | `life cat <type> <id> [--json]` | Show one entry |
 | `life new <type>` | Create an entry interactively |
 | `life capture "<text>" [--type=<slug>]` | Quick-capture, defaults to `notes` |
 | `life search "<query>"` | Full-text search |
-| `life keys [list\|new\|revoke <id>]` | Manage API keys |
+| `life keys [list\|new\|revoke <id>]` | Manage Workspace Seals |
 | `life logout` | Clear stored credentials |
 | `life version` | Print version |
 
@@ -87,15 +87,15 @@ Run `life` with no arguments for an interactive REPL.
 ```bash
 $ life
 
-  ⬤  Life Command
-  LifeOS CLI · v0.1.0
+  ⬤  Dashboard Command
+  QuestPage CLI · v0.1.0
 
 life › status
   ✓ signed in as you@example.com (#1)
-  workspace Your Workspace (your-workspace, owner)
+  tavern Your Dashboard (your-tavern, owner)
   memberships 1
 
-life › capture "Refactor billing webhooks"
+life › capture "Refactor messenger birds"
   ✓ captured to notes #128
 
 life › exit
@@ -105,7 +105,7 @@ Arguments accept double-quoted strings, so `capture "buy oat milk"` parses as a 
 
 ## Configuration
 
-State lives in `~/.lifeos/config.json` (mode `0600` on POSIX so other local users can't read it):
+State lives in `~/.questpage/config.json` (mode `0600` on POSIX so other local users can't read it):
 
 ```json
 {
@@ -139,10 +139,10 @@ life cat notes 42 --json | jq .body
 ## Security notes
 
 - The CLI never stores raw passwords or magic-link tokens.
-- API keys are stored unencrypted at rest — treat `~/.lifeos/config.json` like an `~/.ssh/` file.
+- Workspace Seals are stored unencrypted at rest — treat `~/.questpage/config.json` like an `~/.ssh/` file.
 - Device-code sessions show up under **Settings → Sessions** in the web app. Revoke any session there to invalidate the CLI immediately.
 - Public endpoints are rate-limited per-IP. `life login` against a wrong password 11+ times in 15 min returns `429 Too many requests`.
 
 ## Source
 
-CLI source: [`apps/cli/`](https://github.com/Poohmuhahaha/lifeos/tree/main/apps/cli) · License: AGPL-3.0
+CLI source: [`apps/cli/`](https://github.com/Poohmuhahaha/questpage/tree/main/apps/cli) · License: AGPL-3.0

@@ -5,7 +5,7 @@ import { parseQuery, projectFields } from '$lib/server/query';
 import { fireWebhooks } from '$lib/server/webhook';
 import { rebuildBackrefs } from '$lib/server/backref';
 import { enforceEntryCap } from '$lib/server/limits';
-import { ContentEntryCreate } from '@lifeos/core';
+import { ContentEntryCreate } from '@questpage/core';
 
 /**
  * GET /api/v1/:collection

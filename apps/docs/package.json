@@ -1,5 +1,5 @@
 {
-  "name": "@lifeos/docs",
+  "name": "@questpage/docs",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lifeos/core": "workspace:*",
-    "@lifeos/ui": "workspace:*",
+    "@questpage/core": "workspace:*",
+    "@questpage/ui": "workspace:*",
     "marked": "^14.0.0"
   },
   "devDependencies": {

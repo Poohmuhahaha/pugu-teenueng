@@ -26,9 +26,9 @@ export async function runWorkspaces(args: string[], ctx: Ctx): Promise<void> {
     if (!membership) { err(`no membership matches "${target}"`); return; }
     type Switched = { ok: boolean; workspaceId: number };
     const res = await api.post<Switched>(`/api/v1/workspaces/${membership.workspaceId}/switch`);
-    if (res.ok) ok(`active workspace → ${c.bold(membership.workspace.name)} (${membership.workspace.slug})`);
+    if (res.ok) ok(`active tavern → ${c.bold(membership.workspace.name)} (${membership.workspace.slug})`);
     else warn('switch returned non-ok response');
-    info('note: API-key sessions are pinned to a single workspace and cannot be switched at runtime.');
+    info('note: Workspace Seal sessions are pinned to a single tavern and cannot be switched at runtime.');
     return;
   }
 

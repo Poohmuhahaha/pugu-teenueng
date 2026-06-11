@@ -1,10 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { createRequire } from 'node:module';
 import bcrypt from 'bcryptjs';
+const require = createRequire(import.meta.url);
+const { PrismaClient } = require('custom-prisma-client');
 
 const db = new PrismaClient();
 
 async function main() {
-  const email = process.env.SEED_EMAIL ?? 'pooh@lifeos.dev';
+  const email = process.env.SEED_EMAIL ?? 'pooh@questpage.app';
   const password = process.env.SEED_PASSWORD ?? 'changeme123';
   const name = process.env.SEED_NAME ?? 'Pooh';
 
@@ -20,46 +22,61 @@ async function main() {
     where: { slug },
     update: {},
     create: {
-      name: `${name}'s Workspace`,
+      name: `${name}'s Dashboard`,
       slug,
       members: { create: { userId: user.id, role: 'owner' } },
     },
   });
 
-  // ── Three demo content types ───────────────────────────────────────
+  // ── Four RPG demo content types ───────────────────────────────────────
   const types = [
     {
-      slug: 'personal-crm',
-      name: 'Personal CRM',
+      slug: 'tavern-quests',
+      name: 'Dashboard Quests',
       schema: { fields: [
         { name: 'title', type: 'text', required: true },
-        { name: 'email', type: 'text' },
-        { name: 'company', type: 'text' },
-        { name: 'relationship', type: 'select', options: ['family', 'friend', 'colleague', 'client', 'other'] },
-        { name: 'lastContacted', type: 'date' },
-        { name: 'notes', type: 'richtext' },
-      ] },
-    },
-    {
-      slug: 'reading-log',
-      name: 'Reading Log',
-      schema: { fields: [
-        { name: 'title', type: 'text', required: true },
-        { name: 'author', type: 'text' },
-        { name: 'type', type: 'select', options: ['book', 'article', 'podcast', 'video', 'other'] },
-        { name: 'status', type: 'select', options: ['queue', 'reading', 'done', 'abandoned'] },
-        { name: 'rating', type: 'number' },
-        { name: 'notes', type: 'richtext' },
-      ] },
-    },
-    {
-      slug: 'projects',
-      name: 'Projects',
-      schema: { fields: [
-        { name: 'title', type: 'text', required: true },
-        { name: 'status', type: 'select', options: ['idea', 'active', 'shipped', 'paused', 'killed'] },
+        { name: 'difficulty', type: 'select', options: ['trivial', 'easy', 'medium', 'hard', 'epic'] },
+        { name: 'goldReward', type: 'number' },
+        { name: 'xpReward', type: 'number' },
+        { name: 'status', type: 'select', options: ['available', 'active', 'completed', 'failed'] },
         { name: 'dueDate', type: 'date' },
-        { name: 'priority', type: 'select', options: ['low', 'med', 'high'] },
+        { name: 'questGiver', type: 'text' },
+        { name: 'notes', type: 'richtext' },
+      ] },
+    },
+    {
+      slug: 'gold-purse',
+      name: 'Revenue Tracker',
+      schema: { fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'amount', type: 'number', required: true },
+        { name: 'type', type: 'select', options: ['loot', 'tribute', 'supply_cost', 'tavern_tab', 'other'] },
+        { name: 'transactionDate', type: 'date' },
+        { name: 'merchant', type: 'text' },
+        { name: 'notes', type: 'richtext' },
+      ] },
+    },
+    {
+      slug: 'elixir-rations',
+      name: 'Integration & Rations',
+      schema: { fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'type', type: 'select', options: ['elixir', 'ration', 'potion', 'herb', 'rest'] },
+        { name: 'quality', type: 'select', options: ['poor', 'common', 'fine', 'exquisite', 'masterwork'] },
+        { name: 'quantity', type: 'number' },
+        { name: 'effects', type: 'text' },
+        { name: 'loggedAt', type: 'date' },
+        { name: 'notes', type: 'richtext' },
+      ] },
+    },
+    {
+      slug: 'spellbook',
+      name: 'Documentation',
+      schema: { fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'school', type: 'select', options: ['abjuration', 'conjuration', 'divination', 'enchantment', 'evocation', 'illusion', 'necromancy', 'transmutation', 'lore'] },
+        { name: 'manaCost', type: 'number' },
+        { name: 'source', type: 'text' },
         { name: 'notes', type: 'richtext' },
       ] },
     },
@@ -83,31 +100,28 @@ async function main() {
   });
 
   // ── Entries with cross-content-type [[wiki-links]] ─────────────────
-  const crmId = typeRows.get('personal-crm')!.id;
-  const readId = typeRows.get('reading-log')!.id;
-  const projId = typeRows.get('projects')!.id;
+  const questsId = typeRows.get('tavern-quests')!.id;
+  const goldId = typeRows.get('gold-purse')!.id;
+  const elixirId = typeRows.get('elixir-rations')!.id;
+  const spellsId = typeRows.get('spellbook')!.id;
 
   const entries: Array<{ contentTypeId: number; data: Record<string, unknown> }> = [
-    // Personal CRM
-    { contentTypeId: crmId, data: { title: 'Alice', email: 'alice@example.com', company: 'Acme', relationship: 'colleague', notes: 'Met at the meetup. Could pair on [[LifeOS Launch]].' } },
-    { contentTypeId: crmId, data: { title: 'Bob', email: 'bob@example.com', company: 'Indie', relationship: 'mentor', notes: 'Long-time mentor. Introduced me to [[Alice]] originally.' } },
-    { contentTypeId: crmId, data: { title: 'Carol', email: 'carol@example.com', relationship: 'friend', notes: 'Recommended [[Atomic Habits]] — definitely worth the read.' } },
-    { contentTypeId: crmId, data: { title: 'Dan', email: 'dan@example.com', company: 'Studio', relationship: 'client', notes: 'Signed off on the [[Brand Refresh]] mockups last week.' } },
-    { contentTypeId: crmId, data: { title: 'Eve', email: 'eve@example.com', relationship: 'family', notes: 'Mom\'s sister.' } },
+    // Dashboard Quests
+    { contentTypeId: questsId, data: { title: 'Launch Campaign', difficulty: 'hard', goldReward: 50, xpReward: 200, status: 'active', notes: 'Complete the landing page draft. Requires drinking a [[Focus Feature]].' } },
+    { contentTypeId: questsId, data: { title: 'Clean the Workspace Hall', difficulty: 'easy', goldReward: 10, xpReward: 50, status: 'available', notes: 'Tidy up the office guild hall desk.' } },
+    { contentTypeId: questsId, data: { title: 'Analyze Competitors', difficulty: 'medium', goldReward: 25, xpReward: 100, status: 'completed', notes: 'Finished reading [[The Mythical Man-Month]]. Found some valuable insights.' } },
 
-    // Reading log
-    { contentTypeId: readId, data: { title: 'Atomic Habits', author: 'James Clear', type: 'book', status: 'done', rating: 4, notes: 'The 1% improvement framing is the keeper.' } },
-    { contentTypeId: readId, data: { title: 'Show Your Work', author: 'Austin Kleon', type: 'book', status: 'reading', rating: 5, notes: 'Triggered the launch plan for [[LifeOS Launch]].' } },
-    { contentTypeId: readId, data: { title: 'The Mom Test', author: 'Rob Fitzpatrick', type: 'book', status: 'queue', rating: 0, notes: 'For [[Brand Refresh]] user interviews.' } },
-    { contentTypeId: readId, data: { title: 'Lenny\'s Newsletter — PMM playbook', author: 'Lenny Rachitsky', type: 'article', status: 'done', rating: 4, notes: '' } },
-    { contentTypeId: readId, data: { title: 'How I Built This — Stripe', author: 'Guy Raz', type: 'podcast', status: 'done', rating: 5, notes: '' } },
+    // Revenue Tracker
+    { contentTypeId: goldId, data: { title: 'Bounty payment for landing page', amount: 150, type: 'loot', notes: 'Paid by the merchant guild.' } },
+    { contentTypeId: goldId, data: { title: 'Bought 3 drafts of Dwarven Stout', amount: 12, type: 'tavern_tab', notes: 'At the Prancing Pony. Met an interesting rogue.' } },
+    { contentTypeId: goldId, data: { title: 'Purchase Spell Components', amount: 45, type: 'supply_cost', notes: 'Bought premium ink for the [[Documentation]].' } },
 
-    // Projects
-    { contentTypeId: projId, data: { title: 'LifeOS Launch', status: 'active', priority: 'high', notes: 'OSS release + landing → ProductHunt. Need [[Bob]] for the launch tweet quote.' } },
-    { contentTypeId: projId, data: { title: 'Brand Refresh', status: 'active', priority: 'med', notes: 'Working with [[Dan]]\'s team. Inspired by [[The Mom Test]] for the research phase.' } },
-    { contentTypeId: projId, data: { title: 'Newsletter MVP', status: 'idea', priority: 'low', notes: 'Weekly digest of LifeOS templates.' } },
-    { contentTypeId: projId, data: { title: 'Cohort onboarding', status: 'paused', priority: 'med', notes: 'Park until [[LifeOS Launch]] ships.' } },
-    { contentTypeId: projId, data: { title: 'Stripe payment retry experiment', status: 'shipped', priority: 'low', notes: 'Reduced failed-charge churn by ~12%.' } },
+    // Integration & Rations
+    { contentTypeId: elixirId, data: { title: 'Focus Feature', type: 'potion', quality: 'fine', quantity: 1, effects: '+2 Concentration', notes: 'Helped with the quest [[Launch Campaign]].' } },
+
+    // Documentation
+    { contentTypeId: spellsId, data: { title: 'Focus Feature', school: 'transmutation', manaCost: 15, source: 'Alchemist Workspace Guidebook', notes: 'A powerful recipe. Boosts productivity.' } },
+    { contentTypeId: spellsId, data: { title: 'The Mythical Man-Month', school: 'lore', source: 'Ancient Library of Brooks', notes: 'Adding more mages to a late project makes it later.' } },
   ];
 
   for (const e of entries) {
@@ -128,7 +142,7 @@ async function main() {
 
   console.log('Seed complete:');
   console.log(`  User:       ${email} (id=${user.id})`);
-  console.log(`  Workspace:  ${ws.slug} (id=${ws.id})`);
+  console.log(`  Dashboard:     ${ws.slug} (id=${ws.id})`);
   console.log(`  Types:      ${types.map((t) => t.slug).join(', ')}`);
   console.log(`  Entries:    ${entries.length} across ${types.length} types with cross-type [[wiki-links]]`);
   console.log(`  Password:   ${password}  ← change before sharing this DB`);

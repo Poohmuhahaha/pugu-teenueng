@@ -1,40 +1,31 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { base } from '$app/paths';
   import { SECTIONS } from '$lib/sections';
-
-  let heroEl: HTMLElement;
-
-  onMount(() => {
-    if (heroEl) {
-      staggerChildren(heroEl, ':scope > *', { gap: 0.07, duration: 0.5, y: 20 });
-    }
-  });
 </script>
 
 <svelte:head>
-  <title>LifeOS Documentation</title>
+  <title>QuestPage Documentation</title>
 </svelte:head>
 
 <div class="home">
-  <header class="home-hero" bind:this={heroEl}>
+  <header class="home-hero">
     <span class="eyebrow">Documentation</span>
-    <h1>Build with LifeOS.</h1>
+    <h1>Build with QuestPage.</h1>
     <p class="lede">
-      LifeOS is an open-source headless productivity OS — knowledge graph, block editor,
-      structured collections, and a REST API on top. These docs cover everything from
-      <code class="doc-code">docker compose up</code> to wiring HMAC-signed webhooks into
+      QuestPage is an open-source RPG tavern-style personal AI secretary — knowledge graph, spellbook editor,
+      structured quest boards, and a Workspace API on top. These docs cover everything from
+      <code class="doc-code">docker compose up</code> to wiring HMAC-signed messenger birds into
       production pipelines.
     </p>
     <div class="cta-row">
       <a class="btn" href={base + '/quickstart'}>Get started in 10 minutes →</a>
-      <a class="btn btn-secondary" href="https://github.com/Poohmuhahaha/lifeos" target="_blank" rel="noopener">★ GitHub</a>
+      <a class="btn btn-secondary" href="https://github.com/Poohmuhahaha/questpage" target="_blank" rel="noopener">★ GitHub</a>
     </div>
   </header>
 
   <section class="home-grid">
     {#each SECTIONS as section, i (section.id)}
-      <article class="home-card" use:reveal={{ delay: i * 0.06, y: 24 }}>
+      <article class="home-card">
         <header>
           <h2>{section.title}</h2>
           <p>{section.description}</p>
@@ -56,15 +47,15 @@
   <section class="home-foot">
     <h2>Need help?</h2>
     <div class="help-grid">
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/issues" target="_blank" rel="noopener" use:reveal={{ delay: 0 }}>
+      <a class="help-card" href="https://github.com/Poohmuhahaha/questpage/issues" target="_blank" rel="noopener">
         <h3>File an issue</h3>
         <p>Found a bug or want to suggest a feature? Open it on GitHub.</p>
       </a>
-      <a class="help-card" href="https://github.com/Poohmuhahaha/lifeos/discussions" target="_blank" rel="noopener" use:reveal={{ delay: 0.08 }}>
+      <a class="help-card" href="https://github.com/Poohmuhahaha/questpage/discussions" target="_blank" rel="noopener">
         <h3>Discussions</h3>
         <p>Architecture questions, recipes, show &amp; tell — talk to the community.</p>
       </a>
-      <a class="help-card" href="mailto:support@lifeos.app" use:reveal={{ delay: 0.16 }}>
+      <a class="help-card" href="mailto:support@questpage.app">
         <h3>Email support</h3>
         <p>Paid plans get a 24h SLA. Free tier is best-effort.</p>
       </a>
@@ -165,9 +156,8 @@
     padding: var(--s-lg);
     color: var(--c-ink);
     text-decoration: none;
-    transition: transform 0.15s, box-shadow 0.15s;
   }
-  .help-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); text-decoration: none; }
+  .help-card:hover { box-shadow: var(--shadow-md); text-decoration: none; }
   .help-card h3 {
     font: 600 16px/1.4 var(--font-body);
     color: var(--c-ink);

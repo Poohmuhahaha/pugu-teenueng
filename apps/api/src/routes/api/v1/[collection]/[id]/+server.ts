@@ -7,7 +7,7 @@ import { rebuildBackrefs } from '$lib/server/backref';
 import { requireContentTypeAction } from '$lib/server/permissions';
 import { publish } from '$lib/server/sync';
 import { writeAudit } from '$lib/server/audit';
-import { ContentEntryPatch } from '@lifeos/core';
+import { ContentEntryPatch } from '@questpage/core';
 
 async function loadEntry(event) {
   const actor = await resolveActor(event);

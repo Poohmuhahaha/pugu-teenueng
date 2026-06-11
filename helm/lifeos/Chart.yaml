@@ -1,12 +1,12 @@
 apiVersion: v2
-name: lifeos
+name: questpage
 description: Headless productivity OS — self-host on Kubernetes
 type: application
 version: 0.0.1
 appVersion: "0.0.1"
-home: https://github.com/Poohmuhahaha/lifeos
+home: https://github.com/Poohmuhahaha/questpage
 sources:
-  - https://github.com/Poohmuhahaha/lifeos
+  - https://github.com/Poohmuhahaha/questpage
 maintainers:
   - name: Pooh
     email: kawoat1471@gmail.com

@@ -19,9 +19,9 @@
   "tasks": {
     "setup-dev": "deno run --unstable-detect-cjs -A scripts/setup-and-run.js",
     "dev": "deno run --unstable-detect-cjs -A scripts/setup-and-run.js",
-    "build": "deno task --unstable-detect-cjs --filter @lifeos/core build && deno task --unstable-detect-cjs --filter @lifeos/sdk build && deno task --unstable-detect-cjs --filter @lifeos/api build && deno task --unstable-detect-cjs --filter @lifeos/admin build && deno task --unstable-detect-cjs --filter @lifeos/web build && deno task --unstable-detect-cjs --filter @lifeos/landing build && deno task --unstable-detect-cjs --filter @lifeos/docs build",
-    "test": "deno task --unstable-detect-cjs --filter @lifeos/api test",
-    "test:e2e": "deno task --unstable-detect-cjs --filter @lifeos/api test:e2e",
-    "lint": "deno task --filter @lifeos/core lint && deno task --filter @lifeos/sdk lint && deno task --filter @lifeos/api lint && deno task --filter @lifeos/admin lint && deno task --filter @lifeos/web lint && deno task --filter @lifeos/landing lint"
+    "build": "deno task --unstable-detect-cjs --filter @questpage/core build && deno task --unstable-detect-cjs --filter @questpage/sdk build && deno task --unstable-detect-cjs --filter @questpage/api build && deno task --unstable-detect-cjs --filter @questpage/admin build && deno task --unstable-detect-cjs --filter @questpage/web build && deno task --unstable-detect-cjs --filter @questpage/landing build && deno task --unstable-detect-cjs --filter @questpage/docs build",
+    "test": "deno task --unstable-detect-cjs --filter @questpage/api test",
+    "test:e2e": "deno task --unstable-detect-cjs --filter @questpage/api test:e2e",
+    "lint": "deno task --filter @questpage/core lint && deno task --filter @questpage/sdk lint && deno task --filter @questpage/api lint && deno task --filter @questpage/admin lint && deno task --filter @questpage/web lint && deno task --filter @questpage/landing lint"
   }
 }

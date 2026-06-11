@@ -46,8 +46,8 @@ export async function POST({ request }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-LifeOS-Signature': `sha256=${sig}`,
-          'X-LifeOS-Attempt': String(failure.attempts + 1),
+          'X-QuestPage-Signature': `sha256=${sig}`,
+          'X-QuestPage-Attempt': String(failure.attempts + 1),
         },
         body,
       });

@@ -3,7 +3,7 @@ import { db } from '$lib/server/db';
 import { verifyWebhookSignature } from '$lib/server/billing';
 
 /**
- * Stripe → LifeOS event sink.
+ * Stripe → QuestPage event sink.
  * Handles customer.subscription.{created,updated,deleted} and checkout.session.completed.
  * Signature verified via STRIPE_WEBHOOK_SECRET.
  */

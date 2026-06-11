@@ -12,21 +12,21 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: lifeos
-          POSTGRES_PASSWORD: lifeos
-          POSTGRES_DB: lifeos_test
+          POSTGRES_USER: questpage
+          POSTGRES_PASSWORD: questpage
+          POSTGRES_DB: questpage_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U lifeos"
+          --health-cmd "pg_isready -U questpage"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
 
     env:
-      DATABASE_URL: postgresql://lifeos:lifeos@localhost:5432/lifeos_test
+      DATABASE_URL: postgresql://questpage:questpage@localhost:5432/questpage_test
       JWT_SECRET: ci-secret-min-32-chars-please-replace-in-prod
       CSRF_SECRET: ci-csrf-secret-min-32-chars-please-replace
-      COOKIE_NAME: lifeos_session
+      COOKIE_NAME: questpage_session
       NODE_ENV: test
 
     steps:

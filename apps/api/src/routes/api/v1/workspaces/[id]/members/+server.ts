@@ -43,7 +43,7 @@ export async function GET(event) {
 /**
  * POST /api/v1/workspaces/[id]/members
  * Add an existing user as a member, or — if no user with that email exists yet —
- * send a "we invited you to LifeOS" email. The actual join happens on signup
+ * send a "we invited you to QuestPage" email. The actual join happens on signup
  * via PendingInvite resolution (see `ensurePersonalWorkspace` callers).
  */
 export async function POST(event) {

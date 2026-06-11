@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
-  import { reveal, staggerChildren, animate, prefersReducedMotion, EASING } from '@lifeos/ui/motion';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -14,12 +13,9 @@
   $: excerpt = data.excerpt;
 
   // GitHub edit URL — points to the source markdown so contributors can submit fixes.
-  $: editUrl = `https://github.com/Poohmuhahaha/lifeos/edit/main/docs/${page.file}`;
+  $: editUrl = `https://github.com/Poohmuhahaha/questpage/edit/main/docs/${page.file}`;
 
-  // "On this page" active-section tracking
   let activeId = '';
-  let articleEl: HTMLElement;
-  let headEl: HTMLElement;
 
   onMount(() => {
     const headings = Array.from(document.querySelectorAll('.doc-prose h2, .doc-prose h3')) as HTMLElement[];
@@ -37,38 +33,20 @@
     );
     headings.forEach((h) => io.observe(h));
 
-    // Page entrance: head fades up, then prose blocks stagger.
-    if (!prefersReducedMotion()) {
-      if (headEl) {
-        animate(
-          headEl,
-          { opacity: [0, 1], transform: ['translateY(12px)', 'translateY(0)'] },
-          { duration: 0.45, easing: EASING.entrance },
-        );
-      }
-      if (articleEl) {
-        // Reveal each direct child of .doc-prose with a small stagger.
-        const prose = articleEl.querySelector('.doc-prose') as HTMLElement | null;
-        if (prose) {
-          staggerChildren(prose, ':scope > *', { gap: 0.025, duration: 0.35, y: 12 });
-        }
-      }
-    }
-
     return () => io.disconnect();
   });
 </script>
 
 <svelte:head>
-  <title>{page.title} · LifeOS Docs</title>
+  <title>{page.title} · QuestPage Docs</title>
   <meta name="description" content={page.description || excerpt} />
-  <meta property="og:title" content={`${page.title} · LifeOS Docs`} />
+  <meta property="og:title" content={`${page.title} · QuestPage Docs`} />
   <meta property="og:description" content={page.description || excerpt} />
-  <link rel="canonical" href={`https://lifeos.app/docs/${page.slug}`} />
+  <link rel="canonical" href={`https://questpage.app/docs/${page.slug}`} />
 </svelte:head>
 
 <div class="doc-page">
-  <article class="doc-article" bind:this={articleEl}>
+  <article class="doc-article">
     <nav class="doc-crumbs" aria-label="Breadcrumb">
       <a href={base + '/'}>Docs</a>
       <span class="sep">/</span>
@@ -77,7 +55,7 @@
       <span class="cur">{page.title}</span>
     </nav>
 
-    <header class="doc-pagehead" bind:this={headEl}>
+    <header class="doc-pagehead">
       <h1>{page.title}</h1>
       <p class="doc-lede">{page.description}</p>
     </header>

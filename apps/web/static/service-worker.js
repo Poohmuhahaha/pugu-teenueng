@@ -5,7 +5,7 @@
  * - Stale-while-revalidate for static assets
  * - Falls back to cached root when offline and the request is a navigation
  */
-const VERSION = 'lifeos-v1';
+const VERSION = 'questpage-v1';
 const SHELL = ['/', '/login', '/signup', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (event) => {

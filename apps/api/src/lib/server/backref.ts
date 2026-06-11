@@ -1,5 +1,5 @@
 import { db } from './db';
-import { parseWikiLinks } from '@lifeos/core';
+import { parseWikiLinks } from '@questpage/core';
 
 const CONTEXT_RADIUS = 80;
 

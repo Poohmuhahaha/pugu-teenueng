@@ -10,8 +10,8 @@ export async function GET({ url, cookies }) {
 
   const code = url.searchParams.get('code');
   const stateGiven = url.searchParams.get('state');
-  const stateCookie = cookies.get('lifeos_oauth_state');
-  cookies.delete('lifeos_oauth_state', { path: '/' });
+  const stateCookie = cookies.get('questpage_oauth_state');
+  cookies.delete('questpage_oauth_state', { path: '/' });
 
   if (!code) throw error(400, 'Missing code');
   if (!stateGiven || !stateCookie || stateGiven !== stateCookie) {

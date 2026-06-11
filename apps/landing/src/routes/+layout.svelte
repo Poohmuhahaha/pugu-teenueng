@@ -1,5 +1,5 @@
 <script lang="ts">
-  import '@lifeos/ui/design.css';
+  import '@questpage/ui/design.css';
 </script>
 
 <slot />

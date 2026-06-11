@@ -300,22 +300,20 @@
 
   /* Card */
   .collection-card {
-    background: var(--c-surface-card);
-    border: 1px solid var(--c-hairline);
-    border-radius: 12px;
-    padding: 24px;
+    background: transparent;
+    border: none;
+    border-top: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: 24px 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-decoration: none;
     color: inherit;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 220px;
   }
   .collection-card:hover {
-    border-color: var(--c-muted);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    border-top-color: var(--c-brand-accent);
   }
 
   .collection-meta {
@@ -428,9 +426,9 @@
   .spinner {
     width: 28px;
     height: 28px;
-    border: 2px solid var(--c-hairline);
-    border-top-color: var(--c-ink);
-    border-radius: 50%;
+    border: 3px solid var(--c-primary);
+    border-top-color: var(--c-brand-accent);
+    border-radius: 0px;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin {
@@ -440,13 +438,14 @@
   /* Error state */
   .error-state p {
     color: var(--c-brand-accent);
-    font-weight: 500;
+    font-weight: 600;
   }
   .error-icon {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    background: var(--c-hairline);
+    border-radius: 0px;
+    background: var(--c-surface-card);
+    border: 2px solid var(--c-primary);
     color: var(--c-ink);
     display: flex;
     align-items: center;

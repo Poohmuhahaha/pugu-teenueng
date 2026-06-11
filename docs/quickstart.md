@@ -1,14 +1,14 @@
-# LifeOS — Quickstart
+# QuestPage — Quickstart
 
-Get a working LifeOS instance in 10 minutes — locally or on a server.
+Get a working QuestPage instance in 10 minutes — locally or on a server.
 
 ## Option A — Docker (recommended)
 
 You need Docker + Docker Compose. That's it.
 
 ```bash
-git clone https://github.com/Poohmuhahaha/lifeos.git
-cd lifeos
+git clone https://github.com/Poohmuhahaha/questpage.git
+cd questpage
 cp .env.example .env
 # edit .env: set POSTGRES_PASSWORD, JWT_SECRET, CSRF_SECRET (32+ chars each)
 docker compose up -d
@@ -26,7 +26,7 @@ Then bootstrap the database and seed:
 
 ```bash
 docker compose exec api deno run -A npm:prisma migrate deploy --schema=prisma/schema.prisma
-docker compose exec api deno task db:seed   # creates pooh@lifeos.dev / changeme123
+docker compose exec api deno task db:seed   # creates pooh@questpage.dev / changeme123
 ```
 
 Open http://localhost:3001 and sign in.
@@ -36,8 +36,8 @@ Open http://localhost:3001 and sign in.
 You need Deno 2 + a Postgres instance.
 
 ```bash
-git clone https://github.com/Poohmuhahaha/lifeos.git
-cd lifeos
+git clone https://github.com/Poohmuhahaha/questpage.git
+cd questpage
 deno task setup-dev   # sets up environment, database, and runs all dev servers in parallel
 ```
 
@@ -51,22 +51,22 @@ deno task setup-dev   # sets up environment, database, and runs all dev servers 
 ## Option C — Kubernetes (production)
 
 ```bash
-helm install lifeos ./helm/lifeos \
+helm install questpage ./helm/questpage \
   --set secrets.jwtSecret=$(openssl rand -hex 32) \
   --set secrets.csrfSecret=$(openssl rand -hex 32) \
   --set secrets.postgresPassword=$(openssl rand -hex 16)
 ```
 
-See `helm/lifeos/values.yaml` for all knobs.
+See `helm/questpage/values.yaml` for all knobs.
 
 ## Next steps
 
-1. **Define your first collection** — go to admin (`http://localhost:5175`) and click "+ New Type"
-2. **Issue an API key** — admin → API Keys → "+ New Key" with role=`editor`
+1. **Define your first quest type** — go to the admin console (`http://localhost:5175`) and click "+ New Type"
+2. **Issue a Workspace Seal** — admin → Workspace Seals → "+ New Seal" with role=`editor`
 3. **Hit the API**:
    ```bash
-   curl -H "X-API-Key: lk_xxx.your-secret" http://localhost:3000/api/v1/personal-crm
+   curl -H "X-API-Key: qs_xxx.your-secret" http://localhost:3000/api/v1/tavern-quests
    ```
-4. **Register a webhook** — admin → Webhooks → Slack incoming webhook URL → events `afterCreate,afterUpdate`
+4. **Register a Messenger Bird** — admin → Messenger Birds → Slack incoming messenger bird URL → events `afterCreate,afterUpdate`
 
 See `docs/api.md` for the full API reference, `docs/self-host.md` for production deployment guidance.

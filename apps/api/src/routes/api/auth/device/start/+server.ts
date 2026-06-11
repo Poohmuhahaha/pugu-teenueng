@@ -12,8 +12,8 @@ import { rateLimit } from '$lib/server/ratelimit';
  *   {
  *     "device_code": "<random>",
  *     "user_code":   "ABCD-1234",
- *     "verification_uri":          "https://lifeos.app/auth/device",
- *     "verification_uri_complete": "https://lifeos.app/auth/device?code=ABCD-1234",
+ *     "verification_uri":          "https://questpage.app/auth/device",
+ *     "verification_uri_complete": "https://questpage.app/auth/device?code=ABCD-1234",
  *     "expires_in":                900,
  *     "interval":                  5
  *   }

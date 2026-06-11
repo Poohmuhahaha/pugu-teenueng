@@ -1,5 +1,5 @@
 /**
- * Local config — persisted at ~/.lifeos/config.json.
+ * Local config — persisted at ~/.questpage/config.json.
  *
  * Holds the API base URL and the active credential (either a JWT session token
  * obtained via device-code login, or an API key pasted via `life login`).
@@ -12,7 +12,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 export interface LifeConfig {
-  /** Base URL of the LifeOS API. Default: http://localhost:3000 (dev). */
+  /** Base URL of the QuestPage API. Default: http://localhost:3000 (dev). */
   apiUrl: string;
   /** Active credential, set by `life login`. */
   auth?: {
@@ -26,21 +26,34 @@ export interface LifeConfig {
   };
 }
 
-const DEFAULT_API_URL = process.env.LIFEOS_API_URL ?? 'http://localhost:3000';
+const DEFAULT_API_URL = process.env.QUESTPAGE_API_URL ?? process.env.LIFEOS_API_URL ?? 'http://localhost:3000';
 
-const CONFIG_DIR = join(homedir(), '.lifeos');
+const CONFIG_DIR = join(homedir(), '.questpage');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json');
 
 export async function loadConfig(): Promise<LifeConfig> {
+  const envToken = process.env.QUESTPAGE_API_KEY ?? process.env.QUESTPAGE_TOKEN;
+  let envAuth: LifeConfig['auth'] = undefined;
+  if (envToken) {
+    envAuth = {
+      kind: 'apikey',
+      token: envToken,
+      issuedAt: new Date().toISOString(),
+    };
+  }
+
   try {
     const raw = await readFile(CONFIG_PATH, 'utf-8');
     const parsed = JSON.parse(raw) as Partial<LifeConfig>;
     return {
-      apiUrl: parsed.apiUrl ?? DEFAULT_API_URL,
-      auth: parsed.auth,
+      apiUrl: process.env.QUESTPAGE_API_URL ?? parsed.apiUrl ?? DEFAULT_API_URL,
+      auth: envAuth ?? parsed.auth,
     };
   } catch {
-    return { apiUrl: DEFAULT_API_URL };
+    return {
+      apiUrl: process.env.QUESTPAGE_API_URL ?? DEFAULT_API_URL,
+      auth: envAuth,
+    };
   }
 }
 

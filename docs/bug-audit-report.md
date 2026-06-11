@@ -3,7 +3,7 @@
 Three-agent run: Agent 1 found 12 bugs, Agent 2 fixed 11, deferred 1.
 This report is Agent 3's independent verification.
 
-**Commit**: [52ff597](https://github.com/Poohmuhahaha/lifeos/commit/52ff597)
+**Commit**: [52ff597](https://github.com/Poohmuhahaha/questpage/commit/52ff597)
 **Tests**: pass (25/25 in apps/api)
 **Build**: pass (apps/api vite build clean; apps/cli `tsc --noEmit` clean)
 
@@ -24,7 +24,7 @@ This report is Agent 3's independent verification.
 ### B-001 — Device-code verification_uri hardcoded to port 5176
 - **Status**: Verified
 - **What Agent 2 changed**: `apps/api/src/routes/api/auth/device/start/+server.ts` now prefers `process.env.PUBLIC_WEB_URL` and only falls back to the `:3000 → :5176` swap, which is the dev shape.
-- **Why this resolves the bug**: In production the previous `.replace(/:3000$/, ':5176')` was a no-op (prod origins end with `:443`/no port), so `verification_uri` pointed at the API host instead of the web app. Setting `PUBLIC_WEB_URL=https://app.lifeos.com` now puts the CLI user on the right host.
+- **Why this resolves the bug**: In production the previous `.replace(/:3000$/, ':5176')` was a no-op (prod origins end with `:443`/no port), so `verification_uri` pointed at the API host instead of the web app. Setting `PUBLIC_WEB_URL=https://app.questpage.com` now puts the CLI user on the right host.
 - **Residual concern**: Self-hosted operators must set `PUBLIC_WEB_URL` or the device flow still issues an API-host URL in production. Worth documenting in `docs/self-host.md`.
 
 ### B-002 — `touchSession` not awaited in hooks
@@ -122,7 +122,7 @@ This report is Agent 3's independent verification.
 
 Agent 1.2 found 2 bugs, Agent 2.2 fixed 2, deferred 0.
 
-**Commit**: [9d24652](https://github.com/Poohmuhahaha/lifeos/commit/9d24652)
+**Commit**: [9d24652](https://github.com/Poohmuhahaha/questpage/commit/9d24652)
 **Tests**: pass (25/25 in apps/api)
 **Build**: pass (apps/api vite build clean; apps/web vite build clean)
 
@@ -176,7 +176,7 @@ Agent 1.2 found 2 bugs, Agent 2.2 fixed 2, deferred 0.
 Agent 1.3 found 4 confirmed bugs (B-015 + carry-overs C-B, C-C, C-D), no new bugs.
 Agent 2.3 fixed all four (plus a stale comment in `[collection]/+server.ts`).
 
-**Commit**: [63335df](https://github.com/Poohmuhahaha/lifeos/commit/63335df)
+**Commit**: [63335df](https://github.com/Poohmuhahaha/questpage/commit/63335df)
 **Tests**: 25/25 passing (`apps/api` vitest)
 **Build**: clean (`apps/api` vite build, `apps/web` vite build)
 

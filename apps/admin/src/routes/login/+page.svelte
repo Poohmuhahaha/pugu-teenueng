@@ -19,16 +19,16 @@
   }
 </script>
 
-<svelte:head><title>Sign in · LifeOS Admin</title></svelte:head>
+<svelte:head><title>Sign in · QuestPage Admin</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS Admin
+      QuestPage Admin
     </a>
     <h1>Sign in</h1>
-    <p class="auth-sub">Manage content types, entries, API keys, and more.</p>
+    <p class="auth-sub">Manage quest types, entries, Workspace Seals, and more.</p>
 
     <form on:submit|preventDefault={submit}>
       <div class="field">

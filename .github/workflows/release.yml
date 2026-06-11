@@ -28,5 +28,5 @@ jobs:
           file: apps/${{ matrix.app }}/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/lifeos-${{ matrix.app }}:latest
-            ghcr.io/${{ github.repository_owner }}/lifeos-${{ matrix.app }}:${{ github.event.release.tag_name || github.sha }}
+            ghcr.io/${{ github.repository_owner }}/questpage-${{ matrix.app }}:latest
+            ghcr.io/${{ github.repository_owner }}/questpage-${{ matrix.app }}:${{ github.event.release.tag_name || github.sha }}

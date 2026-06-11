@@ -32,12 +32,16 @@
   onMount(load);
 </script>
 
+<svelte:head>
+  <title>Dashboard Chronicles · QuestPage Admin</title>
+</svelte:head>
+
 <div class="stack">
-  <h2 style="margin:0">Audit Log</h2>
+  <h2 style="margin:0">Dashboard Chronicles</h2>
 
   <div class="h-row">
-    <input bind:value={entityFilter} placeholder="Filter entity (e.g. personal-crm)" style="flex:1" />
-    <input bind:value={actionFilter} placeholder="Filter action (create/update/delete)" style="flex:1" />
+    <input bind:value={entityFilter} placeholder="Filter quest board (e.g. tavern-quests)" style="flex:1" />
+    <input bind:value={actionFilter} placeholder="Filter adventure action (create/update/delete)" style="flex:1" />
     <button class="btn" on:click={load}>Apply</button>
   </div>
 
@@ -45,7 +49,7 @@
     <p style="color:var(--c-muted)">Loading…</p>
   {:else if rows.length === 0}
     <div class="card" style="text-align:center; padding:40px; color:var(--c-muted)">
-      No audit entries match your filter.
+      No chronicle entries match your filter.
     </div>
   {:else}
     <table class="t">

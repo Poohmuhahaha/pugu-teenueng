@@ -3,8 +3,8 @@
  *
  * Required env (optional, dev falls back to console.log):
  *   RESEND_API_KEY=re_…
- *   EMAIL_FROM="LifeOS <hello@lifeos.so>"
- *   PUBLIC_BASE_URL=https://lifeos.example.com
+ *   EMAIL_FROM="QuestPage <hello@questpage.app>"
+ *   PUBLIC_BASE_URL=https://questpage.example.com
  */
 
 let cached: typeof import('resend').Resend | null | undefined;
@@ -34,7 +34,7 @@ export interface SendEmailRequest {
 
 export async function sendEmail(req: SendEmailRequest): Promise<{ id: string | null; delivered: boolean }> {
   const Resend = await loadResend();
-  const from = process.env.EMAIL_FROM ?? 'LifeOS <noreply@lifeos.local>';
+  const from = process.env.EMAIL_FROM ?? 'QuestPage <noreply@questpage.local>';
   if (!Resend) {
     if (process.env.NODE_ENV !== 'production') {
       console.log('\n────── EMAIL (resend disabled) ──────');
@@ -81,7 +81,7 @@ function shell(opts: { preheader: string; heading: string; body: string; cta?: {
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px; background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;">
             <tr>
               <td style="padding:32px 36px 0 36px;">
-                <div style="font-weight:800; font-size:14px; color:#c9ad93; letter-spacing:0.1em;">LIFEOS</div>
+                <div style="font-weight:800; font-size:14px; color:#c9ad93; letter-spacing:0.1em;">QUESTPAGE</div>
               </td>
             </tr>
             <tr>
@@ -100,11 +100,11 @@ function shell(opts: { preheader: string; heading: string; body: string; cta?: {
             </tr>` : ''}
             <tr>
               <td style="padding:0 36px 32px 36px; font-size:12px; line-height:1.55; color:#6b7280;">
-                ${opts.footer ?? 'You\'re receiving this because of activity on your LifeOS account.'}
+                ${opts.footer ?? 'You\'re receiving this because of activity on your QuestPage account.'}
               </td>
             </tr>
           </table>
-          <div style="margin-top:14px; font-size:11px; color:#9ca3af;">© LifeOS · <a href="${escapeHtml(base())}" style="color:#9ca3af;">${escapeHtml(base().replace(/^https?:\/\//, ''))}</a></div>
+          <div style="margin-top:14px; font-size:11px; color:#9ca3af;">© QuestPage · <a href="${escapeHtml(base())}" style="color:#9ca3af;">${escapeHtml(base().replace(/^https?:\/\//, ''))}</a></div>
         </td>
       </tr>
     </table>
@@ -114,26 +114,26 @@ function shell(opts: { preheader: string; heading: string; body: string; cta?: {
 
 export const emailTemplates = {
   welcome(toName: string): { subject: string; text: string; html: string } {
-    const subject = 'Welcome to LifeOS';
+    const subject = 'Welcome to QuestPage';
     const text = [
       `Hi ${toName},`,
       '',
-      'Welcome to LifeOS — your headless productivity OS.',
+      'Welcome to QuestPage — your AI-powered RPG tavern secretary.',
       '',
       `Get started: ${base()}`,
-      'Define your first collection: open the admin (port 5175 in dev).',
+      'Define your first quest type: open the admin (port 5175 in dev).',
       'Read the API docs: see docs/api.md in the repo or /api/v1/docs on your instance.',
       '',
       'Reply to this email with any feedback. We read everything.',
       '',
-      '— LifeOS',
+      '— QuestPage',
     ].join('\n');
     const html = shell({
       preheader: 'Welcome — here\'s where to start.',
       heading: `Welcome, ${escapeHtml(toName)}.`,
-      body: `<p style="margin:0 0 12px;">LifeOS is your headless productivity OS — knowledge graph, block editor, REST API, all in one.</p>
-             <p style="margin:0 0 12px;">A starter workspace is ready for you. Open the admin to define your first content type, or skip straight to the API.</p>`,
-      cta: { label: 'Open LifeOS', url: base() },
+      body: `<p style="margin:0 0 12px;">QuestPage turns your daily life (tasks, money, health, notes) into an RPG quest board in a fantasy tavern.</p>
+             <p style="margin:0 0 12px;">A starter tavern is ready for you. Open the admin to define your first quest type, or skip straight to the API.</p>`,
+      cta: { label: 'Open QuestPage', url: base() },
       footer: 'Reply to this email with any feedback. We read everything.',
     });
     return { subject, text, html };
@@ -141,9 +141,9 @@ export const emailTemplates = {
 
   magicLink(token: string): { subject: string; text: string; html: string } {
     const url = `${base()}/api/auth/magic/${token}`;
-    const subject = 'Your LifeOS sign-in link';
+    const subject = 'Your QuestPage sign-in link';
     const text = [
-      'Click below to sign in to LifeOS:',
+      'Click below to sign in to QuestPage:',
       '',
       url,
       '',
@@ -153,7 +153,7 @@ export const emailTemplates = {
       preheader: 'One-tap sign-in — link expires in 15 minutes.',
       heading: 'Your sign-in link',
       body: `<p style="margin:0 0 12px;">Tap the button below to sign in. The link expires in <strong>15 minutes</strong>.</p>`,
-      cta: { label: 'Sign in to LifeOS', url },
+      cta: { label: 'Sign in to QuestPage', url },
       footer: 'If you didn\'t request this email, you can safely ignore it — no one can access your account without the link above.',
     });
     return { subject, text, html };
@@ -161,7 +161,7 @@ export const emailTemplates = {
 
   passwordReset(token: string): { subject: string; text: string; html: string } {
     const url = `${base()}/reset-password?token=${token}`;
-    const subject = 'Reset your LifeOS password';
+    const subject = 'Reset your QuestPage password';
     const text = [
       'You requested a password reset.',
       '',
@@ -180,10 +180,10 @@ export const emailTemplates = {
   },
 
   invite(workspaceName: string, fromName: string, role: string): { subject: string; text: string; html: string } {
-    const subject = `${fromName} invited you to "${workspaceName}" on LifeOS`;
+    const subject = `${fromName} invited you to "${workspaceName}" on QuestPage`;
     const url = base();
     const text = [
-      `${fromName} added you to the "${workspaceName}" workspace on LifeOS as ${role}.`,
+      `${fromName} added you to the "${workspaceName}" tavern on QuestPage as ${role}.`,
       '',
       `Sign in to start collaborating: ${url}`,
       '',
@@ -193,9 +193,9 @@ export const emailTemplates = {
       preheader: `${fromName} added you to ${workspaceName}.`,
       heading: 'You\'re invited',
       body: `<p style="margin:0 0 12px;"><strong>${escapeHtml(fromName)}</strong> added you to <strong>${escapeHtml(workspaceName)}</strong> as <strong>${escapeHtml(role)}</strong>.</p>
-             <p style="margin:0 0 12px;">Sign in to start collaborating. If you don't have a LifeOS account yet, sign up with this email address and you'll join automatically.</p>`,
-      cta: { label: 'Open workspace', url },
-      footer: 'You can leave or change your role from <em>Settings → Workspace</em> at any time.',
+             <p style="margin:0 0 12px;">Sign in to start collaborating. If you don't have a QuestPage account yet, sign up with this email address and you'll join automatically.</p>`,
+      cta: { label: 'Open tavern', url },
+      footer: 'You can leave or change your role from <em>Settings → Dashboard</em> at any time.',
     });
     return { subject, text, html };
   },

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import type { ContentTypeField } from '@lifeos/core';
+  import type { ContentTypeField } from '@questpage/core';
 
   export let params: any = undefined;
 

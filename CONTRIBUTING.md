@@ -1,6 +1,6 @@
-# Contributing to LifeOS
+# Contributing to QuestPage
 
-We welcome contributions! LifeOS is built as a self-hostable, local-first productivity tool, and community contributions are key to making it better.
+We welcome contributions! QuestPage is built as a self-hostable, local-first productivity tool, and community contributions are key to making it better.
 
 ## Development Setup
 
@@ -8,7 +8,7 @@ We welcome contributions! LifeOS is built as a self-hostable, local-first produc
 2. Install dependencies: `pnpm install`
 3. Copy `.env.example` to `.env` and set required secrets.
 4. Start the database: `docker-compose up -d db`
-5. Run migrations: `pnpm --filter @lifeos/api exec prisma migrate dev`
+5. Run migrations: `pnpm --filter @questpage/api exec prisma migrate dev`
 6. Start development servers: `pnpm dev` (This will start the web, api, admin, and landing apps).
 
 ## Pull Requests
@@ -26,4 +26,4 @@ We welcome contributions! LifeOS is built as a self-hostable, local-first produc
 
 ## License
 
-By contributing to LifeOS, you agree that your contributions will be licensed under the AGPL-3.0 License.
+By contributing to QuestPage, you agree that your contributions will be licensed under the AGPL-3.0 License.

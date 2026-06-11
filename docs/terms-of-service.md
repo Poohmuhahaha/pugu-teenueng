@@ -1,4 +1,4 @@
-# Terms of Service for LifeOS
+# Terms of Service for QuestPage
 
 **Effective Date:** May 21, 2026  
 **Last Updated:** May 21, 2026  
@@ -7,7 +7,7 @@
 
 ## 1. AGREEMENT TO TERMS
 
-These Terms of Service (these "Terms") constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you," "your," or "User"), and LifeOS ("we," "our," "us," or the "Company"), concerning your access to and use of the LifeOS website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud platform (collectively, the "Services").
+These Terms of Service (these "Terms") constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you," "your," or "User"), and QuestPage ("we," "our," "us," or the "Company"), concerning your access to and use of the QuestPage website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud platform (collectively, the "Services").
 
 Please read these Terms carefully before accessing or using our Services. By installing the software, registering an account, subscribing to paid plans, or browsing our website, you agree to be bound by all of these Terms. **IF YOU DO NOT AGREE WITH ALL OF THESE TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND MUST DISCONTINUE USE IMMEDIATELY.**
 
@@ -19,22 +19,22 @@ Please read these Terms carefully before accessing or using our Services. By ins
 By using the Services, you represent and warrant that you are at least thirteen (13) years of age. If you are under 18, you may only use the Services under the supervision of a parent or legal guardian who agrees to be bound by these Terms.
 
 ### 2.2. Account Security
-To access certain features, including our managed synchronization services (LifeOS Cloud), you must register an account by providing a valid email address and credentials. 
+To access certain features, including our managed synchronization services (QuestPage Cloud), you must register an account by providing a valid email address and credentials. 
 * You represent that all registration information is truthful and accurate.
 * You are solely responsible for preserving the confidentiality of your account credentials.
-* You are fully responsible for all activities that occur under your account. You agree to notify us immediately at **support@lifeos.app** upon discovering any unauthorized use or security breach of your account.
+* You are fully responsible for all activities that occur under your account. You agree to notify us immediately at **support@questpage.app** upon discovering any unauthorized use or security breach of your account.
 
 ---
 
 ## 3. SOFTWARE LICENSING & OPEN-SOURCE CITATION
 
 ### 3.1. Open-Source Core
-The core source code of the LifeOS software is open-source software and is licensed under the **GNU Affero General Public License version 3 (AGPL-3.0)**. 
+The core source code of the QuestPage software is open-source software and is licensed under the **GNU Affero General Public License version 3 (AGPL-3.0)**. 
 * You are permitted to inspect, self-host, copy, modify, and redistribute the core software in accordance with the terms of the AGPL-3.0 license.
-* **Network Deployment Condition:** In compliance with Section 13 of the AGPL-3.0, if you modify the LifeOS software and run it on a server to make it available to other users over a network, you MUST make the modified source code available to those users under the terms of the AGPL-3.0.
+* **Network Deployment Condition:** In compliance with Section 13 of the AGPL-3.0, if you modify the QuestPage software and run it on a server to make it available to other users over a network, you MUST make the modified source code available to those users under the terms of the AGPL-3.0.
 
 ### 3.2. Proprietary Assets and Trademarks
-While the core software is open-source, the LifeOS brand name, logo, custom cloud synchronization interfaces, commercial infrastructure, design assets, and marketing materials (collectively, the "Company IP") are proprietary property of the Company. 
+While the core software is open-source, the QuestPage brand name, logo, custom cloud synchronization interfaces, commercial infrastructure, design assets, and marketing materials (collectively, the "Company IP") are proprietary property of the Company. 
 * These Terms do not grant you any license or right to use the Company IP for commercial branding, marketing, or trademarked distribution without our prior, written authorization.
 
 ---
@@ -42,10 +42,10 @@ While the core software is open-source, the LifeOS brand name, logo, custom clou
 ## 4. LOCAL-FIRST DESIGN & ZERO-KNOWLEDGE DISCLAIMER
 
 ### 4.1. Local Storage Sovereignty
-LifeOS operates on a local-first architectural model. Your databases, structured schemas, wiki records, and knowledge graphs are compiled, processed, and stored directly on your physical hardware. We do not inspect, collect, or store your database contents, nor do we possess any recovery tools to restore local data lost due to device failure, storage corruption, browser cache purges, or hardware theft. **YOU ARE SOLELY RESPONSIBLE FOR CREATING REGULAR MANUAL BACKUPS OF YOUR LOCAL DATA.**
+QuestPage operates on a local-first architectural model. Your databases, structured schemas, wiki records, and knowledge graphs are compiled, processed, and stored directly on your physical hardware. We do not inspect, collect, or store your database contents, nor do we possess any recovery tools to restore local data lost due to device failure, storage corruption, browser cache purges, or hardware theft. **YOU ARE SOLELY RESPONSIBLE FOR CREATING REGULAR MANUAL BACKUPS OF YOUR LOCAL DATA.**
 
 ### 4.2. Zero-Knowledge Cloud Sync
-If you purchase a LifeOS Cloud synchronization subscription:
+If you purchase a QuestPage Cloud synchronization subscription:
 * **Client-Side Encryption:** The software encrypts all synced databases client-side using robust encryption standards. The encryption and decryption keys are held exclusively on your local devices.
 * **No Access to Data:** We operate purely as an encrypted synchronization conduit. We do not have access to your encryption keys.
 * **Loss of Cryptographic Keys:** If you lose, delete, or forget your master sync keys or encryption keys, we cannot recover them, nor can we decrypt your synchronized database. We bear zero liability for permanent data loss resulting from your failure to safeguard your cryptographic sync keys.
@@ -85,7 +85,7 @@ When utilizing our managed cloud sync servers, APIs, or website, you agree not t
 
 ## 7. DISCLAIMER OF WARRANTIES
 
-**THE SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO the MAXIMUM EXTENT PERMITTED BY LAW, LIFEOS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.**
+**THE SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO the MAXIMUM EXTENT PERMITTED BY LAW, QUESTPAGE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.**
 
 WE MAKE NO REPRESENTATIONS OR WARRANTIES THAT:
 1. THE SERVICES WILL BE UNINTERRUPTED, SECURE, TIMELY, OR ERROR-FREE.
@@ -96,7 +96,7 @@ WE MAKE NO REPRESENTATIONS OR WARRANTIES THAT:
 
 ## 8. LIMITATION OF LIABILITY
 
-**TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL LIFEOS, ITS DIRECTORS, EMPLOYEES, PARTNERS, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, LOSS OF DATA, LOSS OF USE, LOSS OF GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH:**
+**TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL QUESTPAGE, ITS DIRECTORS, EMPLOYEES, PARTNERS, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, LOSS OF DATA, LOSS OF USE, LOSS OF GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH:**
 1. YOUR USE OF OR INABILITY TO USE THE SERVICES.
 2. ANY TRANSMISSION CORRUPTION, SYNC COLLISION, OR PERMANENT LOSS OF YOUR DATABASES, SCHEMAS, OR NOTE ENTRIES.
 3. UNAUTHORIZED ACCESS, USE, OR ALTERATION OF YOUR SYNCHRONIZED TRANSMISSIONS.
@@ -117,7 +117,7 @@ You agree to defend, indemnify, and hold harmless the Company, its affiliates, d
 
 ## 10. TERMINATION OF SERVICES
 
-* **By You:** You may stop using the Services at any time. You can terminate your LifeOS Cloud sync account through the billing dashboard.
+* **By You:** You may stop using the Services at any time. You can terminate your QuestPage Cloud sync account through the billing dashboard.
 * **By Us:** We reserve the right to suspend or terminate your account or restrict access to our sync servers at our sole discretion, without liability, if you fail to comply with these Terms, engage in activities that threaten server security, or fail to pay outstanding subscription balances.
 
 Upon termination of your account, your license to use the commercial managed sync services will immediately cease, and we will delete your cached sync blocks in accordance with our Privacy Policy.
@@ -149,6 +149,6 @@ Our failure to enforce any right or provision of these Terms will not be deemed 
 
 For questions, customer service inquiries, billing disputes, or notifications of unauthorized account use, please contact:
 
-**LifeOS Customer Support**  
-**Email:** [support@lifeos.app](mailto:support@lifeos.app)  
-**Website:** [https://lifeos.app/support](https://lifeos.app/support)
+**QuestPage Customer Support**  
+**Email:** [support@questpage.app](mailto:support@questpage.app)  
+**Website:** [https://questpage.app/support](https://questpage.app/support)

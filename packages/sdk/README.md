@@ -1,20 +1,20 @@
-# @lifeos/sdk
+# @questpage/sdk
 
-Typed TypeScript client for the LifeOS REST API.
+Typed TypeScript client for the QuestPage REST API.
 
 ## Install
 
 ```bash
-npm install @lifeos/sdk
+npm install @questpage/sdk
 ```
 
 ## Usage
 
 ```ts
-import { LifeOSClient } from '@lifeos/sdk';
+import { QuestPageClient } from '@questpage/sdk';
 
-const client = new LifeOSClient({
-  baseUrl: 'https://api.lifeos.so',
+const client = new QuestPageClient({
+  baseUrl: 'https://api.questpage.so',
   apiKey: process.env.LIFEOS_API_KEY,
 });
 

@@ -1,7 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fly, fade } from 'svelte/transition';
-  import { quintOut } from 'svelte/easing';
 
   interface Workspace { id: number; name: string; slug: string; role: string; }
 
@@ -50,7 +48,7 @@
   <div class="ws" class:open>
     <button class="ws-btn" on:click={() => (open = !open)} aria-expanded={open}>
       <span class="dot"></span>
-      <span class="name">{active?.name ?? 'Choose'}</span>
+      <span class="name">{active?.name ?? 'Choose Dashboard'}</span>
       <svg
         class="chev"
         class:open
@@ -58,12 +56,7 @@
       ><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     {#if open}
-      <div
-        class="menu"
-        role="menu"
-        in:fly={{ y: -6, duration: 180, easing: quintOut }}
-        out:fade={{ duration: 100 }}
-      >
+      <div class="menu" role="menu">
         {#each workspaces as w (w.id)}
           <button class="item" class:active={w.id === activeId} on:click={() => switchTo(w.id)}>
             <span>{w.name}</span><span class="role">{w.role}</span>
@@ -73,11 +66,11 @@
         {#if creating}
           <form on:submit|preventDefault={create} class="new-form">
             <!-- svelte-ignore a11y-autofocus -->
-            <input bind:value={newName} placeholder="New workspace name" autofocus />
+            <input bind:value={newName} placeholder="New Dashboard name" autofocus />
             <button type="submit" class="btn btn-sm">Create</button>
           </form>
         {:else}
-          <button class="item" on:click={() => (creating = true)}><span>+ New workspace</span></button>
+          <button class="item" on:click={() => (creating = true)}><span>+ New Dashboard</span></button>
         {/if}
       </div>
     {/if}
@@ -89,25 +82,24 @@
   .ws-btn {
     display: flex; align-items: center; gap: 8px;
     padding: 6px 12px;
-    border-radius: var(--r-md);
+    border-radius: 0px;
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
+    border: 3px solid var(--c-primary);
     color: var(--c-ink);
-    font: 500 13px/1.4 var(--font-body);
+    font: 600 13px/1.4 var(--font-body);
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: background 0.1s;
   }
-  .ws-btn:hover { border-color: var(--c-ink); background: var(--c-surface-soft); }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-brand-accent); }
-  .chev { transition: transform 0.18s ease; }
+  .ws-btn:hover { background: var(--c-surface-soft); }
+  .dot { width: 6px; height: 6px; border-radius: 0px; background: var(--c-brand-accent); border: 1.5px solid var(--c-primary); }
   .chev.open { transform: rotate(180deg); }
   .name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .menu {
     position: absolute; top: calc(100% + 6px); left: 0;
     min-width: 240px;
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-lg);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
     box-shadow: var(--shadow-md);
     padding: 6px;
     z-index: 50;

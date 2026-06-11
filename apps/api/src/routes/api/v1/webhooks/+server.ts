@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import { randomBytes } from 'node:crypto';
 import { db } from '$lib/server/db';
 import { resolveActor, requireRole } from '$lib/server/auth';
-import { WebhookCreate } from '@lifeos/core';
+import { WebhookCreate } from '@questpage/core';
 
 export async function GET(event) {
   const actor = await resolveActor(event);
@@ -36,6 +36,6 @@ export async function POST(event) {
   });
   return json(
     { id: hook.id, url: hook.url, events: hook.events, contentTypeSlug: hook.contentTypeSlug, secret },
-    { status: 201, headers: { 'X-LifeOS-Warning': 'Save this signing secret now — used to verify webhook signatures.' } }
+    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this signing secret now — used to verify webhook signatures.' } }
   );
 }

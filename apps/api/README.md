@@ -1,6 +1,6 @@
-# @lifeos/api
+# @questpage/api
 
-SvelteKit server-only app — implements the LifeOS public REST API.
+SvelteKit server-only app — implements the QuestPage public REST API.
 
 ## Endpoints
 
@@ -55,4 +55,4 @@ All endpoints are workspace-scoped via the resolved actor.
 }
 ```
 
-Signed via `X-LifeOS-Signature: sha256=<hmac>`. Verify with the secret returned when the webhook was created.
+Signed via `X-QuestPage-Signature: sha256=<hmac>`. Verify with the secret returned when the webhook was created.

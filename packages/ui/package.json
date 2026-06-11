@@ -1,5 +1,5 @@
 {
-  "name": "@lifeos/ui",
+  "name": "@questpage/ui",
   "version": "0.0.1",
   "private": true,
   "description": "Shared Cal.com-inspired design system — tokens, base styles, utility classes",
@@ -11,9 +11,7 @@
     "./motion": "./src/motion.ts",
     "./design.css": "./src/design.css"
   },
-  "dependencies": {
-    "motion": "^12.40.0"
-  },
+  "dependencies": {},
   "files": [
     "src"
   ],

@@ -64,7 +64,7 @@ export async function POST(event) {
     const token = await signSession({ uid: user.id, name: user.name, email: user.email });
     await db.deviceCode.update({ where: { id: row.id }, data: { consumedAt: new Date() } });
 
-    const ua = event.request.headers.get('user-agent') ?? 'lifeos-cli';
+    const ua = event.request.headers.get('user-agent') ?? 'questpage-cli';
     const ip = event.request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null;
     await recordSession(user.id, token, ua, ip);
 

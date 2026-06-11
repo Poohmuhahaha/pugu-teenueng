@@ -60,11 +60,11 @@ async function loadBullMQ(): Promise<QueueBackend | null> {
 
     type QueueType = { add: (name: string, payload: unknown, opts?: unknown) => Promise<unknown> };
     const emailQueue = new (Queue as new (n: string, opts: { connection: unknown }) => QueueType)(
-      'lifeos:email',
+      'questpage:email',
       { connection },
     );
     const webhookQueue = new (Queue as new (n: string, opts: { connection: unknown }) => QueueType)(
-      'lifeos:webhook',
+      'questpage:webhook',
       { connection },
     );
 

@@ -7,7 +7,7 @@ import { json } from '@sveltejs/kit';
 const OPENAPI = {
   openapi: '3.1.0',
   info: {
-    title: 'LifeOS API',
+    title: 'QuestPage API',
     version: '0.0.1',
     description: 'Headless productivity OS — Strapi-style content CRUD scoped by workspace.',
   },

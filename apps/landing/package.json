@@ -1,5 +1,5 @@
 {
-  "name": "@lifeos/landing",
+  "name": "@questpage/landing",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lifeos/core": "workspace:*",
-    "@lifeos/ui": "workspace:*"
+    "@questpage/core": "workspace:*",
+    "@questpage/ui": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.0",

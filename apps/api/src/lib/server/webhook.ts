@@ -60,7 +60,7 @@ export async function fireWebhooks(opts: {
     const signature = createHmac('sha256', hook.secret).update(body).digest('hex');
     fetch(hook.url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-LifeOS-Signature': `sha256=${signature}` },
+      headers: { 'Content-Type': 'application/json', 'X-QuestPage-Signature': `sha256=${signature}` },
       body,
     })
       .then(async (res) => {

@@ -53,23 +53,23 @@
   }
 </script>
 
-<svelte:head><title>Authorize Life Command · LifeOS</title></svelte:head>
+<svelte:head><title>Authorize Quest Command · QuestPage</title></svelte:head>
 
 <div class="device-shell">
   <div class="device-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
 
     {#if checking}
       <h1>Loading…</h1>
     {:else if !signedIn}
       <h1>Sign in to continue</h1>
-      <p class="sub">You need to be signed into LifeOS to authorize the CLI.</p>
+      <p class="sub">You need to be signed into QuestPage to authorize the CLI.</p>
       <a class="btn btn-block" href={`/login?return=${returnTo()}`}>Sign in</a>
     {:else if result === 'idle'}
-      <h1>Authorize Life Command</h1>
+      <h1>Authorize Quest Command</h1>
       <p class="sub">
         Confirm the code shown in your terminal. Approving grants the CLI
         a session that's tied to <strong>your</strong> account.
@@ -107,11 +107,11 @@
         Your terminal will pick up the session within a few seconds.
       </div>
       <p class="hint mt-md">You can close this tab.</p>
-      <a class="btn btn-secondary btn-block mt-md" href="/">Back to LifeOS</a>
+      <a class="btn btn-secondary btn-block mt-md" href="/">Back to QuestPage</a>
     {:else if result === 'denied'}
       <h1>Denied</h1>
       <p class="sub">The CLI request was denied. No session was issued.</p>
-      <a class="btn btn-secondary btn-block" href="/">Back to LifeOS</a>
+      <a class="btn btn-secondary btn-block" href="/">Back to QuestPage</a>
     {:else}
       <h1>Something went wrong</h1>
       <p class="field-error">{errorMsg}</p>
@@ -148,7 +148,7 @@
     text-decoration: none;
     margin-bottom: var(--s-md);
   }
-  .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-ink); }
+  .brand-dot { width: 10px; height: 10px; border-radius: 0px; background: var(--c-ink); }
   h1 {
     font: 600 24px/1.2 var(--font-display);
     letter-spacing: -0.6px;

@@ -191,7 +191,7 @@
             class:dim={selectedNodeId !== null && n.id !== selectedNodeId && !neighborIds.has(n.id)}
             style="cursor:pointer"
           >
-            <circle r="10" fill={groupColors[n.group] ?? 'var(--c-muted)'} stroke={n.id === selectedNodeId ? 'var(--c-ink)' : 'var(--c-canvas)'} stroke-width="2.5" />
+            <rect x="-9" y="-9" width="18" height="18" fill={groupColors[n.group] ?? 'var(--c-muted)'} stroke={n.id === selectedNodeId ? 'var(--c-ink)' : 'var(--c-canvas)'} stroke-width="2.5" />
             <text x="14" y="4" font-size="11" font-weight="600" fill="var(--c-ink)" stroke="var(--c-canvas)" stroke-width="2" paint-order="stroke fill">{n.label}</text>
           </g>
         {/each}
@@ -224,15 +224,15 @@
   h1 { font-size: 26px; letter-spacing: -0.02em; margin: 0; }
   .legend { display: flex; gap: 8px; flex-wrap: wrap; max-width: 480px; }
   .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--c-muted); }
-  .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted); border: 1px dashed var(--c-hairline); border-radius: 12px; }
-  .graph-shell { position: relative; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 12px; overflow: hidden; }
+  .dot { width: 8px; height: 8px; border-radius: 0px; border: 1px solid var(--c-primary); }
+  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted); border: 3px dashed var(--c-primary); border-radius: 0px; }
+  .graph-shell { position: relative; background: var(--c-surface-card); border: 3px solid var(--c-primary); border-radius: 0px; overflow: hidden; }
   svg { width: 100%; height: 600px; display: block; }
   g.dim { opacity: 0.25; }
   .panel {
     position: absolute; top: 12px; right: 12px;
     width: 240px;
-    background: var(--c-canvas); border: 1px solid var(--c-hairline); border-radius: 10px;
+    background: var(--c-canvas); border: 3px solid var(--c-primary); border-radius: 0px;
     padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   }
   .panel .close { position: absolute; top: 8px; right: 8px; background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--c-muted); }

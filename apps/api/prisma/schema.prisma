@@ -124,6 +124,7 @@ model Workspace {
   entries            ContentEntry[]
   apiKeys            ApiKey[]
   webhooks           Webhook[]
+  prospects          Prospect[]
   auditLogs          AuditLog[]
   subscription       Subscription?
   permissionDefaults WorkspacePermissionDefault[]
@@ -325,4 +326,18 @@ model AuditLog {
 
   @@index([workspaceId, createdAt])
   @@index([entity, entityId])
+}
+
+model Prospect {
+  id          Int        @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name        String
+  email       String
+  phone       String?
+  status      String     @default("pending") // pending, approved, rejected
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([workspaceId, status])
 }

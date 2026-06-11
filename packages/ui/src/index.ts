@@ -1,18 +1,18 @@
 /**
- * @lifeos/ui — shared design system.
+ * @questpage/ui — shared design system.
  *
- * Apps should `import '@lifeos/ui/design.css';` exactly once in their layout.
+ * Apps should `import '@questpage/ui/design.css';` exactly once in their layout.
  * This file only exists so the package has a JS entrypoint for tooling
  * (TypeScript module resolution, etc.). It re-exports a small set of token
  * names so non-CSS consumers can reference them programmatically if needed.
  */
 
 export const TOKENS = {
-  primary: '#111111',
-  ink: '#111111',
-  brandAccent: '#3b82f6',
-  surfaceDark: '#101010',
-  hairline: '#e5e7eb',
+  primary: '#3A2616',
+  ink: '#3A2616',
+  brandAccent: '#F7B35A',
+  surfaceDark: '#3A2616',
+  hairline: '#B97A3A',
 } as const;
 
 export type DesignToken = keyof typeof TOKENS;

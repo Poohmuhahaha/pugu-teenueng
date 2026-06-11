@@ -5,9 +5,10 @@
  *   const me = await api.get('/api/v1/me');
  *
  * No SDK dependency — this CLI is intentionally portable. If you want a
- * richer typed surface, swap to @lifeos/sdk on top of the same fetch logic.
+ * richer typed surface, swap to @questpage/sdk on top of the same fetch logic.
  */
 
+import { startSpinner } from './output.js';
 import type { LifeConfig } from './config.js';
 
 export interface ApiClient {
@@ -31,7 +32,7 @@ export function createApi(cfg: LifeConfig): ApiClient {
   function headers(): HeadersInit {
     const h: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'lifeos-cli',
+      'User-Agent': 'questpage-cli',
     };
     if (cfg.auth) {
       if (cfg.auth.kind === 'apikey') {
@@ -44,6 +45,7 @@ export function createApi(cfg: LifeConfig): ApiClient {
   }
 
   async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+    const spinner = startSpinner('Connecting to QuestPage server');
     const url = base + path;
     const init: RequestInit = { method, headers: headers() };
     if (body !== undefined) init.body = JSON.stringify(body);
@@ -52,6 +54,7 @@ export function createApi(cfg: LifeConfig): ApiClient {
     try {
       res = await fetch(url, init);
     } catch (err) {
+      spinner.stop('Network error', true);
       throw new ApiError(
         0,
         `Network error contacting ${base}: ${err instanceof Error ? err.message : String(err)}`,
@@ -63,12 +66,15 @@ export function createApi(cfg: LifeConfig): ApiClient {
     const parsed = ct.includes('json') && text ? safeParseJson(text) : text;
 
     if (!res.ok) {
+      spinner.stop(`Request failed: ${res.status}`, true);
       const msg =
         typeof parsed === 'string'
           ? parsed.slice(0, 240)
           : (parsed as { message?: string })?.message ?? `${res.status} ${res.statusText}`;
       throw new ApiError(res.status, msg, parsed);
     }
+    
+    spinner.stop();
     return parsed as T;
   }
 

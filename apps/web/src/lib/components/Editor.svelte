@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import type { Editor } from '@tiptap/core';
-  import type { Block } from '@lifeos/core';
+  import type { Block } from '@questpage/core';
 
   export let initial: Block[] = [];
   export let placeholder = 'Type / for commands, [[ to link…';
@@ -10,7 +10,7 @@
   let editor: Editor | null = null;
   const dispatch = createEventDispatcher<{ change: Block[] }>();
 
-  // Convert a list of LifeOS Block objects to the ProseMirror doc that TipTap consumes.
+  // Convert a list of QuestPage Block objects to the ProseMirror doc that TipTap consumes.
   function blocksToDoc(blocks: Block[]) {
     if (!blocks.length) {
       return { type: 'doc', content: [{ type: 'paragraph' }] };
@@ -45,7 +45,7 @@
     return [];
   }
 
-  // Convert ProseMirror JSON back into LifeOS Block[].
+  // Convert ProseMirror JSON back into QuestPage Block[].
   function docToBlocks(doc: { content?: Array<Record<string, unknown>> }): Block[] {
     const blocks: Block[] = [];
     for (const node of doc.content ?? []) {
@@ -125,7 +125,7 @@
     border: 1px solid var(--c-hairline);
     border-radius: 8px;
     background: var(--c-canvas);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 14px;
     line-height: 1.6;
     color: var(--c-body);
@@ -148,7 +148,7 @@
     color: var(--c-ink);
     padding: 12px 16px;
     border-radius: 6px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     margin: 12px 0;
   }

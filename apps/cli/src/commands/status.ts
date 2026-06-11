@@ -13,7 +13,7 @@ export async function runStatus(_args: string[], ctx: Ctx): Promise<void> {
     warn('not logged in — run `life login`');
     return;
   }
-  out.write(`${c.dim('auth')}     ${cfg.auth.kind === 'apikey' ? 'API key' : 'session'} (issued ${cfg.auth.issuedAt})\n`);
+  out.write(`${c.dim('auth')}     ${cfg.auth.kind === 'apikey' ? 'Workspace Seal' : 'session'} (issued ${cfg.auth.issuedAt})\n`);
 
   // Live check against /api/v1/me so we catch expired / revoked credentials.
   try {
@@ -26,7 +26,7 @@ export async function runStatus(_args: string[], ctx: Ctx): Promise<void> {
     const me = await api.get<Me>('/api/v1/me');
     const ws = me.memberships.find((m) => m.workspaceId === me.actor.workspaceId);
     ok(`signed in as ${c.bold(me.user.email)} ${c.dim(`(#${me.user.id})`)}`);
-    out.write(`${c.dim('workspace')} ${ws?.workspace.name ?? '?'} ${c.dim(`(${ws?.workspace.slug ?? me.actor.workspaceId}, ${me.actor.role})`)}\n`);
+    out.write(`${c.dim('tavern')}    ${ws?.workspace.name ?? '?'} ${c.dim(`(${ws?.workspace.slug ?? me.actor.workspaceId}, ${me.actor.role})`)}\n`);
     out.write(`${c.dim('memberships')} ${me.memberships.length}\n`);
   } catch (e) {
     if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {

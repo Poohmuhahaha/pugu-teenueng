@@ -1,5 +1,5 @@
 {
-  "name": "@lifeos/api",
+  "name": "@questpage/api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -9,16 +9,16 @@
     "start": "node build",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
+    "db:seed": "deno run -A prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install --with-deps"
   },
-  "prisma": { "seed": "tsx prisma/seed.ts" },
+  "prisma": { "seed": "deno run -A prisma/seed.ts" },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.0",
-    "@lifeos/core": "workspace:*",
+    "@questpage/core": "workspace:*",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",

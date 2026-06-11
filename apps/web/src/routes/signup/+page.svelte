@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let params: any = undefined;
   let name = '';
   let email = '';
   let password = '';
@@ -20,16 +21,16 @@
   }
 </script>
 
-<svelte:head><title>Create account · LifeOS</title></svelte:head>
+<svelte:head><title>Create account · QuestPage</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
-    <h1>Create your workspace</h1>
-    <p class="auth-sub">Spin up a new LifeOS workspace in under a minute.</p>
+    <h1>Create your tavern</h1>
+    <p class="auth-sub">Spin up a new QuestPage tavern in under a minute.</p>
 
     <form on:submit|preventDefault={submit}>
       <div class="field">

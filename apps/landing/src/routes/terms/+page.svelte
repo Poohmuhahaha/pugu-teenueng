@@ -1,10 +1,10 @@
 <svelte:head>
-  <title>Terms of Service · LifeOS</title>
-  <meta name="description" content="LifeOS Terms of Service — open-source AGPL-3.0 core, cloud subscription terms, account responsibilities, and data rights." />
-  <link rel="canonical" href="https://lifeos.app/terms" />
-  <meta property="og:title" content="LifeOS Terms of Service" />
-  <meta property="og:description" content="Subscription, self-hosting, and account terms for LifeOS." />
-  <meta property="og:url" content="https://lifeos.app/terms" />
+  <title>Terms of Service · QuestPage</title>
+  <meta name="description" content="QuestPage Terms of Service — open-source AGPL-3.0 core, cloud subscription terms, account responsibilities, and data rights." />
+  <link rel="canonical" href="https://questpage.app/terms" />
+  <meta property="og:title" content="QuestPage Terms of Service" />
+  <meta property="og:description" content="Subscription, self-hosting, and account terms for QuestPage." />
+  <meta property="og:url" content="https://questpage.app/terms" />
   <meta name="twitter:card" content="summary" />
 </svelte:head>
 
@@ -12,7 +12,7 @@
   <div class="top-nav-inner">
     <a class="brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
     <nav class="nav-links">
       <a href="/">Home</a>
@@ -30,7 +30,7 @@
 
     <section>
       <h2>1. Agreement to Terms</h2>
-      <p>These Terms of Service (these "Terms") constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you," "your," or "User"), and LifeOS ("we," "our," "us," or the "Company"), concerning your access to and use of the LifeOS website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud platform (collectively, the "Services").</p>
+      <p>These Terms of Service (these "Terms") constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you," "your," or "User"), and QuestPage ("we," "our," "us," or the "Company"), concerning your access to and use of the QuestPage website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud platform (collectively, the "Services").</p>
       <p>Please read these Terms carefully before accessing or using our Services. By installing the software, registering an account, subscribing to paid plans, or browsing our website, you agree to be bound by all of these Terms. <strong>IF YOU DO NOT AGREE WITH ALL OF THESE TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND MUST DISCONTINUE USE IMMEDIATELY.</strong></p>
     </section>
 
@@ -39,29 +39,29 @@
       <h3>2.1. Age Requirements</h3>
       <p>By using the Services, you represent and warrant that you are at least thirteen (13) years of age. If you are under 18, you may only use the Services under the supervision of a parent or legal guardian who agrees to be bound by these Terms.</p>
       <h3>2.2. Account Security</h3>
-      <p>To access certain features, including our managed synchronization services (LifeOS Cloud), you must register an account by providing a valid email address and credentials.</p>
+      <p>To access certain features, including our managed synchronization services (QuestPage Cloud), you must register an account by providing a valid email address and credentials.</p>
       <ul>
         <li>You represent that all registration information is truthful and accurate.</li>
         <li>You are solely responsible for preserving the confidentiality of your account credentials.</li>
-        <li>You are fully responsible for all activities that occur under your account. You agree to notify us immediately at <a href="mailto:support@lifeos.app">support@lifeos.app</a> upon discovering any unauthorized use or security breach of your account.</li>
+        <li>You are fully responsible for all activities that occur under your account. You agree to notify us immediately at <a href="mailto:support@questpage.app">support@questpage.app</a> upon discovering any unauthorized use or security breach of your account.</li>
       </ul>
     </section>
 
     <section>
       <h2>3. Software Licensing & Open-Source Citation</h2>
       <h3>3.1. Open-Source Core</h3>
-      <p>The core source code of the LifeOS software is open-source software and is licensed under the <strong>GNU Affero General Public License version 3 (AGPL-3.0)</strong>. You are permitted to inspect, self-host, copy, modify, and redistribute the core software in accordance with the terms of the AGPL-3.0 license.</p>
-      <p><strong>Network Deployment Condition:</strong> In compliance with Section 13 of the AGPL-3.0, if you modify the LifeOS software and run it on a server to make it available to other users over a network, you MUST make the modified source code available to those users under the terms of the AGPL-3.0.</p>
+      <p>The core source code of the QuestPage software is open-source software and is licensed under the <strong>GNU Affero General Public License version 3 (AGPL-3.0)</strong>. You are permitted to inspect, self-host, copy, modify, and redistribute the core software in accordance with the terms of the AGPL-3.0 license.</p>
+      <p><strong>Network Deployment Condition:</strong> In compliance with Section 13 of the AGPL-3.0, if you modify the QuestPage software and run it on a server to make it available to other users over a network, you MUST make the modified source code available to those users under the terms of the AGPL-3.0.</p>
       <h3>3.2. Proprietary Assets and Trademarks</h3>
-      <p>While the core software is open-source, the LifeOS brand name, logo, custom cloud synchronization interfaces, commercial infrastructure, design assets, and marketing materials (collectively, the "Company IP") are proprietary property of the Company. These Terms do not grant you any license or right to use the Company IP for commercial branding, marketing, or trademarked distribution without our prior, written authorization.</p>
+      <p>While the core software is open-source, the QuestPage brand name, logo, custom cloud synchronization interfaces, commercial infrastructure, design assets, and marketing materials (collectively, the "Company IP") are proprietary property of the Company. These Terms do not grant you any license or right to use the Company IP for commercial branding, marketing, or trademarked distribution without our prior, written authorization.</p>
     </section>
 
     <section>
       <h2>4. Local-First Design & Zero-Knowledge Disclaimer</h2>
       <h3>4.1. Local Storage Sovereignty</h3>
-      <p>LifeOS operates on a local-first architectural model. Your databases, structured schemas, wiki records, and knowledge graphs are compiled, processed, and stored directly on your physical hardware. We do not inspect, collect, or store your database contents, nor do we possess any recovery tools to restore local data lost due to device failure, storage corruption, browser cache purges, or hardware theft. <strong>YOU ARE SOLELY RESPONSIBLE FOR CREATING REGULAR MANUAL BACKUPS OF YOUR LOCAL DATA.</strong></p>
+      <p>QuestPage operates on a local-first architectural model. Your databases, structured schemas, wiki records, and knowledge graphs are compiled, processed, and stored directly on your physical hardware. We do not inspect, collect, or store your database contents, nor do we possess any recovery tools to restore local data lost due to device failure, storage corruption, browser cache purges, or hardware theft. <strong>YOU ARE SOLELY RESPONSIBLE FOR CREATING REGULAR MANUAL BACKUPS OF YOUR LOCAL DATA.</strong></p>
       <h3>4.2. Zero-Knowledge Cloud Sync</h3>
-      <p>If you purchase a LifeOS Cloud synchronization subscription:</p>
+      <p>If you purchase a QuestPage Cloud synchronization subscription:</p>
       <ul>
         <li><strong>Client-Side Encryption:</strong> The software encrypts all synced databases client-side using robust encryption standards. The encryption and decryption keys are held exclusively on your local devices.</li>
         <li><strong>No Access to Data:</strong> We operate purely as an encrypted synchronization conduit. We do not have access to your encryption keys.</li>
@@ -90,19 +90,19 @@
 
     <section>
       <h2>7. Disclaimer of Warranties</h2>
-      <p class="caps">THE SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO THE MAXIMUM EXTENT PERMITTED BY LAW, LIFEOS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.</p>
+      <p class="caps">THE SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO THE MAXIMUM EXTENT PERMITTED BY LAW, QUESTPAGE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.</p>
       <p class="caps">WE MAKE NO REPRESENTATIONS OR WARRANTIES THAT THE SERVICES WILL BE UNINTERRUPTED, SECURE, TIMELY, OR ERROR-FREE; OR THAT THE SYNC SYSTEM WILL PREVENT DATA LOSS, TRANSMISSION CONFLICTS, OR STORAGE CORRUPTION WITH 100% RELIABILITY.</p>
     </section>
 
     <section>
       <h2>8. Limitation of Liability</h2>
-      <p class="caps">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL LIFEOS, ITS DIRECTORS, EMPLOYEES, PARTNERS, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, LOSS OF DATA, LOSS OF USE, LOSS OF GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR INABILITY TO USE THE SERVICES.</p>
+      <p class="caps">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL QUESTPAGE, ITS DIRECTORS, EMPLOYEES, PARTNERS, OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, LOSS OF DATA, LOSS OF USE, LOSS OF GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF OR INABILITY TO USE THE SERVICES.</p>
       <p class="caps">IN NO EVENT SHALL THE AGGREGATE LIABILITY OF THE COMPANY EXCEED THE GREATER OF ONE HUNDRED UNITED STATES DOLLARS ($100.00 USD) OR THE TOTAL AMOUNT PAID BY YOU TO THE COMPANY FOR THE SPECIFIC SERVICE IN QUESTION DURING THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE INITIATION OF THE CLAIM.</p>
     </section>
 
     <section>
       <h2>9. Support and Contact</h2>
-      <p>For questions, customer service inquiries, billing disputes, or notifications of unauthorized account use, please contact us at <a href="mailto:support@lifeos.app">support@lifeos.app</a>.</p>
+      <p>For questions, customer service inquiries, billing disputes, or notifications of unauthorized account use, please contact us at <a href="mailto:support@questpage.app">support@questpage.app</a>.</p>
     </section>
   </article>
 </main>
@@ -112,9 +112,9 @@
     <div>
       <a class="brand" href="/">
         <span class="brand-dot"></span>
-        LifeOS
+        QuestPage
       </a>
-      <p class="footer-tag">Headless productivity OS. Self-host or cloud.</p>
+      <p class="footer-tag">QuestPage AI Lead Generation Dashboard · Self-host or cloud.</p>
     </div>
     <div class="footer-cols">
       <div class="footer-col">
@@ -129,12 +129,12 @@
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <a href="mailto:support@lifeos.app">Contact</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
+        <a href="mailto:support@questpage.app">Contact</a>
+        <a href="https://github.com/Poohmuhahaha/questpage">GitHub</a>
       </div>
     </div>
   </div>
-  <div class="site-footer-bottom">© 2026 LifeOS · All rights reserved</div>
+  <div class="site-footer-bottom">© 2026 QuestPage · All rights reserved</div>
 </footer>
 
 <style>

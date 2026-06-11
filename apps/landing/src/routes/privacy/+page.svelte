@@ -1,10 +1,10 @@
 <svelte:head>
-  <title>Privacy Policy · LifeOS</title>
-  <meta name="description" content="LifeOS Privacy Policy — local-first data ownership, zero-knowledge encrypted sync, no third-party tracking." />
-  <link rel="canonical" href="https://lifeos.app/privacy" />
-  <meta property="og:title" content="LifeOS Privacy Policy" />
-  <meta property="og:description" content="How LifeOS handles your data — local-first, zero-knowledge sync, GDPR compliant." />
-  <meta property="og:url" content="https://lifeos.app/privacy" />
+  <title>Privacy Policy · QuestPage</title>
+  <meta name="description" content="QuestPage Privacy Policy — local-first data ownership, zero-knowledge encrypted sync, no third-party tracking." />
+  <link rel="canonical" href="https://questpage.app/privacy" />
+  <meta property="og:title" content="QuestPage Privacy Policy" />
+  <meta property="og:description" content="How QuestPage handles your data — local-first, zero-knowledge sync, GDPR compliant." />
+  <meta property="og:url" content="https://questpage.app/privacy" />
   <meta name="twitter:card" content="summary" />
 </svelte:head>
 
@@ -12,7 +12,7 @@
   <div class="top-nav-inner">
     <a class="brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
     <nav class="nav-links">
       <a href="/">Home</a>
@@ -30,18 +30,18 @@
 
     <section>
       <h2>1. Introduction and Scope</h2>
-      <p>Welcome to LifeOS. LifeOS ("we," "our," "us," or the "Company") is committed to protecting the privacy and security of our users ("you," "your," or "User").</p>
-      <p>This Privacy Policy (the "Policy") explains how we collect, use, process, store, disclose, and safeguard your information when you access or use the LifeOS website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud infrastructure (collectively, the "Services").</p>
-      <p>By accessing or using our Services, you acknowledge that you have read, understood, and agree to the collection and use of your information in accordance with this Policy. If you do not agree with any terms herein, you must immediately cease all access and use of our Services.</p>
+      <p>Welcome to QuestPage. QuestPage ("we," "our," "us," or the "Company") is committed to protecting the privacy and security of our users ("you," "your," or "User").</p>
+      <p>This Privacy Policy (the "Policy") explains how we collect, use, process, store, disclose, and safeguard your information when you access or use the QuestPage website, desktop or mobile applications, command-line interface (CLI) tools, managed synchronization servers, and cloud infrastructure (collectively, the "Services").</p>
+      <p>By accessing or using our Services, you acknowledge that you have read, understood, and agree to the quest board and use of your information in accordance with this Policy. If you do not agree with any terms herein, you must immediately cease all access and use of our Services.</p>
     </section>
 
     <section>
       <h2>2. The Local-First Paradigm & Data Ownership</h2>
-      <p>LifeOS is architected as a <strong>local-first</strong> application. This core design principle guarantees complete user sovereignty over personal data.</p>
+      <p>QuestPage is architected as a <strong>local-first</strong> application. This core design principle guarantees complete user sovereignty over personal data.</p>
       <h3>2.1. Local Database Data</h3>
-      <p>By design, all your notes, custom schemas, collections, structured databases, wiki links, and knowledge graphs (collectively, "User Database Data") are compiled, stored, and processed <strong>locally</strong> on your physical device(s) inside your browser's sandboxed storage or local directory structure. We do not upload, ingest, monitor, copy, or monetize your User Database Data. We have zero access to your database entries or knowledge graphs.</p>
+      <p>By design, all your notes, custom schemas, quest boards, structured databases, wiki links, and knowledge graphs (collectively, "User Database Data") are compiled, stored, and processed <strong>locally</strong> on your physical device(s) inside your browser's sandboxed storage or local directory structure. We do not upload, ingest, monitor, copy, or monetize your User Database Data. We have zero access to your database entries or knowledge graphs.</p>
       <h3>2.2. Managed Sync Services (End-to-End Encryption)</h3>
-      <p>If you opt to subscribe to <strong>LifeOS Cloud</strong> or use our managed synchronization servers to keep multiple devices in sync:</p>
+      <p>If you opt to subscribe to <strong>QuestPage Cloud</strong> or use our managed synchronization servers to keep multiple devices in sync:</p>
       <ul>
         <li><strong>End-to-End Encryption (E2EE):</strong> All User Database Data is encrypted client-side <em>before</em> it leaves your device.</li>
         <li><strong>Cryptographic Keys:</strong> The master sync keys and encryption keys are generated locally on your machine and are never transmitted to our servers in plaintext.</li>
@@ -54,7 +54,7 @@
       <p>Although we cannot access your notes or databases, we do collect certain information required to manage accounts, process payments, and improve general application stability.</p>
       <h3>3.1. Information You Provide Voluntarily</h3>
       <ul>
-        <li><strong>Account Information:</strong> To create a LifeOS Cloud account or register for paid tiers, you must provide a valid email address and secure account credentials.</li>
+        <li><strong>Account Information:</strong> To create a QuestPage Cloud account or register for paid tiers, you must provide a valid email address and secure account credentials.</li>
         <li><strong>Support Interactions:</strong> When you contact us for technical assistance, report a bug, or send email queries, we collect your email address, name, and any text or attachments you choose to send.</li>
         <li><strong>Feedback and Surveys:</strong> If you participate in product surveys or user feedback programs, we collect the details you provide.</li>
       </ul>
@@ -69,7 +69,7 @@
 
     <section>
       <h2>4. Cookies and Local Storage Technologies</h2>
-      <p>LifeOS does not deploy third-party advertising cookies, retargeting scripts, or tracking pixels. We utilize Local Storage and First-Party Cookies strictly for functional and operational necessity, such as maintaining your active login session and storing your theme preferences (light or dark mode).</p>
+      <p>QuestPage does not deploy third-party advertising cookies, retargeting scripts, or tracking pixels. We utilize Local Storage and First-Party Cookies strictly for functional and operational necessity, such as maintaining your active login session and storing your theme preferences (light or dark mode).</p>
     </section>
 
     <section>
@@ -88,13 +88,13 @@
 
     <section>
       <h2>7. Security Measures</h2>
-      <p>We employ rigorous, industry-standard administrative, physical, and technical safeguards designed to protect all data within our custody. All network communications are encrypted in transit via SSL/TLS, and LifeOS Cloud sync relies on AES-256 client-side encryption.</p>
+      <p>We employ rigorous, industry-standard administrative, physical, and technical safeguards designed to protect all data within our custody. All network communications are encrypted in transit via SSL/TLS, and QuestPage Cloud sync relies on AES-256 client-side encryption.</p>
       <p><strong>Important Note:</strong> Because your encryption keys are kept locally on your devices, you are solely responsible for protecting those keys. If you lose your master sync keys or reveal them to unauthorized parties, we cannot recover or decrypt your data.</p>
     </section>
 
     <section>
       <h2>8. Contact Us</h2>
-      <p>If you have any questions, concerns, or complaints regarding this Privacy Policy or our data handling practices, please contact us at <a href="mailto:privacy@lifeos.app">privacy@lifeos.app</a>.</p>
+      <p>If you have any questions, concerns, or complaints regarding this Privacy Policy or our data handling practices, please contact us at <a href="mailto:privacy@questpage.app">privacy@questpage.app</a>.</p>
     </section>
   </article>
 </main>
@@ -104,9 +104,9 @@
     <div>
       <a class="brand" href="/">
         <span class="brand-dot"></span>
-        LifeOS
+        QuestPage
       </a>
-      <p class="footer-tag">Headless productivity OS. Self-host or cloud.</p>
+      <p class="footer-tag">QuestPage AI Lead Generation Dashboard · Self-host or cloud.</p>
     </div>
     <div class="footer-cols">
       <div class="footer-col">
@@ -121,12 +121,12 @@
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <a href="mailto:privacy@lifeos.app">Contact</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
+        <a href="mailto:privacy@questpage.app">Contact</a>
+        <a href="https://github.com/Poohmuhahaha/questpage">GitHub</a>
       </div>
     </div>
   </div>
-  <div class="site-footer-bottom">© 2026 LifeOS · All rights reserved</div>
+  <div class="site-footer-bottom">© 2026 QuestPage · All rights reserved</div>
 </footer>
 
 <style>

@@ -1,11 +1,39 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
+  import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@questpage/core';
+  import { prefersReducedMotion, animate, EASING, stagger, reveal } from '@questpage/ui';
 
   let email = '';
   let submitted = false;
   let submitting = false;
   let locale: Locale = 'en';
+  let activeTab = 'docker';
+  let copied = false;
+
+  const COMMANDS = {
+    docker: `git clone https://github.com/Poohmuhahaha/questpage.git
+cd questpage
+cp .env.example .env
+docker compose up -d`,
+    deno: `git clone https://github.com/Poohmuhahaha/questpage.git
+cd questpage
+deno task setup-dev`,
+    kubernetes: `helm install questpage ./helm/questpage \\
+  --set secrets.jwtSecret=$(openssl rand -hex 32) \\
+  --set secrets.csrfSecret=$(openssl rand -hex 32) \\
+  --set secrets.postgresPassword=$(openssl rand -hex 16)`
+  };
+
+  function handleCopy() {
+    const text = COMMANDS[activeTab as 'docker' | 'deno' | 'kubernetes'];
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      copied = true;
+      setTimeout(() => {
+        copied = false;
+      }, 2000);
+    });
+  }
 
   let eyebrowEl: HTMLElement;
   let headlineEl: HTMLElement;
@@ -24,7 +52,6 @@
     if (prefersReducedMotion()) return;
 
     startHeroAnimation();
-    startMockupLoop();
     startParallax();
   });
 
@@ -102,7 +129,7 @@
       });
 
       // Internal mockup content also staggers in slightly behind the card.
-      const innerRows = mockupCardEl.querySelectorAll('.mock-row, .mock-block .badge') as NodeListOf<HTMLElement>;
+      const innerRows = mockupCardEl.querySelectorAll('.terminal-line') as NodeListOf<HTMLElement>;
       for (const r of innerRows) {
         r.style.opacity = '0';
         r.style.transform = 'translateY(10px)';
@@ -151,38 +178,7 @@
     );
   }
 
-  // === Mockup loop — stronger pulses ===
-  function startMockupLoop(): void {
-    let cancelled = false;
-    const tick = async () => {
-      while (!cancelled) {
-        await new Promise((r) => setTimeout(r, 2400));
-        if (cancelled || !mockupCardEl) return;
-        const checks = mockupCardEl.querySelectorAll('.mock-line:not(.done) .check');
-        const badges = mockupCardEl.querySelectorAll('.mock-block .badge');
-        if (badges.length) {
-          const target = badges[Math.floor(Math.random() * badges.length)] as HTMLElement;
-          animate(
-            target,
-            { transform: ['scale(1) rotate(0)', 'scale(1.25) rotate(-4deg)', 'scale(1) rotate(0)'] },
-            { duration: 0.7, easing: EASING.spring },
-          );
-        }
-        if (checks.length) {
-          const c = checks[Math.floor(Math.random() * checks.length)] as HTMLElement;
-          animate(
-            c,
-            { transform: ['scale(1)', 'scale(1.3)', 'scale(1)'] },
-            { duration: 0.55, easing: EASING.spring },
-          );
-        }
-      }
-    };
-    void tick();
-    const onVis = () => { if (document.hidden) cancelled = true; else { cancelled = false; void tick(); } };
-    document.addEventListener('visibilitychange', onVis);
-    detachListeners.push(() => { cancelled = true; document.removeEventListener('visibilitychange', onVis); });
-  }
+
 
   // === Scroll-linked parallax on the mockup card ===
   // As the user scrolls past the hero, the mockup floats upward slightly faster
@@ -243,14 +239,14 @@
 <header class="top-nav">
   <div class="nav-inner">
     <a class="brand" href="/">
-      <span class="brand-dot"></span>
-      LifeOS
+      <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
+      <span>QuestPage</span>
     </a>
     <nav class="nav-links">
       <a href="#features">{t('nav.features', locale)}</a>
       <a href="#pricing">{t('nav.pricing', locale)}</a>
       <a href="/docs/">Docs</a>
-      <a href="https://github.com/Poohmuhahaha/lifeos">{t('nav.github', locale)}</a>
+      <a href="https://github.com/Poohmuhahaha/questpage">{t('nav.github', locale)}</a>
     </nav>
     <div class="nav-right">
       <div class="nav-pill-group" role="tablist" aria-label="Language">
@@ -264,18 +260,24 @@
           >{l.toUpperCase()}</button>
         {/each}
       </div>
+      <a class="button-primary nav-cta" href="/docs/">Get Started</a>
     </div>
   </div>
 </header>
 
+<section class="hero" bind:this={heroSectionEl}>
+  <div class="hero-inner hero-title-only">
+    <h1 bind:this={headlineEl}>
+      {t('landing.headline.left', locale)} <span class="accent">{t('landing.headline.right', locale)}</span>
+    </h1>
+  </div>
+</section>
+
 <main>
-  <section class="hero" bind:this={heroSectionEl}>
+  <section class="hero-details">
     <div class="hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow" bind:this={eyebrowEl}>{t('landing.eyebrow', locale)}</span>
-        <h1 bind:this={headlineEl}>
-          {t('landing.headline.left', locale)} <span class="accent">{t('landing.headline.right', locale)}</span>
-        </h1>
+        <h2 class="hero-copy-title">{locale === 'en' ? 'Your AI secretary, your quest board.' : 'เลขา AI ของคุณ บอร์ดเควสของคุณ'}</h2>
         <p class="lede" bind:this={ledeEl}>{t('landing.lede', locale)}</p>
         <ul class="hero-bullets" bind:this={bulletsEl}>
           <li>{t('landing.hero.bullet.1', locale)}</li>
@@ -300,61 +302,86 @@
         </form>
         <p class="microcopy" bind:this={microcopyEl}>{t('landing.microcopy', locale)}</p>
         <div class="hero-cta-row" bind:this={heroCtaRowEl}>
-          <a class="text-link" href="https://github.com/Poohmuhahaha/lifeos" target="_blank" rel="noopener">★ {t('landing.cta.secondary', locale)}</a>
+          <a class="text-link" href="https://github.com/Poohmuhahaha/questpage" target="_blank" rel="noopener">★ {t('landing.cta.secondary', locale)}</a>
         </div>
       </div>
-      <div class="hero-mockup" aria-hidden="true">
-        <div class="mockup-card" bind:this={mockupCardEl} style="opacity:0">
-          <div class="mockup-head">
-            <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
-            <span class="mockup-title">today.md</span>
+      <div class="hero-mockup">
+        <div class="mockup-controls">
+          <div class="mockup-tabs">
+            <button class="mockup-tab" class:active={activeTab === 'docker'} on:click={() => activeTab = 'docker'}>Docker</button>
+            <button class="mockup-tab" class:active={activeTab === 'deno'} on:click={() => activeTab = 'deno'}>Deno</button>
+            <button class="mockup-tab" class:active={activeTab === 'kubernetes'} on:click={() => activeTab = 'kubernetes'}>Kubernetes</button>
           </div>
-          <div class="mockup-body">
-            <div class="mock-row mock-h">Daily note</div>
-            <div class="mock-row mock-line"><span class="check"></span>Ship landing page</div>
-            <div class="mock-row mock-line done"><span class="check on"></span>Wire waitlist API</div>
-            <div class="mock-row mock-line"><span class="check"></span>Review PR <span class="mock-link">#42</span></div>
-            <div class="mock-block">
-              <span class="badge badge-violet">graph</span>
-              <span class="badge badge-orange">editor</span>
-              <span class="badge badge-emerald">api</span>
+        </div>
+        <div class="mockup-card" bind:this={mockupCardEl}>
+          <div class="mockup-head">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+              <span class="mockup-title">
+                {#if activeTab === 'docker'}docker-compose.yml
+                {:else if activeTab === 'deno'}setup-dev.sh
+                {:else if activeTab === 'kubernetes'}helm-install.sh
+                {/if}
+              </span>
             </div>
+            <button class="btn-copy" on:click={handleCopy} aria-label="Copy command to clipboard">
+              {#if copied}
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Copied</span>
+              {:else}
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              {/if}
+            </button>
+          </div>
+          <div class="mockup-body terminal-body">
+            {#if activeTab === 'docker'}
+              <div class="terminal-line"><span class="t-comment"># Clone repository</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">git</span> clone https://github.com/Poohmuhahaha/questpage.git</div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">cd</span> questpage</div>
+              <div class="terminal-line"></div>
+              <div class="terminal-line"><span class="t-comment"># Setup environment</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">cp</span> .env.example .env</div>
+              <div class="terminal-line"></div>
+              <div class="terminal-line"><span class="t-comment"># Run services</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">docker compose</span> up -d</div>
+            {:else if activeTab === 'deno'}
+              <div class="terminal-line"><span class="t-comment"># Clone repository</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">git</span> clone https://github.com/Poohmuhahaha/questpage.git</div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">cd</span> questpage</div>
+              <div class="terminal-line"></div>
+              <div class="terminal-line"><span class="t-comment"># Spin up development environment</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">deno</span> task setup-dev</div>
+            {:else if activeTab === 'kubernetes'}
+              <div class="terminal-line"><span class="t-comment"># Deploy with Helm</span></div>
+              <div class="terminal-line"><span class="prompt">$</span> <span class="t-cmd">helm</span> install questpage ./helm/questpage \</div>
+              <div class="terminal-line">  --set secrets.jwtSecret=$(openssl rand -hex 32) \</div>
+              <div class="terminal-line">  --set secrets.csrfSecret=$(openssl rand -hex 32) \</div>
+              <div class="terminal-line">  --set secrets.postgresPassword=$(openssl rand -hex 16)</div>
+            {/if}
           </div>
         </div>
       </div>
     </div>
   </section>
-
   <section class="trust-band" aria-labelledby="trust-head">
     <h2 class="trust-head" id="trust-head" use:reveal>{t('landing.section.trust', locale)}</h2>
     <div class="trust-grid">
       <div class="trust-item" use:reveal={{ delay: 0.0 }}>
-        <span class="trust-icon" aria-hidden="true">⌘</span>
-        <div>
-          <h3>{t('landing.trust.opensource.title', locale)}</h3>
-          <p>{t('landing.trust.opensource.desc', locale)}</p>
-        </div>
+        <h3>{t('landing.trust.opensource.title', locale)}</h3>
+        <p>{t('landing.trust.opensource.desc', locale)}</p>
       </div>
       <div class="trust-item" use:reveal={{ delay: 0.08 }}>
-        <span class="trust-icon" aria-hidden="true">▣</span>
-        <div>
-          <h3>{t('landing.trust.selfhost.title', locale)}</h3>
-          <p>{t('landing.trust.selfhost.desc', locale)}</p>
-        </div>
+        <h3>{t('landing.trust.selfhost.title', locale)}</h3>
+        <p>{t('landing.trust.selfhost.desc', locale)}</p>
       </div>
       <div class="trust-item" use:reveal={{ delay: 0.16 }}>
-        <span class="trust-icon" aria-hidden="true">⊕</span>
-        <div>
-          <h3>{t('landing.trust.e2ee.title', locale)}</h3>
-          <p>{t('landing.trust.e2ee.desc', locale)}</p>
-        </div>
+        <h3>{t('landing.trust.e2ee.title', locale)}</h3>
+        <p>{t('landing.trust.e2ee.desc', locale)}</p>
       </div>
       <div class="trust-item" use:reveal={{ delay: 0.24 }}>
-        <span class="trust-icon" aria-hidden="true">{'</>'}</span>
-        <div>
-          <h3>{t('landing.trust.api.title', locale)}</h3>
-          <p>{t('landing.trust.api.desc', locale)}</p>
-        </div>
+        <h3>{t('landing.trust.api.title', locale)}</h3>
+        <p>{t('landing.trust.api.desc', locale)}</p>
       </div>
     </div>
   </section>
@@ -365,32 +392,26 @@
     </div>
     <div class="grid">
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-graph" aria-hidden="true"></span>
         <h3>{t('landing.feature.graph.title', locale)}</h3>
         <p>{@html t('landing.feature.graph.desc', locale)}</p>
       </div>
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-editor" aria-hidden="true"></span>
         <h3>{t('landing.feature.editor.title', locale)}</h3>
         <p>{@html t('landing.feature.editor.desc', locale)}</p>
       </div>
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-db" aria-hidden="true"></span>
         <h3>{t('landing.feature.db.title', locale)}</h3>
         <p>{@html t('landing.feature.db.desc', locale)}</p>
       </div>
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-local" aria-hidden="true"></span>
         <h3>{t('landing.feature.local.title', locale)}</h3>
         <p>{@html t('landing.feature.local.desc', locale)}</p>
       </div>
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-api" aria-hidden="true"></span>
         <h3>{t('landing.feature.api.title', locale)}</h3>
         <p>{@html t('landing.feature.api.desc', locale)}</p>
       </div>
       <div class="feature-card" use:reveal={{ y: 24 }}>
-        <span class="feature-icon icon-webhooks" aria-hidden="true"></span>
         <h3>{t('landing.feature.webhooks.title', locale)}</h3>
         <p>{@html t('landing.feature.webhooks.desc', locale)}</p>
       </div>
@@ -462,7 +483,7 @@
           <li>{t('landing.pricing.free.bullet2', locale)}</li>
           <li>{t('landing.pricing.free.bullet3', locale)}</li>
         </ul>
-        <a class="button-secondary" href="https://github.com/Poohmuhahaha/lifeos">Get started</a>
+        <a class="button-secondary" href="https://github.com/Poohmuhahaha/questpage">Get started</a>
       </div>
       <div class="pricing-tier-card featured" use:reveal={{ y: 28, scale: 0.96 }}>
         <span class="featured-badge">{locale === 'en' ? 'RECOMMENDED' : 'แนะนำ'}</span>
@@ -474,7 +495,7 @@
           <li>{t('landing.pricing.pro.bullet3', locale)}</li>
           <li>{t('landing.pricing.pro.bullet4', locale)}</li>
         </ul>
-        <a class="button-primary on-dark" href="#top">Join waitlist</a>
+        <a class="button-primary" href="#top">Join waitlist</a>
       </div>
       <div class="pricing-tier-card" use:reveal={{ y: 28 }}>
         <div class="tier-name">{t('landing.pricing.studio.name', locale)}</div>
@@ -540,8 +561,8 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a class="brand brand-light" href="/">
-        <span class="brand-dot light"></span>
-        LifeOS
+        <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
+        <span>QuestPage</span>
       </a>
       <p class="footer-tag">Headless productivity OS. Self-host or cloud.</p>
     </div>
@@ -550,7 +571,7 @@
         <h4>Product</h4>
         <a href="#features">{t('nav.features', locale)}</a>
         <a href="#pricing">{t('nav.pricing', locale)}</a>
-        <a href="https://github.com/Poohmuhahaha/lifeos">{t('nav.github', locale)}</a>
+        <a href="https://github.com/Poohmuhahaha/questpage">{t('nav.github', locale)}</a>
       </div>
       <div class="footer-col">
         <h4>Docs</h4>
@@ -574,31 +595,31 @@
 <style>
   /* === Cal.com-inspired design tokens === */
   :global(:root) {
-    --c-primary: #111111;
-    --c-primary-active: #242424;
-    --c-ink: #111111;
-    --c-body: #374151;
-    --c-muted: #6b7280;
-    --c-muted-soft: #898989;
-    --c-hairline: #e5e7eb;
-    --c-hairline-soft: #f3f4f6;
-    --c-canvas: #ffffff;
-    --c-surface-soft: #f8f9fa;
-    --c-surface-card: #f5f5f5;
-    --c-surface-dark: #101010;
-    --c-surface-dark-elev: #1a1a1a;
-    --c-on-dark: #ffffff;
-    --c-on-dark-soft: #a1a1aa;
-    --c-brand-accent: #3b82f6;
+    --c-primary: #3A2616;
+    --c-primary-active: #B97A3A;
+    --c-ink: #3A2616;
+    --c-body: #3A2616;
+    --c-muted: #B97A3A;
+    --c-muted-soft: #B97A3A;
+    --c-hairline: #B97A3A;
+    --c-hairline-soft: #FFD59A;
+    --c-canvas: #FFF2D9;
+    --c-surface-soft: #FFD59A;
+    --c-surface-card: #FFD59A;
+    --c-surface-dark: #3A2616;
+    --c-surface-dark-elev: #24170d;
+    --c-on-dark: #FFF2D9;
+    --c-on-dark-soft: #FFD59A;
+    --c-brand-accent: #F7B35A;
     --c-badge-orange: #fb923c;
     --c-badge-pink: #ec4899;
     --c-badge-violet: #8b5cf6;
     --c-badge-emerald: #34d399;
 
-    --r-md: 8px;
-    --r-lg: 12px;
-    --r-xl: 16px;
-    --r-pill: 9999px;
+    --r-md: 0px;
+    --r-lg: 0px;
+    --r-xl: 0px;
+    --r-pill: 0px;
 
     --s-xs: 8px;
     --s-sm: 12px;
@@ -608,9 +629,9 @@
     --s-xxl: 48px;
     --s-section: 96px;
 
-    --font-display: 'Cal Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-display: 'Times New Roman', Times, serif;
+    --font-body: 'Times New Roman', Times, serif;
+    --font-mono: 'Times New Roman', Times, serif;
   }
 
   :global(html) { scroll-behavior: smooth; }
@@ -627,10 +648,8 @@
   /* === Top nav === */
   .top-nav {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: saturate(180%) blur(12px);
-    -webkit-backdrop-filter: saturate(180%) blur(12px);
-    border-bottom: 1px solid var(--c-hairline-soft);
+    background: var(--c-canvas);
+    border-bottom: 3px solid var(--c-primary);
   }
   .nav-inner {
     max-width: 1200px; margin: 0 auto;
@@ -645,8 +664,13 @@
     text-decoration: none;
   }
   .brand-dot {
-    width: 10px; height: 10px; border-radius: 50%;
+    width: 10px; height: 10px; border-radius: 0px;
     background: var(--c-ink);
+  }
+  .brand-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
   }
   .nav-links { display: flex; gap: 28px; align-items: center; }
   .nav-links a {
@@ -656,6 +680,7 @@
   }
   .nav-links a:hover { color: var(--c-ink); }
   .nav-right { display: flex; align-items: center; gap: var(--s-md); }
+  .nav-cta { height: 36px; padding: 0 16px; font-size: 13px; }
 
   /* nav-pill-group: pill-in-pill */
   .nav-pill-group {
@@ -703,12 +728,31 @@
   }
 
   /* === Hero === */
-  .hero { padding: var(--s-section) 0 var(--s-xxl); border-top: none; }
+  .hero {
+    padding: calc(var(--s-section) * 1.5) 0;
+    min-height: 540px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-top: none;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/hero-bg.png') center/cover no-repeat;
+    border-bottom: 3px solid var(--c-primary);
+  }
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--s-xl);
+    width: 100%;
+  }
+  .hero-details {
+    padding: var(--s-xl) 0 var(--s-section);
+  }
   .hero-grid {
     display: grid;
     grid-template-columns: 7fr 5fr;
     gap: var(--s-xxl);
-    align-items: center;
+    align-items: start;
   }
   .eyebrow {
     display: inline-block;
@@ -721,13 +765,23 @@
   }
   .hero h1 {
     font-family: var(--font-display);
-    font-size: clamp(40px, 6.5vw, 64px);
-    font-weight: 600; line-height: 1.05;
-    letter-spacing: -2px;
-    margin: 0 0 var(--s-lg);
-    color: var(--c-ink);
+    font-size: clamp(42px, 6.5vw, 58px);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin: 0;
+    color: #FFFFFF;
+    text-align: center;
   }
-  .accent { color: var(--c-ink); }
+  .accent { color: #FFFFFF; }
+  .hero-copy-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--c-ink);
+    margin: 0 0 var(--s-lg);
+  }
   .lede {
     font-size: 18px; line-height: 1.55;
     color: var(--c-body);
@@ -741,9 +795,9 @@
   .text-input {
     flex: 1; height: 44px;
     padding: 0 14px;
-    background: var(--c-canvas);
+    background: #FFFFFF;
     color: var(--c-ink);
-    border: 1px solid var(--c-hairline);
+    border: 3px solid var(--c-primary);
     border-radius: var(--r-md);
     font-size: 15px;
     font-family: inherit;
@@ -789,27 +843,39 @@
   .microcopy {
     margin: var(--s-sm) 0 0;
     font-size: 13px;
-    color: var(--c-muted-soft);
+    color: var(--c-body);
+    opacity: 0.8;
   }
 
   /* === Hero mockup card === */
-  .hero-mockup { display: flex; justify-content: center; }
+  .hero-mockup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-md);
+    align-items: stretch;
+    width: 100%;
+  }
+  .mockup-controls {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: var(--s-xs);
+  }
   .mockup-card {
     width: 100%;
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-xl);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
   }
   .mockup-head {
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
     padding: 10px 14px;
     background: var(--c-surface-soft);
-    border-bottom: 1px solid var(--c-hairline-soft);
+    border-bottom: 3px solid var(--c-primary);
   }
   .mockup-head .dot-r, .mockup-head .dot-y, .mockup-head .dot-g {
-    width: 10px; height: 10px; border-radius: 50%;
+    width: 10px; height: 10px; border-radius: 0px; border: 1.5px solid var(--c-primary);
   }
   .dot-r { background: #ff605c; }
   .dot-y { background: #ffbd44; }
@@ -820,54 +886,100 @@
     font-size: 12px;
     color: var(--c-muted);
   }
-  .mockup-body { padding: var(--s-lg); display: flex; flex-direction: column; gap: 10px; }
-  .mock-row { font-size: 14px; line-height: 1.4; }
-  .mock-h {
-    font-family: var(--font-display);
-    font-weight: 600; font-size: 18px; letter-spacing: -0.3px;
-    color: var(--c-ink);
-    margin-bottom: 4px;
+  
+  /* === Terminal Styling === */
+  .terminal-body {
+    padding: var(--s-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 280px;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #24170d;
+    color: #ffd59a;
+    text-align: left;
   }
-  .mock-line {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 0;
-    color: var(--c-body);
-    border-bottom: 1px solid var(--c-hairline-soft);
+  
+  .terminal-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-height: 1.6em;
   }
-  .mock-line:last-of-type { border-bottom: none; }
-  .check {
-    flex: none;
-    width: 16px; height: 16px;
-    border: 1.5px solid var(--c-hairline);
+  
+  .prompt {
+    color: #fb923c;
+    user-select: none;
+    margin-right: 8px;
+  }
+  
+  .t-cmd {
+    color: #34d399;
+    font-weight: bold;
+  }
+  
+  .t-comment {
+    color: #b97a3a;
+    font-style: italic;
+  }
+  
+  /* Copy Button inside header */
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--c-hairline);
+    color: var(--c-primary);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    transition: all 0.15s ease;
     border-radius: 4px;
-    background: var(--c-canvas);
-    position: relative;
   }
-  .check.on {
-    background: var(--c-primary);
+  
+  .btn-copy:hover {
+    background: var(--c-canvas);
     border-color: var(--c-primary);
   }
-  .check.on::after {
-    content: '';
-    position: absolute; left: 4px; top: 1px;
-    width: 4px; height: 8px;
-    border-right: 1.5px solid #fff;
-    border-bottom: 1.5px solid #fff;
-    transform: rotate(45deg);
+  
+  .btn-copy svg {
+    flex-shrink: 0;
   }
-  .mock-line.done { color: var(--c-muted); text-decoration: line-through; }
-  .mock-link { color: var(--c-brand-accent); }
-  .mock-block { display: flex; gap: 6px; margin-top: 6px; }
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    font-size: 12px; font-weight: 500;
+  
+  .btn-copy .icon-success {
+    color: #059669;
+  }
+
+  /* Mockup tabs */
+  .mockup-tabs {
+    display: flex;
+    gap: 8px;
+  }
+  .mockup-tab {
+    background: var(--c-surface-soft);
+    border: 1px solid var(--c-hairline);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 12px;
     border-radius: var(--r-pill);
+    color: var(--c-muted);
+    transition: all 0.15s ease;
+  }
+  .mockup-tab:hover {
+    border-color: var(--c-ink);
     color: var(--c-ink);
   }
-  .badge-violet { background: rgba(139, 92, 246, 0.15); color: var(--c-badge-violet); }
-  .badge-orange { background: rgba(251, 146, 60, 0.15); color: var(--c-badge-orange); }
-  .badge-emerald { background: rgba(52, 211, 153, 0.2); color: #059669; }
+  .mockup-tab.active {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    color: var(--c-on-dark);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
 
   /* === Features grid === */
   .features .grid {
@@ -876,14 +988,14 @@
     grid-template-columns: repeat(3, 1fr);
   }
   .feature-card {
-    background: var(--c-surface-card);
-    border-radius: var(--r-lg);
-    padding: var(--s-xl);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: transparent;
+    border: none;
+    border-top: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: var(--s-md) 0 var(--s-lg);
   }
   .feature-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border-top-color: var(--c-brand-accent);
   }
   .feature-icon {
     display: inline-flex; align-items: center; justify-content: center;
@@ -924,28 +1036,28 @@
     grid-template-columns: repeat(4, 1fr);
   }
   .pricing-tier-card {
-    background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-lg);
-    padding: var(--s-xl);
+    background: transparent;
+    border: none;
+    border-top: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: var(--s-md) 0 var(--s-lg);
     display: flex; flex-direction: column;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: none;
   }
   .pricing-tier-card.featured {
-    background: var(--c-surface-dark);
-    border-color: var(--c-surface-dark);
-    color: var(--c-on-dark);
+    background: transparent;
+    border-top: 4px solid var(--c-brand-accent);
+    color: var(--c-ink);
     position: relative;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: none;
   }
   .featured-badge {
-    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    background: var(--c-canvas);
-    color: var(--c-ink);
+    position: absolute; top: -12px; left: 0px;
+    background: var(--c-brand-accent);
+    color: var(--c-primary);
     font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-    padding: 4px 12px;
-    border-radius: var(--r-pill);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    padding: 2px 8px;
+    border-radius: 0px;
   }
   .tier-name {
     font-size: 14px; font-weight: 600;
@@ -953,7 +1065,7 @@
     letter-spacing: 0;
     text-transform: none;
   }
-  .pricing-tier-card.featured .tier-name { color: var(--c-on-dark-soft); }
+  .pricing-tier-card.featured .tier-name { color: var(--c-muted); }
   .tier-price {
     font-family: var(--font-display);
     font-size: 36px; font-weight: 600; line-height: 1.15;
@@ -961,14 +1073,14 @@
     margin: var(--s-xs) 0 var(--s-lg);
     color: var(--c-ink);
   }
-  .pricing-tier-card.featured .tier-price { color: var(--c-on-dark); }
+  .pricing-tier-card.featured .tier-price { color: var(--c-ink); }
   .tier-price span {
     font-family: var(--font-body);
     font-size: 14px; font-weight: 500;
     color: var(--c-muted);
     letter-spacing: 0;
   }
-  .pricing-tier-card.featured .tier-price span { color: var(--c-on-dark-soft); }
+  .pricing-tier-card.featured .tier-price span { color: var(--c-muted); }
   .pricing-tier-card ul {
     padding: 0; margin: 0 0 var(--s-lg);
     list-style: none;
@@ -980,25 +1092,26 @@
     color: var(--c-body);
     display: flex; align-items: flex-start; gap: 10px;
   }
-  .pricing-tier-card.featured li { color: var(--c-on-dark-soft); }
+  .pricing-tier-card.featured li { color: var(--c-body) !important; }
   .pricing-tier-card li::before {
     content: '';
     flex: none;
     width: 16px; height: 16px;
     margin-top: 2px;
-    border-radius: 50%;
-    background: var(--c-surface-card) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23111111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/></svg>") center / 12px 12px no-repeat;
-  }
-  .pricing-tier-card.featured li::before {
-    background: var(--c-surface-dark-elev) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/></svg>") center / 12px 12px no-repeat;
+    border-radius: 0px;
+    border: 2px solid var(--c-primary);
+    background: var(--c-surface-soft) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%233A2616' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5l3 3 6-7'/></svg>") center / 12px 12px no-repeat;
   }
 
   /* === Pre-footer CTA band === */
   .cta-band { border-top: none; padding-top: 0; }
   .cta-card {
-    background: var(--c-surface-card);
-    border-radius: var(--r-lg);
-    padding: var(--s-xxl) var(--s-xl);
+    background: transparent;
+    border: none;
+    border-top: 3px solid var(--c-primary);
+    border-bottom: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: var(--s-xxl) 0;
     text-align: center;
   }
   .cta-card h2 {
@@ -1072,13 +1185,14 @@
   }
   @media (max-width: 768px) {
     section { padding: 72px 0; }
-    .hero { padding: 56px 0; }
+    .hero { padding: 84px 0; min-height: 400px; }
     .hero-grid { grid-template-columns: 1fr; gap: var(--s-xl); }
-    .hero h1 { font-size: 40px; letter-spacing: -1.2px; }
+    .hero h1 { font-size: 42px; letter-spacing: -1px; }
     h2 { font-size: 32px; letter-spacing: -1px; }
     .nav-links { display: none; }
     .nav-inner { padding: 0 var(--s-md); }
     main { padding: 0 var(--s-md); }
+    .hero-inner { padding: 0 var(--s-md); }
     .features .grid { grid-template-columns: 1fr; }
     .pricing .tiers { grid-template-columns: 1fr; }
     .waitlist { flex-direction: column; }
@@ -1111,14 +1225,25 @@
     top: 8px;
     width: 12px;
     height: 12px;
-    background: var(--c-surface-card) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3 8.5l3 3 7-8'/></svg>") center / 12px 12px no-repeat;
-    border-radius: 50%;
+    background: #FFD59A url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%233A2616' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' d='M3 8.5l3 3 7-8'/></svg>") center / 12px 12px no-repeat;
+    border-radius: 0px;
+    border: 2px solid var(--c-primary);
   }
   .hero-cta-row {
     margin-top: var(--s-md);
     display: flex;
     gap: var(--s-md);
     align-items: center;
+  }
+  .text-link {
+    color: var(--c-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .text-link:hover {
+    color: var(--c-primary-active);
+    text-decoration: underline;
   }
 
   /* ===== Trust band ===== */
@@ -1142,20 +1267,7 @@
     gap: var(--s-lg);
   }
   .trust-item {
-    display: flex;
-    gap: var(--s-md);
-    align-items: flex-start;
-  }
-  .trust-icon {
-    flex: none;
-    width: 36px; height: 36px;
-    display: inline-flex; align-items: center; justify-content: center;
-    background: var(--c-surface-card);
-    color: var(--c-ink);
-    border-radius: var(--r-md);
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 600;
+    display: block;
   }
   .trust-item h3 {
     margin: 0 0 4px;
@@ -1178,15 +1290,14 @@
     gap: var(--s-lg);
   }
   .who-card {
-    background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-lg);
-    padding: var(--s-xl);
-    transition: border-color 0.15s, transform 0.15s;
+    background: transparent;
+    border: none;
+    border-top: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: var(--s-md) 0 var(--s-lg);
   }
   .who-card:hover {
-    border-color: var(--c-ink);
-    transform: translateY(-2px);
+    border-top-color: var(--c-brand-accent);
   }
   .who-tag {
     font: 600 12px/1 var(--font-mono);

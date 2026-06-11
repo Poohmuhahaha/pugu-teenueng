@@ -19,13 +19,13 @@
   }
 </script>
 
-<svelte:head><title>Reset password · LifeOS Admin</title></svelte:head>
+<svelte:head><title>Reset password · QuestPage Admin</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS Admin
+      QuestPage Admin
     </a>
     <h1>Reset your password</h1>
     <p class="auth-sub">Enter your email — we'll send a one-time reset link.</p>

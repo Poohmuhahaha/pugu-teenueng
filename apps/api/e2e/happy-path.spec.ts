@@ -17,7 +17,7 @@ const EMAIL = `pw-${RUN}@example.com`;
 const PASSWORD = 'hunter22-strong';
 const NAME = `Playwright ${RUN}`;
 
-test.describe.serial('LifeOS happy path', () => {
+test.describe.serial('QuestPage happy path', () => {
   let ctx: Awaited<ReturnType<typeof request.newContext>>;
   let apiKey: string;
 

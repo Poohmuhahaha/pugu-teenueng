@@ -10,7 +10,7 @@ const rootDir = path.resolve(__dirname, '..');
 const envPath = path.join(rootDir, '.env');
 const envExamplePath = path.join(rootDir, '.env.example');
 
-console.log('🚀 Initializing LifeOS environment...');
+console.log('🚀 Initializing QuestPage environment...');
 
 // 1. Copy .env if not exists
 if (!fs.existsSync(envPath)) {
@@ -42,22 +42,32 @@ if (modified) {
 try {
   console.log('💾 Applying database migrations...');
   execSync('deno run -A npm:prisma migrate dev --name init --schema=apps/api/prisma/schema.prisma', { stdio: 'inherit', cwd: rootDir });
+} catch (err) {
+  console.warn('⚠️ Database migration failed. Ensure your local PostgreSQL is running.');
+}
+
+try {
   console.log('✏️ Patching Prisma Client...');
   execSync('deno run -A scripts/patch-prisma.js', { stdio: 'inherit', cwd: rootDir });
-  console.log('🌱 Seeding database...');
-  execSync('deno task --filter @lifeos/api db:seed', { stdio: 'inherit', cwd: rootDir });
 } catch (err) {
-  console.warn('⚠️ Database migration/seed skipped or failed. Ensure your local PostgreSQL is running.');
+  console.warn('⚠️ Patching Prisma client failed:', err.message);
+}
+
+try {
+  console.log('🌱 Seeding database...');
+  execSync('deno task --filter @questpage/api db:seed', { stdio: 'inherit', cwd: rootDir });
+} catch (err) {
+  console.warn('⚠️ Seeding database skipped or failed.');
 }
 
 // 4. Start development servers concurrently
-console.log('🔥 Starting LifeOS development services...');
+console.log('🔥 Starting QuestPage development services...');
 const apps = [
-  '@lifeos/admin',
-  '@lifeos/api',
-  '@lifeos/docs',
-  '@lifeos/landing',
-  '@lifeos/web'
+  '@questpage/admin',
+  '@questpage/api',
+  '@questpage/docs',
+  '@questpage/landing',
+  '@questpage/web'
 ];
 
 const children = [];

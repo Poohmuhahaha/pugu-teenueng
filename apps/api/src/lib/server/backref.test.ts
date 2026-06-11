@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseWikiLinks, renderWikiLinks } from '@lifeos/core';
+import { parseWikiLinks, renderWikiLinks } from '@questpage/core';
 
 describe('parseWikiLinks', () => {
   it('extracts single link', () => {

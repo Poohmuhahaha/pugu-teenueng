@@ -2,7 +2,8 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { quintOut } from 'svelte/easing';
-  import type { ContentTypeField } from '@lifeos/core';
+  import type { ContentTypeField } from '@questpage/core';
+  import { reveal } from '@questpage/ui';
 
   export let params: any = undefined;
 
@@ -174,7 +175,7 @@
       </svg>
     </div>
     <h3>No content types yet</h3>
-    <p>Start by defining a schema — a collection of typed fields. You'll create entries against it from anywhere LifeOS reaches.</p>
+    <p>Start by defining a schema — a collection of typed fields. You'll create entries against it from anywhere QuestPage reaches.</p>
     <button class="btn" on:click={() => (creating = true)}>+ Create your first type</button>
   </div>
 {:else}
@@ -431,9 +432,9 @@
   }
   .empty-icon {
     width: 64px; height: 64px;
-    border-radius: 50%;
+    border-radius: 0px;
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
+    border: 3px solid var(--c-primary);
     display: inline-flex; align-items: center; justify-content: center;
     color: var(--c-muted);
     margin-bottom: var(--s-xs);

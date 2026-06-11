@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let params: any = undefined;
   let email = '';
   let password = '';
   let err = '';
@@ -22,13 +23,13 @@
   }
 </script>
 
-<svelte:head><title>Sign in · LifeOS</title></svelte:head>
+<svelte:head><title>Sign in · QuestPage</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
     <h1>Sign in</h1>
     <p class="auth-sub">Welcome back. Enter your credentials to continue.</p>

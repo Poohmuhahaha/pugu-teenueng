@@ -47,6 +47,6 @@ export async function POST(event) {
   // Return the full key ONCE. Cannot be retrieved later.
   return json(
     { id: key.id, name: key.name, prefix: key.prefix, role: key.role, key: full },
-    { status: 201, headers: { 'X-LifeOS-Warning': 'Save this key now — it cannot be retrieved later.' } }
+    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this key now — it cannot be retrieved later.' } }
   );
 }

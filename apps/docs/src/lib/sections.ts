@@ -27,18 +27,18 @@ export const SECTIONS: DocSection[] = [
   {
     id: 'get-started',
     title: 'Get started',
-    description: 'Stand LifeOS up and ship your first content type.',
+    description: 'Stand QuestPage up and ship your first Quest Type.',
     pages: [
       {
         slug: 'quickstart',
         title: 'Quickstart',
-        description: 'Get a working LifeOS in 10 minutes — Docker, Node, or Kubernetes.',
+        description: 'Get a working QuestPage in 10 minutes — Docker, Node, or Kubernetes.',
         file: 'quickstart.md',
       },
       {
         slug: 'cli',
-        title: 'Life Command (CLI)',
-        description: 'Install life, authenticate, capture notes, drive the API from your terminal.',
+        title: 'Quest Command (CLI)',
+        description: 'Install the CLI, authenticate, capture notes, drive the API from your terminal.',
         file: 'cli.md',
       },
     ],

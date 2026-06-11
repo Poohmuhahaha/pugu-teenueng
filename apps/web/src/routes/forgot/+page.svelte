@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let params: any = undefined;
   let email = '';
   let sent = false;
   let loading = false;
@@ -19,13 +20,13 @@
   }
 </script>
 
-<svelte:head><title>Reset password · LifeOS</title></svelte:head>
+<svelte:head><title>Reset password · QuestPage</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
     <h1>Reset your password</h1>
     <p class="auth-sub">We'll email you a link to set a new password.</p>

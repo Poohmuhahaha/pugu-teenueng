@@ -1,5 +1,5 @@
-# Default values for lifeos Helm chart.
-# Override at install with: helm install lifeos . -f my-values.yaml
+# Default values for questpage Helm chart.
+# Override at install with: helm install questpage . -f my-values.yaml
 
 replicaCount:
   api: 1
@@ -7,11 +7,11 @@ replicaCount:
 
 image:
   api:
-    repository: ghcr.io/lifeos/api
+    repository: ghcr.io/questpage/api
     tag: latest
     pullPolicy: IfNotPresent
   web:
-    repository: ghcr.io/lifeos/web
+    repository: ghcr.io/questpage/web
     tag: latest
     pullPolicy: IfNotPresent
 
@@ -26,7 +26,7 @@ service:
 ingress:
   enabled: false
   className: nginx
-  host: lifeos.example.com
+  host: questpage.example.com
   tls: false
 
 postgres:
@@ -34,8 +34,8 @@ postgres:
   external:
     host: ''
     port: 5432
-    db: lifeos
-    user: lifeos
+    db: questpage
+    user: questpage
   bundled:
     enabled: true
     storage: 8Gi

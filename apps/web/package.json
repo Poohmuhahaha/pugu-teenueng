@@ -1,5 +1,5 @@
 {
-  "name": "@lifeos/web",
+  "name": "@questpage/web",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lifeos/core": "workspace:*",
-    "@lifeos/sdk": "workspace:*",
-    "@lifeos/ui": "workspace:*"
+    "@questpage/core": "workspace:*",
+    "@questpage/sdk": "workspace:*",
+    "@questpage/ui": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@tiptap/core": { "optional": true },

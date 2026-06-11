@@ -100,7 +100,7 @@ export function renderMarkdown(md: string): RenderResult {
       const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
       const inner = this.parser.parseInline(tokens);
       const resolvedHref = rewriteHref(href ?? '');
-      const external = /^https?:\/\//i.test(resolvedHref) && !resolvedHref.startsWith('https://lifeos.app');
+      const external = /^https?:\/\//i.test(resolvedHref) && !resolvedHref.startsWith('https://questpage.app');
       const extra = external ? ' target="_blank" rel="noopener noreferrer"' : '';
       return `<a href="${escapeHtml(resolvedHref)}"${titleAttr}${extra}>${inner}</a>`;
     }

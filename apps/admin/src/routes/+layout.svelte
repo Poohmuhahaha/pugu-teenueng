@@ -1,7 +1,7 @@
 <script lang="ts">
-  import '@lifeos/ui/design.css';
+  import '@questpage/ui/design.css';
   import { onMount } from 'svelte';
-  import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@lifeos/core';
+  import { t, detectLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@questpage/core';
   import { page } from '$app/stores';
 
   export let params: any = undefined;
@@ -61,8 +61,8 @@
     <aside class="sidebar" class:mobile-open={mobileOpen} class:mobile-closed={isMobile && !mobileOpen}>
       <div class="brand-row">
         <a class="brand" href="/">
-          <span class="brand-dot"></span>
-          LifeOS
+          <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
+          <span>QuestPage</span>
         </a>
         <div class="nav-pill-group">
           {#each SUPPORTED_LOCALES as l}
@@ -207,5 +207,10 @@
       transform: translateX(0);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
+  }
+  .brand-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
   }
 </style>

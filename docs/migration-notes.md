@@ -9,11 +9,11 @@ Updated 2026-06-01.
 
 | Item | Commit | Notes |
 |------|--------|-------|
-| Workspace switch endpoint | `530078d` | `POST /api/v1/workspaces/[id]/switch`. Persists active workspace via a separate `lifeos_workspace` cookie. |
+| Dashboard switch endpoint | `530078d` | `POST /api/v1/taverns/[id]/switch`. Persists active tavern via a separate `questpage_workspace` cookie. |
 | Rate limiting | `530078d` | `lib/server/ratelimit.ts`. Wired into login, signup, forgot, reset, magic, waitlist/join. LRU fallback + Redis adapter ready. 4 vitest cases. |
 | Design system consolidated | `530078d` | One canonical `packages/ui/src/design.css`. Three duplicated `app.css` files deleted. |
 | Legacy CSS variables removed | this commit | 20 page-level stylesheets rewritten to use `--c-*` token names. Alias block stripped from `design.css`. |
-| Playwright happy-path extended | this commit | Existing `e2e/happy-path.spec.ts` now covers workspace switch + rate-limit thresholds. |
+| Playwright happy-path extended | this commit | Existing `e2e/happy-path.spec.ts` now covers tavern switch + rate-limit thresholds. |
 | BullMQ adapter (feature-flagged) | this commit | `lib/server/queue.ts`. Activates when `REDIS_URL` is set AND `bullmq` is installed. Default Postgres-backed queue remains the production-safe baseline. |
 
 ---
@@ -36,7 +36,7 @@ Budget: ~1 dev-day per app, 4 apps. Start with `landing` (smallest, lowest risk)
 
 ### Turborepo
 
-**Why we're not adding it.** Deno workspaces already give us dependency-aware task execution via `deno task --filter @lifeos/<name> <task>`. Turbo on top of `deno task` would duplicate caching logic and not meaningfully improve build times. The genuine wins Turbo offers — remote caching, distributed CI — are not on the critical path while the team is small.
+**Why we're not adding it.** Deno taverns already give us dependency-aware task execution via `deno task --filter @questpage/<name> <task>`. Turbo on top of `deno task` would duplicate caching logic and not meaningfully improve build times. The genuine wins Turbo offers — remote caching, distributed CI — are not on the critical path while the team is small.
 
 **When to revisit**: if monorepo build time crosses ~3 min on cold cache, or when a second engineer joins and CI parallelism starts mattering. At that point, the migration is straightforward: `pnpm add -Dw turbo`, define a `turbo.json` with the same task graph, switch `deno.json` scripts to call `turbo run`.
 
@@ -46,9 +46,9 @@ Budget: ~1 dev-day per app, 4 apps. Start with `landing` (smallest, lowest risk)
 
 **Path forward**:
 
-1. Create `apps/worker/` — a small Node entrypoint that boots BullMQ Workers for `lifeos:email` and `lifeos:webhook` queues.
+1. Create `apps/worker/` — a small Node entrypoint that boots BullMQ Workers for `questpage:email` and `questpage:messenger bird` queues.
 2. Worker pulls `EmailJob` rows by `jobId`, calls `sendEmail()`, updates row.
-3. For webhooks: re-derives HMAC signature from `secret + body`, POSTs, writes failure rows.
+3. For messenger birds: re-derives HMAC signature from `secret + body`, POSTs, writes failure rows.
 4. Dockerfile + helm chart entry. Set `REDIS_URL` + `bullmq` install in worker container.
 
 The adapter is structured so adding the worker is purely additive — no changes needed to the API surface.
@@ -59,7 +59,7 @@ The adapter is structured so adding the worker is purely additive — no changes
 
 | Issue | Impact | Effort |
 |-------|--------|--------|
-| `packages/ui` only ships CSS, no Svelte components | Auth cards, workspace switcher, badge layouts still duplicated across apps | 1 dev-day to extract 5–6 shared components |
+| `packages/ui` only ships CSS, no Svelte components | Auth cards, tavern switcher, badge layouts still duplicated across apps | 1 dev-day to extract 5–6 shared components |
 | `apps/web/src/lib/components/Editor.svelte` couples Tiptap directly to the page | Hard to swap editor (e.g. Lexical, Prosemirror direct) | Refactor before the Svelte 5 migration so it only happens once |
 | No structured logging / observability | Hard to debug production. Sentry adapter peer-optional but never instantiated | Wire `@sentry/node` in `hooks.server.ts` behind `SENTRY_DSN` env var |
 | `docs/scaling.md` describes Redis pub-sub but `apps/web` SSE client doesn't reconnect with exponential backoff | Long-lived `/api/v1/sync/stream` clients silently drop | ~2 hours; add jitter + visibility-change reconnect |

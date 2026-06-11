@@ -16,12 +16,12 @@ export async function runLogin(args: string[], ctx: Ctx): Promise<void> {
 
 async function apiKeyLogin(ctx: Ctx): Promise<void> {
   const existing = await ctx.config();
-  info('Paste an API key. Create one in admin → API Keys, or run `life keys new` after a first sign-in.');
+  info('Paste a Workspace Seal. Create one in Admin → Workspace Seals, or run `life keys new` after a first sign-in.');
   const apiUrl = await ask(c.dim('API URL'), existing.apiUrl);
-  const token = (await askSecret('API key:')).trim();
+  const token = (await askSecret('Workspace Seal:')).trim();
   if (!token) { err('aborted: empty key'); return; }
   if (!token.startsWith('lk_') || !token.includes('.')) {
-    err('that does not look like a LifeOS API key (expected `lk_<prefix>.<secret>`)');
+    err('that does not look like a QuestPage Workspace Seal (expected `lk_<prefix>.<secret>`)');
     return;
   }
 

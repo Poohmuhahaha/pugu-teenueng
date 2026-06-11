@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
 
+  export let params: any = undefined;
   const ROLES = ['owner', 'admin', 'editor', 'member', 'viewer'] as const;
   const ACTIONS = ['read', 'create', 'update', 'delete'] as const;
   type Role = typeof ROLES[number];

@@ -108,7 +108,7 @@
     <div class="card" style="border-color:var(--c-ink); background:rgba(124,58,237,0.06)">
       <div class="label" style="color:var(--c-ink)">⚠ Signing secret — save it now to verify incoming signatures</div>
       <code style="display:block; word-break:break-all; padding:12px; background:var(--c-canvas); border-radius:8px; margin-top:8px; font-size:12px">{issuedSecret}</code>
-      <div style="font-size:11px; color:var(--c-muted); margin-top:8px">Verify webhook deliveries with: HMAC-SHA256(rawBody, secret) === X-LifeOS-Signature header (after the "sha256=" prefix).</div>
+      <div style="font-size:11px; color:var(--c-muted); margin-top:8px">Verify webhook deliveries with: HMAC-SHA256(rawBody, secret) === X-QuestPage-Signature header (after the "sha256=" prefix).</div>
     </div>
   {/if}
 

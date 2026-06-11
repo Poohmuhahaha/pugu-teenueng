@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  export let params: any = undefined;
   let password = '';
   let confirm = '';
   let token = '';
@@ -30,13 +31,13 @@
   }
 </script>
 
-<svelte:head><title>Set new password · LifeOS</title></svelte:head>
+<svelte:head><title>Set new password · QuestPage</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS
+      QuestPage
     </a>
     <h1>Set a new password</h1>
     <p class="auth-sub">Choose something memorable. Minimum 8 characters.</p>

@@ -1,0 +1,17 @@
+{
+  "slug": "tavern-quests",
+  "name": "Dashboard Quests",
+  "description": "Daily tasks, active bounties, and grand quests to complete in your life's adventure.",
+  "schema": {
+    "fields": [
+      { "name": "title",       "type": "text",     "required": true },
+      { "name": "difficulty",  "type": "select",   "options": ["trivial", "easy", "medium", "hard", "epic"] },
+      { "name": "goldReward",  "type": "number" },
+      { "name": "xpReward",    "type": "number" },
+      { "name": "status",      "type": "select",   "options": ["available", "active", "completed", "failed"] },
+      { "name": "dueDate",     "type": "date" },
+      { "name": "questGiver",  "type": "text" },
+      { "name": "notes",       "type": "richtext" }
+    ]
+  }
+}

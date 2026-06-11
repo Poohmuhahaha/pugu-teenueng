@@ -10,8 +10,8 @@ export function banner(): void {
   // ASCII brand mark — keeps the CLI feeling crafted without a heavy figlet dep.
   const lines = [
     '',
-    c.bold('  ⬤  Life Command'),
-    `  ${c.dim('LifeOS CLI · v0.1.0')}`,
+    c.bold('  ⬤  Quest Command'),
+    `  ${c.dim('QuestPage CLI · v0.1.0')}`,
     '',
     c.dim('  type'),
     `    ${c.cyan('help')}     ${c.dim('— list commands')}`,
@@ -34,6 +34,31 @@ export function warn(msg: string): void {
 }
 export function err(msg: string): void {
   process.stderr.write(`${c.red('✗')} ${msg}\n`);
+}
+
+export function startSpinner(text: string) {
+  const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  let i = 0;
+  out.write('\x1B[?25l'); // Hide cursor
+  out.write(`${c.cyan(frames[0])} ${text}`);
+  const interval = setInterval(() => {
+    i = (i + 1) % frames.length;
+    out.write(`\r${c.cyan(frames[i])} ${text}`);
+  }, 80);
+  return {
+    stop(successMsg?: string, isError = false) {
+      clearInterval(interval);
+      out.write('\r\x1B[K'); // Clear line
+      out.write('\x1B[?25h'); // Show cursor
+      if (successMsg) {
+        if (isError) {
+          process.stderr.write(`${c.red('✗')} ${successMsg}\n`);
+        } else {
+          out.write(`${c.green('✓')} ${successMsg}\n`);
+        }
+      }
+    }
+  };
 }
 
 export function line(): void {

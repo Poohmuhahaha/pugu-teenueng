@@ -1,8 +1,8 @@
 {
-  "name": "@lifeos/core",
+  "name": "@questpage/core",
   "version": "0.0.1",
   "private": true,
-  "description": "Zod schemas + domain types shared by all LifeOS apps",
+  "description": "Zod schemas + domain types shared by all QuestPage apps",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",

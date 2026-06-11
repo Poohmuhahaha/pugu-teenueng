@@ -26,8 +26,8 @@
   let dbStatus = 'checking...';
   let services = [
     { name: 'Admin Console', port: 5175, status: 'checking', url: 'http://localhost:5175' },
-    { name: 'Web Workspace', port: 5176, status: 'checking', url: 'http://localhost:5176' },
-    { name: 'Marketing Landing', port: 5177, status: 'checking', url: 'http://localhost:5177' }
+    { name: 'Web Portal', port: 5176, status: 'checking', url: 'http://localhost:5176' },
+    { name: 'Landing Page', port: 5177, status: 'checking', url: 'http://localhost:5177' }
   ];
 
   async function checkHealth() {
@@ -71,7 +71,7 @@
         res = await fetch(selectedEndpoint.path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'test@lifeos.app' })
+          body: JSON.stringify({ email: 'test@questpage.app' })
         });
       }
       const end = performance.now();
@@ -102,14 +102,14 @@
 </script>
 
 <svelte:head>
-  <title>LifeOS API Console</title>
+  <title>QuestPage API Console</title>
 </svelte:head>
 
 <header class="top-nav">
   <div class="top-nav-inner">
     <a class="brand" href="/">
-      <span class="brand-dot"></span>
-      LifeOS
+      <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
+      <span>QuestPage</span>
       <span class="badge badge-blue" style="margin-left: 8px; font-size: 11px">API</span>
     </a>
     <div class="status">
@@ -188,7 +188,6 @@
         <div class="terminal-body">
           {#if responseLoading}
             <div class="loading">
-              <div class="spinner"></div>
               <span>Fetching response…</span>
             </div>
           {:else}
@@ -204,10 +203,10 @@
   <div class="site-footer-inner">
     <div>
       <a class="brand" href="/">
-        <span class="brand-dot"></span>
-        LifeOS
+        <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
+        <span>QuestPage</span>
       </a>
-      <p class="footer-tag">Headless productivity OS · API surface</p>
+      <p class="footer-tag">QuestPage AI Lead Generation Dashboard · API surface</p>
     </div>
     <div class="footer-cols">
       <div class="footer-col">
@@ -218,56 +217,57 @@
       <div class="footer-col">
         <h4>Apps</h4>
         <a href="http://localhost:5175">Admin</a>
-        <a href="http://localhost:5176">Workspace</a>
-        <a href="http://localhost:5177">Landing</a>
+        <a href="http://localhost:5176">Portal</a>
+        <a href="http://localhost:5177">Landing Hall</a>
       </div>
       <div class="footer-col">
         <h4>Source</h4>
-        <a href="https://github.com/Poohmuhahaha/lifeos">GitHub</a>
+        <a href="https://github.com/Poohmuhahaha/questpage">GitHub</a>
       </div>
     </div>
   </div>
-  <div class="site-footer-bottom">© {new Date().getFullYear()} LifeOS · All rights reserved</div>
+  <div class="site-footer-bottom">© {new Date().getFullYear()} QuestPage · All rights reserved</div>
 </footer>
 
 <style>
-  /* ===== Cal.com tokens (api app is standalone, ships its own) ===== */
+  /* ===== Cal.com-inspired design tokens ===== */
   :global(:root) {
-    --c-primary: #111111;
-    --c-primary-active: #242424;
-    --c-ink: #111111;
-    --c-body: #374151;
-    --c-muted: #6b7280;
-    --c-muted-soft: #898989;
-    --c-hairline: #e5e7eb;
-    --c-hairline-soft: #f3f4f6;
-    --c-canvas: #ffffff;
-    --c-surface-soft: #f8f9fa;
-    --c-surface-card: #f5f5f5;
-    --c-surface-dark: #101010;
-    --c-surface-dark-elev: #1a1a1a;
-    --c-on-dark: #ffffff;
-    --c-on-dark-soft: #a1a1aa;
-    --c-brand-accent: #3b82f6;
+    --c-primary: #3A2616;
+    --c-primary-active: #B97A3A;
+    --c-ink: #3A2616;
+    --c-body: #3A2616;
+    --c-muted: #B97A3A;
+    --c-muted-soft: #B97A3A;
+    --c-hairline: #B97A3A;
+    --c-hairline-soft: #FFD59A;
+    --c-canvas: #FFF2D9;
+    --c-surface-soft: #FFD59A;
+    --c-surface-card: #FFD59A;
+    --c-surface-strong: #F7B35A;
+    --c-surface-dark: #3A2616;
+    --c-surface-dark-elev: #24170d;
+    --c-on-dark: #FFF2D9;
+    --c-on-dark-soft: #FFD59A;
+    --c-brand-accent: #F7B35A;
     --c-success: #10b981;
     --c-warning: #f59e0b;
     --c-error: #ef4444;
     --c-badge-violet: #8b5cf6;
     --c-badge-orange: #fb923c;
     --c-badge-emerald: #34d399;
-    --r-md: 8px;
-    --r-lg: 12px;
-    --r-pill: 9999px;
+    --r-md: 0px;
+    --r-lg: 0px;
+    --r-pill: 0px;
     --s-xs: 8px;
     --s-sm: 12px;
     --s-md: 16px;
     --s-lg: 24px;
     --s-xl: 32px;
     --s-xxl: 48px;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --font-display: 'Cal Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --shadow-sm: 2px 2px 0 0 var(--c-primary);
+    --font-display: 'Times New Roman', Times, serif;
+    --font-body: 'Times New Roman', Times, serif;
+    --font-mono: 'Times New Roman', Times, serif;
   }
   :global(*) { box-sizing: border-box; }
   :global(html, body) { margin: 0; padding: 0; background: var(--c-canvas); color: var(--c-body); }
@@ -280,9 +280,8 @@
   /* Top nav */
   .top-nav {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--c-hairline-soft);
+    background: var(--c-canvas);
+    border-bottom: 3px solid var(--c-primary);
   }
   .top-nav-inner {
     max-width: 1200px; margin: 0 auto;
@@ -296,12 +295,13 @@
     color: var(--c-ink);
     text-decoration: none;
   }
-  .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-ink); }
+  .brand-dot { width: 10px; height: 10px; border-radius: 0px; background: var(--c-ink); }
   .badge {
     display: inline-block;
     padding: 3px 10px;
-    font: 500 12px/1.4 var(--font-body);
-    border-radius: var(--r-pill);
+    font: 600 12px/1.4 var(--font-body);
+    border: 2px solid var(--c-primary);
+    border-radius: 0px;
   }
   .badge-blue { background: rgba(59, 130, 246, 0.12); color: var(--c-brand-accent); }
   .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--c-success); }
@@ -313,23 +313,28 @@
     color: var(--c-muted);
   }
   .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 0px;
     background: var(--c-muted-soft);
+    border: 1px solid var(--c-primary);
   }
   .status-dot.online {
     background: var(--c-success);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+    box-shadow: none;
   }
   .status-text { text-transform: capitalize; }
 
   /* Page */
   main { max-width: 1200px; margin: 0 auto; padding: var(--s-xl) var(--s-xl) var(--s-xxl); }
-  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-md); margin-bottom: var(--s-lg); }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-md); margin-bottom: var(--s-xl); }
   .page-title { font: 600 28px/1.2 var(--font-display); letter-spacing: -0.5px; color: var(--c-ink); }
   .page-sub { margin-top: 4px; color: var(--c-muted); font-size: 14px; }
 
   .grid { display: grid; grid-template-columns: 320px 1fr; gap: var(--s-xl); }
   @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Spacing Utilities */
+  .mt-md { margin-top: var(--s-lg) !important; }
+  .mt-xl { margin-top: var(--s-xxl) !important; }
 
   .block-title {
     font: 600 14px/1.4 var(--font-body);
@@ -338,13 +343,15 @@
   }
   .card-soft {
     background: var(--c-surface-card);
-    border-radius: var(--r-lg);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
     padding: var(--s-lg);
+    box-shadow: var(--shadow-sm);
   }
   .stats-card { display: flex; flex-direction: column; gap: 4px; }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0;
+    padding: 12px 0;
     font-size: 14px;
     border-bottom: 1px solid var(--c-hairline-soft);
   }
@@ -355,18 +362,24 @@
   .muted { color: var(--c-muted); }
   .muted-soft { color: var(--c-muted-soft); }
 
-  .app-list { display: flex; flex-direction: column; gap: var(--s-xs); }
+  .app-list { display: flex; flex-direction: column; gap: var(--s-sm); }
   .app-item {
     display: flex; justify-content: space-between; align-items: center;
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-lg);
-    padding: 12px 16px;
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: 14px 18px;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.15s, transform 0.05s;
+    transition: border-color 0.15s, transform 0.05s, box-shadow 0.15s;
+    box-shadow: 2px 2px 0 var(--c-primary);
   }
-  .app-item:hover { border-color: var(--c-ink); text-decoration: none; }
+  .app-item:hover {
+    border-color: var(--c-primary-active);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--c-primary);
+    text-decoration: none;
+  }
   .app-name { font: 600 14px/1.4 var(--font-body); color: var(--c-ink); }
   .app-port { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
 
@@ -374,13 +387,15 @@
   .field-label { font: 500 13px/1.4 var(--font-body); color: var(--c-muted); }
   select {
     width: 100%;
-    height: 40px;
-    padding: 0 12px;
+    height: 44px;
+    padding: 0 14px;
     background: var(--c-canvas);
     color: var(--c-ink);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-md);
-    font: 400 14px/1.4 var(--font-body);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
+    font: 600 14px/1.4 var(--font-body);
+    cursor: pointer;
+    transition: border-color 0.15s;
   }
   select:focus { outline: none; border-color: var(--c-ink); box-shadow: 0 0 0 3px rgba(17,17,17,0.08); }
 
@@ -403,9 +418,10 @@
   .terminal {
     background: var(--c-surface-dark);
     color: var(--c-on-dark);
-    border-radius: var(--r-lg);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
     overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    box-shadow: 6px 6px 0 0 var(--c-primary);
   }
   .terminal-head {
     display: flex; align-items: center; justify-content: space-between;
@@ -451,14 +467,6 @@
   }
   .terminal-body pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
   .loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 64px 0; color: var(--c-on-dark-soft); }
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-top-color: var(--c-on-dark);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Footer */
   .site-footer {

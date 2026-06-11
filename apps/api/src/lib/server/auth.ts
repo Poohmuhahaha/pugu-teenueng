@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 import { randomBytes } from 'node:crypto';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { db } from './db';
-import type { Role } from '@lifeos/core';
+import type { Role } from '@questpage/core';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? 'dev-only-secret-change-me-32-chars');
-export const COOKIE_NAME = process.env.COOKIE_NAME ?? 'lifeos_session';
-export const ACTIVE_WS_COOKIE = process.env.ACTIVE_WS_COOKIE ?? 'lifeos_workspace';
+export const COOKIE_NAME = process.env.COOKIE_NAME ?? 'questpage_session';
+export const ACTIVE_WS_COOKIE = process.env.ACTIVE_WS_COOKIE ?? 'questpage_workspace';
 
 export interface SessionPayload {
   uid: number;

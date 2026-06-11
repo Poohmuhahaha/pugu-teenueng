@@ -13,7 +13,7 @@ let cached: typeof import('ioredis') | null | undefined;
 let pubClient: import('ioredis').Redis | null = null;
 let subClient: import('ioredis').Redis | null = null;
 
-const CHANNEL_PREFIX = 'lifeos:sync:';
+const CHANNEL_PREFIX = 'questpage:sync:';
 
 async function loadIoredis(): Promise<typeof import('ioredis') | null> {
   if (cached !== undefined) return cached;

@@ -3,7 +3,7 @@ import { ok, err, info } from '../output.js';
 import type { Ctx } from '../cli.js';
 
 /**
- * Quick-capture: post a one-liner to the user's "inbox" collection.
+ * Quick-capture: post a one-liner to the user's "inbox" quest board.
  * Defaults to slug "notes" — overridable with --type=<slug>.
  *
  * Examples:
@@ -31,6 +31,6 @@ export async function runCapture(args: string[], ctx: Ctx): Promise<void> {
     ok(`captured to ${c.cyan(target)} #${res.id}`);
   } catch (e) {
     err(e instanceof Error ? e.message : String(e));
-    info(`tip: pass --type=<slug> to target a specific collection (default: "notes")`);
+    info(`tip: pass --type=<slug> to target a specific quest type (default: "notes")`);
   }
 }

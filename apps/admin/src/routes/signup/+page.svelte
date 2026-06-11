@@ -20,16 +20,16 @@
   }
 </script>
 
-<svelte:head><title>Create account · LifeOS Admin</title></svelte:head>
+<svelte:head><title>Create account · QuestPage Admin</title></svelte:head>
 
 <div class="auth-shell">
   <div class="auth-card">
     <a class="auth-brand" href="/">
       <span class="brand-dot"></span>
-      LifeOS Admin
+      QuestPage Admin
     </a>
-    <h1>Create your workspace</h1>
-    <p class="auth-sub">Get started with the LifeOS admin console.</p>
+    <h1>Create your Dashboard</h1>
+    <p class="auth-sub">Get started with the QuestPage Admin console.</p>
 
     <form on:submit|preventDefault={submit}>
       <div class="field">

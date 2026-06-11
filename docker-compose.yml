@@ -3,17 +3,17 @@ version: '3.9'
 services:
   db:
     image: postgres:16-alpine
-    container_name: lifeos-db
+    container_name: questpage-db
     environment:
-      POSTGRES_USER: lifeos
+      POSTGRES_USER: questpage
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-      POSTGRES_DB: lifeos
+      POSTGRES_DB: questpage
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     volumes:
-      - lifeos_db:/var/lib/postgresql/data
+      - questpage_db:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U lifeos']
+      test: ['CMD-SHELL', 'pg_isready -U questpage']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -22,12 +22,12 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: lifeos-api
+    container_name: questpage-api
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://lifeos:${POSTGRES_PASSWORD:-changeme}@db:5432/lifeos
+      DATABASE_URL: postgresql://questpage:${POSTGRES_PASSWORD:-changeme}@db:5432/questpage
       JWT_SECRET: ${JWT_SECRET:?set in .env}
       CSRF_SECRET: ${CSRF_SECRET:?set in .env}
       COOKIE_NAME: life_session
@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    container_name: lifeos-web
+    container_name: questpage-web
     depends_on:
       - api
     environment:
@@ -52,18 +52,18 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: lifeos-minio
+    container_name: questpage-minio
     command: server /data --console-address ':9001'
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-lifeos}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-questpage}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-changeme}
     ports:
       - '${MINIO_PORT:-9000}:9000'
       - '${MINIO_CONSOLE_PORT:-9001}:9001'
     volumes:
-      - lifeos_minio:/data
+      - questpage_minio:/data
     profiles: [files]
 
 volumes:
-  lifeos_db:
-  lifeos_minio:
+  questpage_db:
+  questpage_minio:

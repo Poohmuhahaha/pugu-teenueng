@@ -19,7 +19,7 @@ export async function runKeys(args: string[], ctx: Ctx): Promise<void> {
   if (sub === 'list' || sub === 'ls') {
     const api = await ctx.api();
     const res = await api.get<{ data: ApiKey[] }>('/api/v1/api-keys');
-    if (!res.data.length) { info('no API keys yet — run `keys new`'); return; }
+    if (!res.data.length) { info('no Workspace Seals yet — run `keys new`'); return; }
     table(
       ['id', 'name', 'prefix', 'role', 'last used', 'status'],
       res.data.map((k) => [
@@ -45,7 +45,7 @@ export async function runKeys(args: string[], ctx: Ctx): Promise<void> {
     const created = await api.post<{ id: number; key: string; prefix: string }>('/api/v1/api-keys', { name, role });
     ok(`created #${created.id}`);
     out.write('\n');
-    out.write(c.yellow('  Save this key now — it will not be shown again:\n\n'));
+    out.write(c.yellow('  Save this Workspace Seal now — it will not be shown again:\n\n'));
     out.write(`    ${c.bold(created.key)}\n\n`);
     return;
   }
@@ -53,7 +53,7 @@ export async function runKeys(args: string[], ctx: Ctx): Promise<void> {
   if (sub === 'revoke') {
     const id = parseInt(args[1] ?? '', 10);
     if (!Number.isFinite(id)) { err('usage: keys revoke <id>'); return; }
-    if (!(await confirm(`Revoke API key #${id}?`, false))) { info('cancelled'); return; }
+    if (!(await confirm(`Revoke Workspace Seal #${id}?`, false))) { info('cancelled'); return; }
     const api = await ctx.api();
     await api.delete(`/api/v1/api-keys/${id}`);
     ok(`revoked #${id}`);

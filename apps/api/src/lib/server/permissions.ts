@@ -1,6 +1,6 @@
 import { db } from './db';
 import { error } from '@sveltejs/kit';
-import type { Role } from '@lifeos/core';
+import type { Role } from '@questpage/core';
 
 export type Action = 'read' | 'create' | 'update' | 'delete';
 

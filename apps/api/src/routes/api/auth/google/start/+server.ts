@@ -6,7 +6,7 @@ export async function GET({ cookies }) {
   if (!isConfigured()) throw error(503, 'Google sign-in not configured on this instance');
 
   const state = randomBytes(16).toString('hex');
-  cookies.set('lifeos_oauth_state', state, {
+  cookies.set('questpage_oauth_state', state, {
     path: '/',
     httpOnly: true,
     sameSite: 'lax',

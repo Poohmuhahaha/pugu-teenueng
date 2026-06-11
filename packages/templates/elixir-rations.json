@@ -1,0 +1,16 @@
+{
+  "slug": "elixir-rations",
+  "name": "Integration & Rations",
+  "description": "Log health metrics, potions drank, rations consumed, and restorative sleep.",
+  "schema": {
+    "fields": [
+      { "name": "title",       "type": "text",     "required": true },
+      { "name": "type",        "type": "select",   "options": ["elixir", "ration", "potion", "herb", "rest"] },
+      { "name": "quality",     "type": "select",   "options": ["poor", "common", "fine", "exquisite", "masterwork"] },
+      { "name": "quantity",    "type": "number" },
+      { "name": "effects",     "type": "text" },
+      { "name": "loggedAt",    "type": "date" },
+      { "name": "notes",       "type": "richtext" }
+    ]
+  }
+}

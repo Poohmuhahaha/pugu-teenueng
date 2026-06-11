@@ -1,10 +1,10 @@
-# Session Compact — LifeOS
+# Session Compact — QuestPage
 
 Snapshot of everything built in this conversation. Read this first when picking up
 a new session — it gives a future Claude (or human) enough context to be useful
 on minute one.
 
-**Repo**: `D:\PROJECTS\website\lifeos` · `github.com/Poohmuhahaha/lifeos` · `main`
+**Repo**: `D:\PROJECTS\website\questpage` · `github.com/Poohmuhahaha/questpage` · `main`
 **Stack**: Deno workspaces · SvelteKit 4 · Prisma + Postgres · TypeScript
 **Last commit at compact time**: `5777e0f`
 
@@ -24,7 +24,7 @@ e47fe28  docs: bug audit cycle 2 — Agent 3.2 verification report
 9d24652  fix: audit cycle 2 — apply Agent 1.2 bug fixes
 2c3e542  docs: bug audit cycle 1 — Agent 3 verification report
 52ff597  fix: audit cycle — apply Agent 1 bug-list fixes (11 fixes)
-117ef97  feat: ship Life Command — the LifeOS CLI (apps/cli)
+117ef97  feat: ship Life Command — the QuestPage CLI (apps/cli)
 ebaf894  fix(docs): resolve /@fs/ 403 + serve docs under /docs path
 a75e3be  docs: ship apps/docs — framework-style documentation site
 6f462e5  feat: P1/P2 cleanup — legacy CSS sweep, e2e coverage, BullMQ adapter
@@ -55,10 +55,10 @@ Run everything: `deno task dev`. It launches all five via `scripts/setup-and-run
   - `src/design.css` — the single source of truth. Cal.com tokens (`--c-primary`, `--c-ink`, `--c-surface-card`, etc.), base typography, utility classes (`.btn`, `.card`, `.input`, `.badge`, `.nav-pill-group`, `.auth-card`, `.t` for tables).
   - `src/motion.ts` — animation utilities built on Motion One. Exports: `reveal`, `staggerChildren`, `countUp`, `pageTransition`, `prefersReducedMotion`, `EASING`, `DURATIONS`.
   - `src/index.ts` — barrel. **`springPress` is intentionally NOT re-exported** (user feedback: buttons should not animate on press).
-- Each app does `import '@lifeos/ui/design.css';` at its layout. The CSS file is loaded once per app.
-- Resolution: Deno workspaces hoist `node_modules/@lifeos/ui` as a junction to `packages/ui`. If the junction is missing (after fresh clone or `deno install` reset), create with PowerShell:
+- Each app does `import '@questpage/ui/design.css';` at its layout. The CSS file is loaded once per app.
+- Resolution: Deno workspaces hoist `node_modules/@questpage/ui` as a junction to `packages/ui`. If the junction is missing (after fresh clone or `deno install` reset), create with PowerShell:
   ```powershell
-  New-Item -ItemType Junction -Path "D:\PROJECTS\website\lifeos\node_modules\@lifeos\ui" -Target "D:\PROJECTS\website\lifeos\packages\ui"
+  New-Item -ItemType Junction -Path "D:\PROJECTS\website\questpage\node_modules\@questpage\ui" -Target "D:\PROJECTS\website\questpage\packages\ui"
   ```
 
 ---
@@ -78,7 +78,7 @@ Motion One added at the workspace root (`deno.json` imports `motion@^12`).
 ## Backend systems built
 
 ### Auth
-- JWT session cookie (`lifeos_session`) + active-workspace cookie (`lifeos_workspace`).
+- JWT session cookie (`questpage_session`) + active-workspace cookie (`questpage_workspace`).
 - `POST /api/v1/workspaces/[id]/switch` — sets the active-workspace cookie atomically.
 - **Device-code flow** for the CLI:
   - `POST /api/auth/device/start` — issues `device_code` + `user_code`.
@@ -115,14 +115,14 @@ Full report: `docs/bug-audit-report.md`.
 
 ## Life Command (CLI)
 
-- **Install**: `npm i -g @lifeos/cli` (also works with `bun add -g`, `deno install`).
+- **Install**: `npm i -g @questpage/cli` (also works with `bun add -g`, `deno install`).
 - **Binary**: `life`. Cross-runtime entry shim in `apps/cli/bin/life.js`.
 - **REPL**: `life` with no args drops you into an interactive prompt.
 - **Auth**: both flows
   - `life login` — paste API key (validates via `/api/v1/me`).
   - `life login --device` — opens browser, polls until approved.
 - **Commands**: `status`, `whoami`, `workspaces`/`ws`, `types`, `ls`, `cat`, `new`, `capture`, `search`, `keys`, `logout`.
-- **Config**: `~/.lifeos/config.json` (chmod 0600 on POSIX).
+- **Config**: `~/.questpage/config.json` (chmod 0600 on POSIX).
 - **Source**: `apps/cli/src/`. Compiled JS in `apps/cli/dist/`. `npm run build` to recompile.
 
 ---
@@ -158,7 +158,7 @@ PostgreSQL via Prisma. 17 models in `apps/api/prisma/schema.prisma`:
 **Database isn't running?** No VPS needed. Options:
 1. `docker compose up -d postgres` (uses the repo's `docker-compose.yml`)
 2. Cloud free tier (Neon, Supabase, Railway) — paste connection URL into `DATABASE_URL`
-3. Only need a VPS if you're *hosting LifeOS for others*
+3. Only need a VPS if you're *hosting QuestPage for others*
 
 ---
 
@@ -175,7 +175,7 @@ PostgreSQL via Prisma. 17 models in `apps/api/prisma/schema.prisma`:
 | Svelte 4 → 5 with runes | Cross-cutting migration, every component touches | ~1 day per app × 4 apps |
 | BullMQ worker process | Adapter shipped but no out-of-process consumer | New `apps/worker/` Node entrypoint |
 | Sentry integration | Peer dep declared, never instantiated | ~2 hours behind `SENTRY_DSN` env var |
-| `@lifeos/ui` Svelte components | Only CSS lives there; auth cards / switcher still duplicated | ~1 day to extract 5–6 components |
+| `@questpage/ui` Svelte components | Only CSS lives there; auth cards / switcher still duplicated | ~1 day to extract 5–6 components |
 | Email `delivered: false` policy (B-004) | Product decision — fail loud vs. fail quiet | One commit when decided |
 | Some admin pages off landing voice | Only `+page.svelte` (home) was promoted | Each sub-page needs the hero-head pattern applied |
 | Turborepo | Not needed yet — Deno tasks handle parallelism | Skip until build crosses ~3 min |
@@ -185,7 +185,7 @@ PostgreSQL via Prisma. 17 models in `apps/api/prisma/schema.prisma`:
 ## Recurring gotchas
 
 1. **`/@fs/` 403 on dev**: each app's `vite.config.ts` already has `server.fs.allow: [WORKSPACE_ROOT]`. If you add a new app, copy that block.
-2. **`@lifeos/ui` 404 in Vite**: the junction at `node_modules/@lifeos/ui` is created by Deno on `deno install` but may need manual `New-Item -ItemType Junction` on Windows after fresh clones.
+2. **`@questpage/ui` 404 in Vite**: the junction at `node_modules/@questpage/ui` is created by Deno on `deno install` but may need manual `New-Item -ItemType Junction` on Windows after fresh clones.
 3. **Direct pushes to main**: harness sub-agents flag this as a security concern even though the user pre-authorized for this session. Either run pushes from the main context, or open a PR via `gh pr create` if reviewing matters.
 4. **CRLF warnings on `git commit`**: project mixes line endings; ignore the warnings.
 5. **Pre-existing duplicate workspace race on signup**: cycle-3 fix re-checks ownership in the `P2002` catch — bug closed, but still worth a single owner-uniqueness constraint when you next touch the schema.
@@ -195,7 +195,7 @@ PostgreSQL via Prisma. 17 models in `apps/api/prisma/schema.prisma`:
 ## File map — where stuff lives
 
 ```
-D:\PROJECTS\website\lifeos\
+D:\PROJECTS\website\questpage\
 ├─ SESSION-COMPACT.md      ← this file
 ├─ DESIGN.md               ← Cal.com design analysis (source of truth for tokens)
 ├─ docs/
@@ -221,7 +221,7 @@ D:\PROJECTS\website\lifeos\
 │  └─ patch-prisma.js
 ├─ deno.json               ← workspace + tasks
 ├─ docker-compose.yml      ← Postgres + minio for local dev
-└─ helm/lifeos/            ← Kubernetes chart
+└─ helm/questpage/            ← Kubernetes chart
 ```
 
 ---
@@ -230,7 +230,7 @@ D:\PROJECTS\website\lifeos\
 
 1. `git pull origin main`
 2. If `node_modules` looks stale: `deno install`
-3. Verify `@lifeos/ui` junction (see "Recurring gotchas" #2)
+3. Verify `@questpage/ui` junction (see "Recurring gotchas" #2)
 4. Bring up Postgres: `docker compose up -d postgres`
 5. Apply any new Prisma migrations: `cd apps/api && npx prisma migrate deploy`
 6. `deno task dev` to launch everything

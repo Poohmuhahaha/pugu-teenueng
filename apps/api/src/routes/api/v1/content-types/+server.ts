@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { resolveActor, requireRole } from '$lib/server/auth';
-import { ContentTypeCreate } from '@lifeos/core';
+import { ContentTypeCreate } from '@questpage/core';
 
 export async function GET(event) {
   const actor = await resolveActor(event);

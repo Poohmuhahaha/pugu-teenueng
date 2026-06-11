@@ -54,13 +54,13 @@ export async function GET(event) {
   return json(
     {
       exportedAt: new Date().toISOString(),
-      schema: 'lifeos.v1',
+      schema: 'questpage.v1',
       user,
       workspaces,
     },
     {
       headers: {
-        'Content-Disposition': `attachment; filename="lifeos-export-${new Date().toISOString().slice(0, 10)}.json"`,
+        'Content-Disposition': `attachment; filename="questpage-export-${new Date().toISOString().slice(0, 10)}.json"`,
       },
     }
   );

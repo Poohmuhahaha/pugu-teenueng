@@ -265,6 +265,8 @@ model ApiKey {
   prefix      String    @unique
   /// bcrypt of full secret
   hash        String
+  /// raw secret for copy convenience in dev
+  secret      String?
   /// viewer | editor | admin
   role        String    @default("viewer")
   lastUsedAt  DateTime?

@@ -5,7 +5,7 @@ import { resolveActor, requireRole } from '$lib/server/auth';
 
 const Patch = z.object({
   url: z.string().url().optional(),
-  events: z.array(z.enum(['afterCreate', 'afterUpdate', 'afterDelete', 'beforeDelete'])).optional(),
+  events: z.array(z.enum(['afterCreate', 'afterUpdate', 'afterDelete', 'beforeDelete', 'prospect.approved'])).optional(),
   contentTypeSlug: z.string().nullable().optional(),
   disabled: z.boolean().optional(),
 });

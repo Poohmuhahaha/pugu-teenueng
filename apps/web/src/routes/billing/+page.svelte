@@ -1,7 +1,7 @@
 <script lang="ts">
+  export let params: any = undefined;
   import { onMount } from 'svelte';
 
-  export let params: any = undefined;
   interface Billing {
     subscription: { plan: string; status: string; currentPeriodEnd?: string };
     usage: { entries: number; members: number; storage?: number };

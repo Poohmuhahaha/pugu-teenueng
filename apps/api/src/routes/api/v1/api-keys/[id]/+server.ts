@@ -14,10 +14,23 @@ export async function DELETE(event) {
   const id = parseInt(event.params.id);
   if (Number.isNaN(id)) throw error(400, 'Invalid id');
 
-  const result = await db.apiKey.updateMany({
-    where: { id, workspaceId: actor.workspaceId, revokedAt: null },
-    data: { revokedAt: new Date() },
+  const key = await db.apiKey.findFirst({
+    where: { id, workspaceId: actor.workspaceId },
   });
-  if (result.count === 0) throw error(404, 'API key not found or already revoked');
-  return json({ ok: true });
+  if (!key) throw error(404, 'API key not found');
+
+  if (key.revokedAt === null) {
+    // Soft revoke
+    await db.apiKey.update({
+      where: { id },
+      data: { revokedAt: new Date() },
+    });
+    return json({ ok: true, action: 'revoked' });
+  } else {
+    // Hard delete
+    await db.apiKey.delete({
+      where: { id },
+    });
+    return json({ ok: true, action: 'deleted' });
+  }
 }

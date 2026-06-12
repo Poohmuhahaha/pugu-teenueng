@@ -17,6 +17,7 @@ export async function GET(event) {
     select: {
       id: true, name: true, prefix: true, role: true,
       lastUsedAt: true, expiresAt: true, createdAt: true, revokedAt: true,
+      secret: true,
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -39,6 +40,7 @@ export async function POST(event) {
       name: parsed.data.name,
       prefix,
       hash,
+      secret,
       role: parsed.data.role,
       expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null,
     },
@@ -47,6 +49,6 @@ export async function POST(event) {
   // Return the full key ONCE. Cannot be retrieved later.
   return json(
     { id: key.id, name: key.name, prefix: key.prefix, role: key.role, key: full },
-    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this key now — it cannot be retrieved later.' } }
+    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this key now - it cannot be retrieved later.' } }
   );
 }

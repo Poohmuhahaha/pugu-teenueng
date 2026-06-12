@@ -45,7 +45,7 @@ export const InviteMember = z.object({
 
 export const WebhookCreate = z.object({
   url: z.string().url(),
-  events: z.array(z.enum(['afterCreate', 'afterUpdate', 'afterDelete', 'beforeDelete'])),
+  events: z.array(z.enum(['afterCreate', 'afterUpdate', 'afterDelete', 'beforeDelete', 'prospect.approved'])),
   contentTypeSlug: z.string().optional(), // omit for all
 });
 

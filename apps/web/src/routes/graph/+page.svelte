@@ -1,9 +1,8 @@
 <script lang="ts">
+  export let params: any = undefined;
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import { onSyncEvent } from '$lib/sync';
-
-  export let params: any = undefined;
 
   interface Entry { id: number; data: Record<string, unknown>; contentType?: { slug: string; name: string } }
   interface Backref { id: number; fromEntryId: number; toEntryId: number | null; targetName: string | null; }
@@ -52,18 +51,15 @@
       group: (e as Entry).contentType?.slug ?? 'unknown',
     }));
 
-    // Pull every backref by enumerating entries and asking for outgoing refs
+    // Fetch all backrefs in one go to prevent DDOSing the server
     edges = [];
-    const allRefs = await Promise.all(nodes.map((n) => fetch(`/api/v1/backrefs?from=${n.id}`).then((r) => r.json())));
+    const allRefs = await fetch(`/api/v1/backrefs`).then((r) => r.json());
     const knownIds = new Set(nodes.map((n) => n.id));
-    allRefs.forEach((res, i) => {
-      const from = nodes[i].id;
-      for (const r of res.data as Backref[]) {
-        if (r.toEntryId && knownIds.has(r.toEntryId)) {
-          edges.push({ source: from, target: r.toEntryId });
-        }
+    for (const r of (allRefs.data || []) as Backref[]) {
+      if (r.fromEntryId && r.toEntryId && knownIds.has(r.fromEntryId) && knownIds.has(r.toEntryId)) {
+        edges.push({ source: r.fromEntryId, target: r.toEntryId });
       }
-    });
+    }
 
     loading = false;
     requestAnimationFrame(start);
@@ -83,7 +79,7 @@
   async function start() {
     if (!svgEl || nodes.length === 0) return;
     width = svgEl.clientWidth || 800;
-    const d3force = await import(/* @vite-ignore */ 'd3-force');
+    const d3force = await import('d3-force');
     simulation = startSim(d3force);
   }
 
@@ -152,7 +148,7 @@
 <div class="graph-head">
   <div>
     <h1>Knowledge Graph</h1>
-    <p style="color:var(--c-muted); font-size:13px; margin:4px 0">{nodes.length} entries · {edges.length} links</p>
+    <p style="color:var(--c-muted); font-size:14px; margin:6px 0 0">{nodes.length} entries · {edges.length} links</p>
   </div>
   <div class="legend">
     {#each collections as c (c.slug)}
@@ -164,7 +160,10 @@
 {#if loading}
   <p style="color:var(--c-muted)">Building graph…</p>
 {:else if nodes.length === 0}
-  <div class="empty">No entries yet. Add some at <a href="http://localhost:5175">admin</a>.</div>
+  <div class="empty">
+    <div style="font-weight: 500; font-size: 16px; margin-bottom: 4px; color: var(--c-ink);">No entries yet.</div>
+    <div>Add some content via the <a href="http://localhost:5175">admin dashboard</a> to see your graph grow.</div>
+  </div>
 {:else}
   <div class="graph-shell">
     <svg bind:this={svgEl} {width} {height} viewBox={`0 0 ${width || 800} ${height}`} preserveAspectRatio="xMidYMid meet">
@@ -174,7 +173,7 @@
           {@const sy = (typeof e.source === 'object' ? e.source.y : 0) ?? 0}
           {@const tx = (typeof e.target === 'object' ? e.target.x : 0) ?? 0}
           {@const ty = (typeof e.target === 'object' ? e.target.y : 0) ?? 0}
-          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="var(--c-hairline)" stroke-opacity="0.5" stroke-width="1.5" />
+          <line x1={sx} y1={sy} x2={tx} y2={ty} stroke="var(--c-muted)" stroke-opacity="0.3" stroke-width="1.5" />
         {/each}
       </g>
       <g>
@@ -191,8 +190,8 @@
             class:dim={selectedNodeId !== null && n.id !== selectedNodeId && !neighborIds.has(n.id)}
             style="cursor:pointer"
           >
-            <rect x="-9" y="-9" width="18" height="18" fill={groupColors[n.group] ?? 'var(--c-muted)'} stroke={n.id === selectedNodeId ? 'var(--c-ink)' : 'var(--c-canvas)'} stroke-width="2.5" />
-            <text x="14" y="4" font-size="11" font-weight="600" fill="var(--c-ink)" stroke="var(--c-canvas)" stroke-width="2" paint-order="stroke fill">{n.label}</text>
+            <circle r="12" fill={groupColors[n.group] ?? 'var(--c-muted)'} stroke={n.id === selectedNodeId ? 'var(--c-ink)' : '#ffffff'} stroke-width={n.id === selectedNodeId ? "3" : "2"} />
+            <text x="16" y="4" font-size="12" font-weight="500" fill="var(--c-ink)" stroke="#ffffff" stroke-width="3" paint-order="stroke fill" style="pointer-events: none;">{n.label}</text>
           </g>
         {/each}
       </g>
@@ -200,19 +199,23 @@
     {#if selectedNode}
       <aside class="panel">
         <button class="close" on:click={() => (selectedNodeId = null)} aria-label="Close">×</button>
-        <div class="label">Selected</div>
+        <div class="label" style="font-size: 11px; margin-bottom: 4px;">Selected</div>
         <h2>{selectedNode.label}</h2>
-        <p style="font-size:12px; color:var(--c-muted); margin:0 0 14px">in <code>{selectedNode.group}</code></p>
-        <button class="btn" on:click={() => navigate(selectedNode)}>Open entry →</button>
-        <div class="label" style="margin-top:24px">Neighbors ({neighborIds.size})</div>
+        <p style="font-size:12px; color:var(--c-muted); margin:0 0 16px">in <code>{selectedNode.group}</code></p>
+        <button class="btn" style="width: 100%; justify-content: center;" on:click={() => navigate(selectedNode)}>Open entry →</button>
+        <hr class="divider" style="margin: 16px 0;" />
+        <div class="label" style="font-size: 11px; margin-bottom: 8px;">Connections ({neighborIds.size})</div>
         <ul class="neighbors">
           {#each [...neighborIds] as nid}
             {@const node = nodes.find((n) => n.id === nid)}
             {#if node}
-              <li><button on:click={() => (selectedNodeId = nid)}>{node.label}</button></li>
+              <li><button on:click={() => (selectedNodeId = nid)}>
+                <span class="dot" style="background:{groupColors[node.group]}; display:inline-block; margin-right:6px;"></span>
+                {node.label}
+              </button></li>
             {/if}
           {/each}
-          {#if neighborIds.size === 0}<li style="color:var(--c-muted); font-size:13px">No connections yet.</li>{/if}
+          {#if neighborIds.size === 0}<li style="color:var(--c-muted); font-size:13px; text-align: center; padding: 12px 0;">No connections yet.</li>{/if}
         </ul>
       </aside>
     {/if}
@@ -220,24 +223,26 @@
 {/if}
 
 <style>
-  .graph-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-  h1 { font-size: 26px; letter-spacing: -0.02em; margin: 0; }
-  .legend { display: flex; gap: 8px; flex-wrap: wrap; max-width: 480px; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--c-muted); }
-  .dot { width: 8px; height: 8px; border-radius: 0px; border: 1px solid var(--c-primary); }
-  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted); border: 3px dashed var(--c-primary); border-radius: 0px; }
-  .graph-shell { position: relative; background: var(--c-surface-card); border: 3px solid var(--c-primary); border-radius: 0px; overflow: hidden; }
+  .graph-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+  h1 { font-size: 24px; font-weight: 700; margin: 0; }
+  .legend { display: flex; gap: 8px; flex-wrap: wrap; max-width: 480px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--c-ink); background: var(--c-surface-card); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--c-hairline); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; border: none; }
+  .empty { padding: 60px 20px; text-align: center; color: var(--c-muted); border: 1px dashed var(--c-hairline); border-radius: 12px; background: rgba(0,0,0,0.02); }
+  .empty a { color: var(--c-primary); font-weight: 500; }
+  .graph-shell { position: relative; background: #ffffff; border: 1px solid var(--c-hairline); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
   svg { width: 100%; height: 600px; display: block; }
-  g.dim { opacity: 0.25; }
+  g.dim { opacity: 0.15; }
   .panel {
-    position: absolute; top: 12px; right: 12px;
-    width: 240px;
-    background: var(--c-canvas); border: 3px solid var(--c-primary); border-radius: 0px;
-    padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    position: absolute; top: 16px; right: 16px;
+    width: 280px;
+    background: #ffffff; border: 1px solid var(--c-hairline); border-radius: 12px;
+    padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   }
-  .panel .close { position: absolute; top: 8px; right: 8px; background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--c-muted); }
-  h2 { font-size: 16px; margin: 4px 0 2px; }
+  .panel .close { position: absolute; top: 12px; right: 12px; background: var(--c-surface-soft); border: none; font-size: 16px; cursor: pointer; color: var(--c-muted); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .panel .close:hover { background: var(--c-hairline); color: var(--c-ink); }
+  h2 { font-size: 18px; font-weight: 600; margin: 0; }
   .neighbors { list-style: none; padding: 0; margin: 0; max-height: 280px; overflow-y: auto; }
-  .neighbors li button { width: 100%; text-align: left; padding: 6px 8px; background: transparent; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--c-ink); }
-  .neighbors li button:hover { background: var(--c-surface-card); }
+  .neighbors li button { width: 100%; text-align: left; padding: 8px 10px; background: transparent; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--c-ink); display: flex; align-items: center; transition: background 0.15s; }
+  .neighbors li button:hover { background: var(--c-surface-soft); }
 </style>

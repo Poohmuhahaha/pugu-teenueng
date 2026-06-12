@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
 
   interface Entry { id: number; email: string; utmSource: string | null; utmCampaign: string | null; ref: string | null; createdAt: string; }
 
@@ -22,6 +23,12 @@
       )
     : rows;
 
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  $: totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+  $: paginatedFiltered = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  $: if (currentPage > totalPages) currentPage = totalPages;
+
   onMount(load);
 </script>
 
@@ -31,7 +38,7 @@
     <a class="btn" href="/api/v1/waitlist/export">Download CSV</a>
   </div>
 
-  <input bind:value={search} placeholder="Search email / utm…" style="width:100%" />
+  <input bind:value={search} class="input" placeholder="Search email / utm…" style="width:100%" />
 
   {#if loading}
     <p style="color:var(--c-muted)">Loading…</p>
@@ -41,7 +48,7 @@
     <table class="t">
       <thead><tr><th>Email</th><th>Source</th><th>Campaign</th><th>Referrer</th><th>Joined</th></tr></thead>
       <tbody>
-        {#each filtered as r (r.id)}
+        {#each paginatedFiltered as r (r.id)}
           <tr>
             <td>{r.email}</td>
             <td>{r.utmSource ?? ''}</td>
@@ -52,12 +59,9 @@
         {/each}
       </tbody>
     </table>
+    <Pagination bind:currentPage {totalPages} />
   {/if}
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
-  .t tr:last-child td { border-bottom:none; }
 </style>

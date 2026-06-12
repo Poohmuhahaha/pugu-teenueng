@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   export let params: any = undefined;
+  import { onMount } from 'svelte';
 
   interface ContentTypeField {
     name: string;

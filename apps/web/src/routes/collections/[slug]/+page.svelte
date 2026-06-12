@@ -1,10 +1,9 @@
 <script lang="ts">
+  export let params: any = undefined;
   import { onMount, onDestroy } from 'svelte';
   import { page } from '$app/stores';
   import type { ContentTypeField } from '@questpage/core';
   import { onSyncEvent } from '$lib/sync';
-
-  export let params: any = undefined;
 
   interface Entry { id: number; createdAt: string; updatedAt: string; [k: string]: unknown; }
   interface ContentType { id: number; slug: string; name: string; schema: { fields: ContentTypeField[] }; }

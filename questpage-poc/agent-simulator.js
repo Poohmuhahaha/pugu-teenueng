@@ -1,7 +1,7 @@
 import http from 'http';
 
 const WEBHOOK_PORT = 8080;
-const API_URL = 'http://localhost:3000/api/prospects';
+const API_URL = 'http://localhost:3000/api/v1/prospects';
 
 // Sample data to simulate AI Agent finding leads
 const leads = [

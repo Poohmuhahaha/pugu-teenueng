@@ -302,7 +302,10 @@ deno task setup-dev`,
         </form>
         <p class="microcopy" bind:this={microcopyEl}>{t('landing.microcopy', locale)}</p>
         <div class="hero-cta-row" bind:this={heroCtaRowEl}>
-          <a class="text-link" href="https://github.com/Poohmuhahaha/questpage" target="_blank" rel="noopener">★ {t('landing.cta.secondary', locale)}</a>
+          <a class="button-secondary github-btn" href="https://github.com/Poohmuhahaha/questpage" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            Star on GitHub
+          </a>
         </div>
       </div>
       <div class="hero-mockup">
@@ -365,7 +368,9 @@ deno task setup-dev`,
     </div>
   </section>
   <section class="trust-band" aria-labelledby="trust-head">
-    <h2 class="trust-head" id="trust-head" use:reveal>{t('landing.section.trust', locale)}</h2>
+    <div class="section-head">
+      <h2 id="trust-head" use:reveal>{t('landing.section.trust', locale)}</h2>
+    </div>
     <div class="trust-grid">
       <div class="trust-item" use:reveal={{ delay: 0.0 }}>
         <h3>{t('landing.trust.opensource.title', locale)}</h3>
@@ -729,8 +734,8 @@ deno task setup-dev`,
 
   /* === Hero === */
   .hero {
-    padding: calc(var(--s-section) * 1.5) 0;
-    min-height: 540px;
+    padding: calc(var(--s-section) * 1.0) 0;
+    min-height: 360px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -765,7 +770,7 @@ deno task setup-dev`,
   }
   .hero h1 {
     font-family: var(--font-display);
-    font-size: clamp(42px, 6.5vw, 58px);
+    font-size: clamp(38px, 5.6vw, 51px);
     font-weight: 600; line-height: 1.1;
     letter-spacing: -1.5px;
     margin: 0;
@@ -988,14 +993,20 @@ deno task setup-dev`,
     grid-template-columns: repeat(3, 1fr);
   }
   .feature-card {
-    background: transparent;
-    border: none;
-    border-top: 3px solid var(--c-primary);
+    background: var(--c-surface-card);
+    border: 3px solid var(--c-primary);
     border-radius: 0px;
-    padding: var(--s-md) 0 var(--s-lg);
+    padding: 24px;
+    box-shadow: 6px 6px 0 var(--c-primary);
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .feature-card:hover {
-    border-top-color: var(--c-brand-accent);
+    transform: translate(2px, 2px);
+    box-shadow: 4px 4px 0 var(--c-primary);
   }
   .feature-icon {
     display: inline-flex; align-items: center; justify-content: center;
@@ -1017,8 +1028,19 @@ deno task setup-dev`,
   .icon-local::before { background: var(--c-badge-pink); }
   .icon-api::before { background: var(--c-primary); }
   .icon-webhooks::before { background: var(--c-brand-accent); }
-  .feature-card h3 { margin: 0 0 var(--s-xs); }
-  .feature-card p { margin: 0; color: var(--c-body); font-size: 15px; line-height: 1.55; }
+  .feature-card h3 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--c-ink);
+    font-family: var(--font-display);
+  }
+  .feature-card p {
+    font-size: 14px;
+    color: var(--c-body);
+    line-height: 1.6;
+    margin: 0;
+  }
   :global(.feature-card code) {
     font-family: var(--font-mono);
     background: var(--c-canvas);
@@ -1185,9 +1207,9 @@ deno task setup-dev`,
   }
   @media (max-width: 768px) {
     section { padding: 72px 0; }
-    .hero { padding: 84px 0; min-height: 400px; }
+    .hero { padding: 60px 0; min-height: 280px; }
     .hero-grid { grid-template-columns: 1fr; gap: var(--s-xl); }
-    .hero h1 { font-size: 42px; letter-spacing: -1px; }
+    .hero h1 { font-size: 29px; letter-spacing: -1px; }
     h2 { font-size: 32px; letter-spacing: -1px; }
     .nav-links { display: none; }
     .nav-inner { padding: 0 var(--s-md); }
@@ -1235,6 +1257,19 @@ deno task setup-dev`,
     gap: var(--s-md);
     align-items: center;
   }
+  .github-btn {
+    width: 100%;
+    max-width: 460px;
+    height: 48px;
+    font-size: 16px;
+    background: #24292e;
+    color: #ffffff;
+    border-color: #24292e;
+  }
+  .github-btn:hover {
+    background: #2f363d;
+    border-color: #2f363d;
+  }
   .text-link {
     color: var(--c-primary);
     font-weight: 600;
@@ -1248,18 +1283,9 @@ deno task setup-dev`,
 
   /* ===== Trust band ===== */
   .trust-band {
-    padding: var(--s-section) 0 var(--s-xxl);
+    padding: var(--s-section) 0;
+    background: var(--c-canvas);
     border-top: 1px solid var(--c-hairline-soft);
-  }
-  .trust-head {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--c-muted);
-    text-align: center;
-    margin: 0 0 var(--s-xl);
-    font-family: var(--font-body);
   }
   .trust-grid {
     display: grid;
@@ -1267,19 +1293,33 @@ deno task setup-dev`,
     gap: var(--s-lg);
   }
   .trust-item {
-    display: block;
+    background: var(--c-surface-card);
+    border: 3px solid var(--c-primary);
+    border-radius: 0px;
+    padding: 24px;
+    box-shadow: 6px 6px 0 var(--c-primary);
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .trust-item:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 4px 4px 0 var(--c-primary);
   }
   .trust-item h3 {
-    margin: 0 0 4px;
-    font-size: 15px;
-    font-weight: 600;
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--c-ink);
+    font-family: var(--font-display);
   }
   .trust-item p {
-    margin: 0;
     font-size: 14px;
     color: var(--c-body);
-    line-height: 1.5;
+    line-height: 1.6;
+    margin: 0;
   }
 
   /* ===== Who section ===== */

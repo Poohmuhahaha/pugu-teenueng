@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5176,
     fs: { allow: [WORKSPACE_ROOT] },
     proxy: {
-      '/api': {
+      '/api/': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },

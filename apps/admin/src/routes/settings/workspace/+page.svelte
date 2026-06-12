@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
   interface Member { userId: number; role: string; name: string; email: string; }
   interface Me { workspace: { id: number; role: string }; workspaces: Array<{ id: number; name: string; slug: string; role: string }>; user: { id: number; email: string }; }
@@ -14,6 +16,14 @@
   let inviteRole: 'admin' | 'editor' | 'member' | 'viewer' = 'member';
   let inviting = false;
   let inviteMsg = '';
+
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  $: totalPages = Math.ceil(members.length / itemsPerPage) || 1;
+  $: paginatedMembers = members.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  $: if (currentPage > totalPages) currentPage = totalPages;
+
+  let modalState: { action: 'leave' | 'transfer' | 'remove' | 'delete' | null, member?: Member } = { action: null };
 
   async function load() {
     loading = true;
@@ -47,24 +57,39 @@
     await load();
   }
 
+  async function confirmModalAction() {
+    if (modalState.action === 'leave') {
+      const res = await fetch(`/api/v1/workspaces/${me?.workspace.id}/leave`, { method: 'POST' });
+      if (!res.ok) { err = await res.text(); } else { window.location.href = '/'; }
+    } else if (modalState.action === 'transfer') {
+      const res = await fetch(`/api/v1/workspaces/${me?.workspace.id}/transfer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: parseInt(transferTarget) }),
+      });
+      if (!res.ok) { err = await res.text(); } else { await load(); }
+    } else if (modalState.action === 'remove' && modalState.member) {
+      const res = await fetch(`/api/v1/workspaces/${me?.workspace.id}/members`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: modalState.member.userId }),
+      });
+      if (res.ok) await load(); else err = await res.text();
+    } else if (modalState.action === 'delete') {
+      const res = await fetch(`/api/v1/workspaces/${me?.workspace.id}`, { method: 'DELETE' });
+      if (!res.ok) { err = await res.text(); } else { window.location.href = '/'; }
+    }
+    modalState = { action: null };
+  }
+
   async function leave() {
     if (!me) return;
-    if (!confirm('Leave this workspace? You\'ll lose access immediately.')) return;
-    const res = await fetch(`/api/v1/workspaces/${me.workspace.id}/leave`, { method: 'POST' });
-    if (!res.ok) { err = await res.text(); return; }
-    window.location.href = '/';
+    modalState = { action: 'leave' };
   }
 
   async function transfer() {
     if (!me || !transferTarget) return;
-    if (!confirm(`Transfer ownership to user #${transferTarget}? You will be demoted to admin.`)) return;
-    const res = await fetch(`/api/v1/workspaces/${me.workspace.id}/transfer`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: parseInt(transferTarget) }),
-    });
-    if (!res.ok) { err = await res.text(); return; }
-    await load();
+    modalState = { action: 'transfer' };
   }
 
   async function invite() {
@@ -101,30 +126,21 @@
 
   async function removeMember(m: Member) {
     if (!me) return;
-    if (!confirm(`Remove ${m.name} (${m.email}) from this workspace?`)) return;
-    const res = await fetch(`/api/v1/workspaces/${me.workspace.id}/members`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: m.userId }),
-    });
-    if (res.ok) await load();
-    else err = await res.text();
+    modalState = { action: 'remove', member: m };
   }
 
   async function destroyWorkspace() {
     if (!me) return;
-    const active = me.workspaces.find((w) => w.id === me!.workspace.id);
-    if (!confirm(`Permanently delete "${active?.name}"? Removes all entries, content types, webhooks, API keys, billing.`)) return;
-    const res = await fetch(`/api/v1/workspaces/${me.workspace.id}`, { method: 'DELETE' });
-    if (!res.ok) { err = await res.text(); return; }
-    window.location.href = '/';
+    modalState = { action: 'delete' };
   }
 
   onMount(load);
 </script>
 
 <div class="stack">
-  <h2 style="margin:0">Workspace settings</h2>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+    <h2>Workspace Settings</h2>
+  </div>
 
   {#if loading || !me}
     <p style="color:var(--c-muted)">Loading…</p>
@@ -132,19 +148,27 @@
     {@const isOwner = me.workspace.role === 'owner'}
     {@const isAdmin = isOwner || me.workspace.role === 'admin'}
 
-    <div class="card stack">
-      <div class="label">Rename workspace {isAdmin ? '' : '(admin only)'}</div>
+    <div class="stack">
+      <div>
+        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Rename workspace {isAdmin ? '' : '(admin only)'}</div>
+        <div style="font-size:13px; color:var(--c-muted); margin-bottom: 12px;">Update your workspace's display name.</div>
+      </div>
       <div class="h-row">
-        <input bind:value={renameValue} disabled={!isAdmin} style="flex:1" />
+        <input bind:value={renameValue} disabled={!isAdmin} style="flex:1; max-width: 400px;" />
         <button class="btn" on:click={rename} disabled={!isAdmin}>Save</button>
       </div>
     </div>
 
-    <div class="card stack">
-      <div class="label">Members ({members.length})</div>
+    <hr class="divider" />
+
+    <div class="stack">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none; margin: 0;">Members ({members.length})</div>
+      </div>
+      <div style="font-size:13px; color:var(--c-muted); margin-bottom: 4px;">Manage who has access to this workspace.</div>
 
       {#if isAdmin}
-        <div class="invite-row">
+        <div class="invite-row" style="background: var(--c-surface-soft); padding: 12px; border-radius: 4px; border: 1px solid var(--c-hairline); margin-bottom: 16px;">
           <input bind:value={inviteEmail} type="email" placeholder="invite@example.com" style="flex:1" />
           <select bind:value={inviteRole}>
             <option value="viewer">viewer</option>
@@ -154,24 +178,23 @@
           </select>
           <button class="btn" on:click={invite} disabled={inviting || !inviteEmail.trim()}>{inviting ? '…' : 'Invite'}</button>
         </div>
-        {#if inviteMsg}<p style="color:#10b981; font-size:13px; margin:4px 0">{inviteMsg}</p>{/if}
+        {#if inviteMsg}<p style="color:#10b981; font-size:13px; margin-top:-8px; margin-bottom:8px;">{inviteMsg}</p>{/if}
       {/if}
 
       <table class="t">
         <thead><tr><th>Name</th><th>Email</th><th>Role</th>{#if isAdmin}<th></th>{/if}</tr></thead>
         <tbody>
-          {#each members as m (m.userId)}
+          {#each paginatedMembers as m (m.userId)}
             <tr>
               <td>{m.name}</td>
               <td>{m.email}</td>
               <td>
                 {#if isAdmin && m.userId !== me.user.id}
-                  <select value={m.role} on:change={(e) => changeRole(m, e.target.value)}>
+                  <select value={m.role} on:change={(e) => changeRole(m, e.currentTarget.value)}>
                     <option value="viewer">viewer</option>
                     <option value="member">member</option>
                     <option value="editor">editor</option>
                     <option value="admin">admin</option>
-                    {#if isOwner}<option value="owner">owner</option>{/if}
                   </select>
                 {:else}{m.role}{/if}
               </td>
@@ -184,35 +207,48 @@
           {/each}
         </tbody>
       </table>
+      <Pagination bind:currentPage {totalPages} />
     </div>
 
     {#if isOwner}
-      <div class="card stack">
-        <div class="label">Transfer ownership</div>
-        <div style="font-size:12px; color:var(--c-muted)">After transfer you will become an admin. Enter the user id of an existing member.</div>
+      <hr class="divider" />
+      <div class="stack">
+        <div>
+          <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Transfer ownership</div>
+          <div style="font-size:13px; color:var(--c-muted); margin-bottom: 12px;">Transfer your workspace ownership to another member. You will become an admin.</div>
+        </div>
         <div class="h-row">
-          <input bind:value={transferTarget} placeholder="user id" type="number" min="1" style="flex:1" />
-          <button class="btn" on:click={transfer}>Transfer</button>
+          <select bind:value={transferTarget} style="flex:1; max-width: 250px;">
+            <option value="" disabled>Select a member...</option>
+            {#each members.filter(m => m.userId !== me.user.id) as m}
+              <option value={m.userId}>{m.name || m.email}</option>
+            {/each}
+          </select>
+          <button class="btn" on:click={transfer} disabled={!transferTarget}>Transfer</button>
         </div>
       </div>
     {/if}
 
-    <div class="card stack" style="border-color:#ef4444">
-      <div class="label" style="color:#ef4444">Danger zone</div>
-      <div class="h-row" style="justify-content: space-between">
+    <hr class="divider" />
+
+    <div class="stack">
+      <div class="label" style="font-size: 14px; font-weight: 600; color: #ef4444; text-transform: none; margin-bottom: 8px;">Danger zone</div>
+      
+      <div class="h-row" style="justify-content: space-between; background: rgba(239, 68, 68, 0.04); padding: 16px; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px;">
         <div>
-          <div style="font-weight:600">Leave workspace</div>
-          <div style="font-size:12px; color:var(--c-muted)">Remove your membership. Sole owner cannot leave — transfer or delete.</div>
+          <div style="font-weight:600; font-size: 14px;">Leave workspace</div>
+          <div style="font-size:13px; color:var(--c-muted); margin-top: 2px;">Remove your access to this workspace. Owners cannot leave until they transfer ownership.</div>
         </div>
-        <button class="btn btn-ghost" on:click={leave}>Leave</button>
+        <button class="btn btn-ghost" on:click={leave} style="color: #ef4444; font-weight: 600;">Leave Workspace</button>
       </div>
+
       {#if isOwner}
-        <div class="h-row" style="justify-content: space-between; margin-top:8px">
+        <div class="h-row" style="justify-content: space-between; background: rgba(239, 68, 68, 0.04); padding: 16px; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px; margin-top: 4px;">
           <div>
-            <div style="font-weight:600; color:#ef4444">Delete workspace</div>
-            <div style="font-size:12px; color:var(--c-muted)">Permanent. Requires no other members.</div>
+            <div style="font-weight:600; font-size: 14px; color:#ef4444">Delete workspace</div>
+            <div style="font-size:13px; color:var(--c-muted); margin-top: 2px;">Permanently delete this workspace and all its data. This cannot be undone.</div>
           </div>
-          <button class="btn" style="background:#ef4444" on:click={destroyWorkspace}>Delete</button>
+          <button class="btn" style="background:#ef4444; color: white; border-color: #ef4444;" on:click={destroyWorkspace}>Delete Workspace</button>
         </div>
       {/if}
     </div>
@@ -221,14 +257,29 @@
   {/if}
 </div>
 
+<ConfirmModal 
+  title={
+    modalState.action === 'leave' ? 'Leave Workspace' :
+    modalState.action === 'transfer' ? 'Transfer Ownership' :
+    modalState.action === 'remove' ? 'Remove Member' :
+    modalState.action === 'delete' ? 'Delete Workspace' : ''
+  }
+  message={
+    modalState.action === 'leave' ? 'Leave this workspace? You\'ll lose access immediately.' :
+    modalState.action === 'transfer' ? `Transfer ownership to user #${transferTarget}? You will be demoted to admin.` :
+    modalState.action === 'remove' ? `Remove ${modalState.member?.name} (${modalState.member?.email}) from this workspace?` :
+    modalState.action === 'delete' ? `Permanently delete "${me?.workspaces.find((w) => w.id === me?.workspace.id)?.name}"? Removes all entries, content types, webhooks, API keys, billing.` : ''
+  }
+  confirmText={modalState.action === 'delete' || modalState.action === 'remove' || modalState.action === 'leave' ? 'Confirm' : 'Transfer'}
+  isOpen={modalState.action !== null}
+  on:confirm={confirmModalAction}
+  on:cancel={() => (modalState = { action: null })}
+/>
+
 <style>
-  .t { width:100%; border-collapse:collapse; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:6px 0; border-bottom:1px solid var(--c-hairline); }
-  .t td { padding:8px 0; font-size:13px; border-bottom:1px solid var(--c-hairline); }
-  .t tr:last-child td { border-bottom: none; }
   .invite-row { display: flex; gap: 8px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed var(--c-hairline); margin-bottom: 8px; }
   .invite-row select { width: 110px; }
-  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); }
+  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); font-weight: 600; }
   .link.danger { color: #dc2626; }
   .link:hover { text-decoration: underline; }
 </style>

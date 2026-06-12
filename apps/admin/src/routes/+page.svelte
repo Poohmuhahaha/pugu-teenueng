@@ -4,6 +4,8 @@
   import { quintOut } from 'svelte/easing';
   import type { ContentTypeField } from '@questpage/core';
   import { reveal } from '@questpage/ui';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
 
   export let params: any = undefined;
 
@@ -63,13 +65,7 @@
   }
 
   async function deleteType(t: ContentType) {
-    const res = await fetch(`/api/v1/content-types/${t.id}`, { method: 'DELETE' });
-    if (res.ok) {
-      confirmingDelete = null;
-      await loadTypes();
-    } else {
-      err = await res.text();
-    }
+    modalState = { action: 'deleteType', type: t };
   }
 
   // Map field types to badge colours so each card has a small chromatic anchor.
@@ -88,7 +84,6 @@
 </script>
 
 <header class="hero-head">
-  <span class="eyebrow">Admin · Schemas</span>
   <div class="hero-row">
     <div class="hero-text">
       <h1 class="hero-title">Content types</h1>
@@ -101,58 +96,68 @@
 </header>
 
 {#if creating}
-  <form class="card create-form" on:submit|preventDefault={submit} in:fly={{ y: -8, duration: 200, easing: quintOut }} out:fade={{ duration: 150 }}>
-    <div class="form-grid">
-      <div class="field">
-        <label class="field-label" for="ct-slug">Slug</label>
-        <input id="ct-slug" bind:value={newSlug} placeholder="personal-crm" pattern="[a-z][a-z0-9-]*" required />
-        <span class="field-hint">lowercase, hyphen-separated. Becomes the URL: <code>/api/v1/&lt;slug&gt;</code></span>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="modal-overlay" on:click={() => (creating = false)}>
+    <div class="modal-card" on:click|stopPropagation in:fly={{ y: -8, duration: 200, easing: quintOut }} out:fade={{ duration: 150 }}>
+      <div class="modal-header">
+        <h3 style="margin:0; font-family: var(--font-display, inherit);">Create Content Type</h3>
+        <button class="modal-close-btn" on:click={() => (creating = false)}>×</button>
       </div>
-      <div class="field">
-        <label class="field-label" for="ct-name">Display name</label>
-        <input id="ct-name" bind:value={newName} placeholder="Personal CRM" required />
-      </div>
-    </div>
-
-    <div class="fields-section">
-      <div class="fields-header">
-        <span class="label">Schema fields</span>
-        <button type="button" class="btn btn-ghost btn-sm" on:click={addField}>+ Add field</button>
-      </div>
-      <div class="field-rows">
-        {#each newFields as f, i (i)}
-          <div class="field-row" in:fly={{ y: -4, duration: 160 }}>
-            <input bind:value={f.name} placeholder="field name" class="field-name" />
-            <select bind:value={f.type} class="field-type">
-              <option value="text">text</option>
-              <option value="richtext">richtext</option>
-              <option value="number">number</option>
-              <option value="date">date</option>
-              <option value="select">select</option>
-              <option value="relation">relation</option>
-              <option value="file">file</option>
-              <option value="checkbox">checkbox</option>
-            </select>
-            <label class="required-toggle">
-              <input type="checkbox" bind:checked={f.required} />
-              <span>required</span>
-            </label>
-            {#if newFields.length > 1}
-              <button type="button" class="btn btn-ghost btn-sm icon-btn" on:click={() => removeField(i)} aria-label="Remove field">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            {/if}
+      <form class="modal-body create-form" on:submit|preventDefault={submit}>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label" for="ct-slug">Slug</label>
+            <input id="ct-slug" bind:value={newSlug} placeholder="personal-crm" pattern="[a-z][a-z0-9-]*" required />
+            <span class="field-hint">lowercase, hyphen-separated. Becomes the URL: <code>/api/v1/&lt;slug&gt;</code></span>
           </div>
-        {/each}
-      </div>
-    </div>
+          <div class="field">
+            <label class="field-label" for="ct-name">Display name</label>
+            <input id="ct-name" bind:value={newName} placeholder="Personal CRM" required />
+          </div>
+        </div>
 
-    {#if err}<div class="form-error">{err}</div>{/if}
-    <div class="form-actions">
-      <button type="button" class="btn btn-secondary" on:click={() => (creating = false)}>Cancel</button>
-      <button type="submit" class="btn">Create content type</button>
+        <div class="fields-section">
+          <div class="fields-header">
+            <span class="label">Schema fields</span>
+            <button type="button" class="btn btn-ghost btn-sm" on:click={addField}>+ Add field</button>
+          </div>
+          <div class="field-rows">
+            {#each newFields as f, i (i)}
+              <div class="field-row" in:fly={{ y: -4, duration: 160 }}>
+                <input bind:value={f.name} placeholder="field name" class="field-name" />
+                <select bind:value={f.type} class="field-type">
+                  <option value="text">text</option>
+                  <option value="richtext">richtext</option>
+                  <option value="number">number</option>
+                  <option value="date">date</option>
+                  <option value="select">select</option>
+                  <option value="relation">relation</option>
+                  <option value="file">file</option>
+                  <option value="checkbox">checkbox</option>
+                </select>
+                <label class="required-toggle">
+                  <input type="checkbox" bind:checked={f.required} />
+                  <span>required</span>
+                </label>
+                {#if newFields.length > 1}
+                  <button type="button" class="btn btn-ghost btn-sm icon-btn" on:click={() => removeField(i)} aria-label="Remove field">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        {#if err}<div class="form-error">{err}</div>{/if}
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" on:click={() => (creating = false)}>Cancel</button>
+          <button type="submit" class="btn">Create content type</button>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 {/if}
 
 {#if loading}
@@ -269,7 +274,6 @@
 
   /* === Create form === */
   .create-form {
-    margin-bottom: var(--s-lg);
     display: flex;
     flex-direction: column;
     gap: var(--s-md);
@@ -321,73 +325,79 @@
   .type-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--s-md);
+    gap: var(--s-lg);
   }
   .type-card {
     background: var(--c-canvas);
-    border: 1px solid var(--c-hairline);
-    border-radius: var(--r-lg);
+    border: 1px solid var(--c-hairline-soft);
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   }
   .type-card:hover {
-    border-color: var(--c-ink);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    border-color: var(--c-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
   }
 
   .type-card-main {
-    display: flex; align-items: center; gap: var(--s-sm);
-    padding: var(--s-md) var(--s-lg);
+    display: flex; align-items: flex-start; gap: var(--s-md);
+    padding: var(--s-lg);
     text-decoration: none;
     color: var(--c-ink);
     border-bottom: 1px solid var(--c-hairline-soft);
   }
   .type-icon {
-    width: 36px; height: 36px;
+    width: 42px; height: 42px;
     flex: none;
-    border-radius: var(--r-md);
-    background: var(--c-surface-card);
-    color: var(--c-ink);
+    border-radius: 10px;
+    background: rgba(58, 38, 22, 0.04);
+    color: var(--c-primary);
     display: flex; align-items: center; justify-content: center;
   }
   .type-name {
-    font: 600 16px/1.3 var(--font-body);
+    font: 600 17px/1.3 var(--font-body);
     color: var(--c-ink);
   }
   .type-slug {
-    font-size: 12px; color: var(--c-muted);
-    margin-top: 2px;
+    font-size: 13px; color: var(--c-muted);
+    margin-top: 4px;
   }
   .type-slug code {
     font-family: var(--font-mono);
-    background: transparent; padding: 0;
+    background: transparent; padding: 0; border: none; box-shadow: none;
   }
 
   .type-fields {
-    padding: var(--s-sm) var(--s-lg);
-    display: flex; flex-wrap: wrap; gap: 6px;
-    min-height: 44px;
-    align-items: center;
+    padding: var(--s-md) var(--s-lg);
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: flex-start;
+    flex: 1;
   }
   .type-fields .badge {
-    padding: 3px 10px;
+    padding: 4px 10px;
     font-size: 12px;
+    font-weight: 500;
+    border-radius: 99px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: none;
   }
   .field-type-hint {
     margin-left: 4px;
-    opacity: 0.6;
+    opacity: 0.5;
     font-size: 11px;
     font-family: var(--font-mono);
   }
 
   .type-foot {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px var(--s-lg);
-    background: var(--c-surface-soft);
+    padding: 12px var(--s-lg);
+    background: rgba(58, 38, 22, 0.02);
     border-top: 1px solid var(--c-hairline-soft);
+    margin-top: auto;
   }
   .type-date { font-size: 12px; color: var(--c-muted-soft); }
   .type-actions { display: flex; align-items: center; gap: var(--s-sm); }
@@ -482,5 +492,50 @@
     .field-row { grid-template-columns: 1fr; }
     .type-grid, .loading-grid { grid-template-columns: 1fr; }
     .type-foot { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+
+  /* ── Modal overlay styles ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(58, 38, 22, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 15vh;
+  }
+  .modal-card {
+    width: 90%;
+    max-width: 600px;
+    background: var(--c-canvas);
+    border: 3px solid var(--c-primary);
+    box-shadow: 6px 6px 0 var(--c-primary);
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 3px solid var(--c-primary);
+    background: var(--c-surface-soft);
+  }
+  .modal-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    color: var(--c-muted);
+    padding: 0;
+  }
+  .modal-close-btn:hover {
+    color: var(--c-ink);
+  }
+  .modal-body {
+    padding: 20px;
   }
 </style>

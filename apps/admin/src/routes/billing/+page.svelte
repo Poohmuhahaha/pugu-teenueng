@@ -82,7 +82,9 @@
 </script>
 
 <div class="stack">
-  <h2 style="margin:0">Billing</h2>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+    <h2 style="margin:0">Billing</h2>
+  </div>
 
   {#if returnMsg}
     <div class="banner">{returnMsg}</div>
@@ -91,12 +93,12 @@
   {#if loading}
     <p style="color:var(--c-muted)">Loading…</p>
   {:else if summary}
-    <div class="card stack">
-      <div class="h-row" style="justify-content: space-between">
+    <div class="stack">
+      <div class="h-row" style="justify-content: space-between; align-items: flex-start;">
         <div>
-          <div class="label">Current plan</div>
+          <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Current plan</div>
           <div style="font-size:24px; font-weight:700; margin-top:4px; text-transform:capitalize">{summary.subscription.plan}</div>
-          <div style="font-size:12px; color:var(--c-muted); margin-top:4px">Status: {summary.subscription.status}</div>
+          <div style="font-size:13px; color:var(--c-muted); margin-top:4px">Status: <strong style="color:var(--c-ink); font-weight: 600;">{summary.subscription.status}</strong></div>
         </div>
         {#if summary.subscription.plan === 'free'}
           <button class="btn" on:click={() => startCheckout('personal')} disabled={upgrading}>Upgrade to Personal Pro</button>
@@ -105,7 +107,8 @@
         {/if}
       </div>
 
-      <div class="usage">
+      <div class="usage" style="margin-top: 16px;">
+        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none; margin-bottom: 8px; border-bottom: none;">Usage & Limits</div>
         <div class="usage-row">
           <span>Entries</span>
           <span>{summary.usage.entries.toLocaleString()} / {fmtLimit(summary.limits.entries)}</span>
@@ -124,12 +127,16 @@
     </div>
 
     {#if summary.subscription.plan === 'free'}
-      <div class="card">
-        <div class="label">Other plans</div>
-        <div class="h-row" style="justify-content: space-between; margin-top:8px">
+      <hr class="divider" />
+      <div class="stack">
+        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Other plans</div>
+        <div style="font-size:13px; color:var(--c-muted); margin-bottom: 12px;">Need more power? Upgrade your workspace to unlock premium features and limits.</div>
+        
+        <div class="h-row" style="justify-content: space-between; background: var(--c-surface-soft); padding: 16px; border: 1px solid var(--c-hairline); border-radius: 4px;">
           <div>
-            <div style="font-weight:600">Studio</div>
-            <div style="font-size:12px; color:var(--c-muted)">10 users · 50 GB · SSO · audit log · ฿999/mo</div>
+            <div style="font-weight:600; font-size: 16px;">Studio Plan</div>
+            <div style="font-size:13px; color:var(--c-muted); margin-top: 4px;">Up to 10 users · 50 GB Storage · SSO & Audit Log</div>
+            <div style="font-weight: 600; margin-top: 8px; color: var(--c-ink);">฿999 <span style="font-weight: 400; color: var(--c-muted); font-size: 12px;">/ month</span></div>
           </div>
           <button class="btn" on:click={() => startCheckout('studio')} disabled={upgrading}>Upgrade to Studio</button>
         </div>
@@ -139,9 +146,9 @@
 </div>
 
 <style>
-  .usage { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid var(--c-hairline); }
-  .usage-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
-  .usage-row span:first-child { color: var(--c-muted); }
-  .usage-row span:last-child { font-variant-numeric: tabular-nums; }
-  .banner { padding: 12px 16px; background: rgba(124,58,237,0.06); border: 1px solid var(--c-ink); border-radius: 10px; color: var(--c-ink); font-size: 13px; font-weight: 500; }
+  .usage { display: flex; flex-direction: column; gap: 6px; padding-top: 16px; border-top: 1px dashed var(--c-hairline); }
+  .usage-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 12px; background: rgba(0,0,0,0.02); border-radius: 4px; }
+  .usage-row span:first-child { color: var(--c-ink); font-weight: 500; }
+  .usage-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--c-primary); }
+  .banner { padding: 12px 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 4px; color: #047857; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
 </style>

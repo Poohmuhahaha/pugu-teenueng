@@ -42,8 +42,8 @@ const messages: Record<Locale, MessageDict> = {
     'auth.continueWithGoogle': 'Continue with Google',
     'auth.forgotPassword': 'Reset password',
 
-    'landing.headline.left': 'Your personal AI.',
-    'landing.headline.right': 'Your RPG Quest.',
+    'landing.headline.left': 'Every goal is a quest.',
+    'landing.headline.right': 'Every day is an adventure.',
     'landing.lede': 'An AI-powered secretary that turns your daily life, work, and finances into a fantasy tavern quest board. Self-host or run on our cloud.',
     'landing.cta': 'Join waitlist',
     'landing.cta.sending': 'Sending…',
@@ -182,8 +182,8 @@ const messages: Record<Locale, MessageDict> = {
     'auth.continueWithGoogle': 'เข้าสู่ระบบด้วย Google',
     'auth.forgotPassword': 'ลืมรหัสผ่าน',
 
-    'landing.headline.left': 'เลขา AI ส่วนตัวของคุณ',
-    'landing.headline.right': 'กับบอร์ดเควส RPG',
+    'landing.headline.left': 'ทุกเป้าหมายคือเควส',
+    'landing.headline.right': 'ทุกวันคือผจญภัย',
     'landing.lede': 'ผู้ช่วย AI อัจฉริยะที่จะช่วยจัดการชีวิต การงาน และการเงินของคุณ โดยเปลี่ยนทุกอย่างให้เป็นเควสในร้านเหล้าแฟนตาซี โฮสต์เองได้ ข้อมูลเป็นของคุณ 100%',
     'landing.cta': 'เข้าคิวใช้งาน',
     'landing.cta.sending': 'กำลังส่ง…',

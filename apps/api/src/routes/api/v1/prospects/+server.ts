@@ -1,9 +1,17 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from './$types';
 import { db } from '$lib/server/db';
+import { resolveActor } from '$lib/server/auth';
 
-export async function GET({ url }: RequestEvent) {
-    const workspaceId = Number(url.searchParams.get('workspaceId')) || 1;
+export async function GET(event: RequestEvent) {
+    let workspaceId = 1;
+    try {
+        const actor = await resolveActor(event);
+        workspaceId = actor.workspaceId;
+    } catch (e) {
+        const wsId = event.url.searchParams.get('workspaceId');
+        if (wsId) workspaceId = Number(wsId);
+    }
     
     const prospects = await db.prospect.findMany({
         where: { workspaceId },
@@ -13,12 +21,19 @@ export async function GET({ url }: RequestEvent) {
     return json(prospects);
 }
 
-export async function POST({ request }: RequestEvent) {
-    const data = await request.json();
+export async function POST(event: RequestEvent) {
+    let workspaceId = 1;
+    try {
+        const actor = await resolveActor(event);
+        workspaceId = actor.workspaceId;
+    } catch (e) {
+        // fallback
+    }
+    const data = await event.request.json();
     
     const prospect = await db.prospect.create({
         data: {
-            workspaceId: data.workspaceId || 1,
+            workspaceId: data.workspaceId || workspaceId,
             name: data.name,
             email: data.email,
             phone: data.phone,

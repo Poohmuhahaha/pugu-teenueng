@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
 
   interface AuditRow {
     id: number;
@@ -14,6 +15,12 @@
   }
 
   let rows: AuditRow[] = [];
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  $: totalPages = Math.ceil(rows.length / itemsPerPage) || 1;
+  $: paginatedRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  $: if (currentPage > totalPages) currentPage = totalPages;
+
   let loading = true;
   let entityFilter = '';
   let actionFilter = '';
@@ -57,7 +64,7 @@
         <tr><th>When</th><th>User</th><th>Action</th><th>Entity</th><th>ID</th><th>IP</th><th></th></tr>
       </thead>
       <tbody>
-        {#each rows as r (r.id)}
+        {#each paginatedRows as r (r.id)}
           <tr>
             <td>{new Date(r.createdAt).toLocaleString()}</td>
             <td>{r.userId ?? 'system'}</td>
@@ -83,14 +90,11 @@
         {/each}
       </tbody>
     </table>
+    <Pagination bind:currentPage {totalPages} />
   {/if}
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
-  .t tr:last-child td { border-bottom:none; }
   .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--surface-alt, #f5f5f5); }
   .chip[data-action="create"] { background: rgba(16,185,129,0.12); color: #047857; }
   .chip[data-action="update"] { background: rgba(59,130,246,0.12); color: #1d4ed8; }

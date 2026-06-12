@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
   interface Session {
     id: number;
@@ -12,8 +14,16 @@
   }
 
   let sessions: Session[] = [];
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  $: totalPages = Math.ceil(sessions.length / itemsPerPage) || 1;
+  $: paginatedSessions = sessions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  $: if (currentPage > totalPages) currentPage = totalPages;
+
   let loading = true;
   let err = '';
+
+  let modalState: { type: 'revoke' | 'revokeAll' | null; session?: Session } = { type: null };
 
   async function load() {
     loading = true;
@@ -24,22 +34,30 @@
     loading = false;
   }
 
-  async function revoke(s: Session) {
+  function revoke(s: Session) {
     if (s.current) { err = 'Use Sign out to end your current session.'; return; }
-    if (!confirm(`Revoke session from ${shortUA(s.ua)}? The other device will be signed out on its next request.`)) return;
-    const res = await fetch(`/api/v1/me/sessions/${s.id}`, { method: 'DELETE' });
-    if (res.ok) await load();
-    else err = await res.text();
+    modalState = { type: 'revoke', session: s };
   }
 
-  async function revokeAll() {
-    if (!confirm('Sign out every device except this one?')) return;
-    const res = await fetch('/api/v1/me/sessions/all', { method: 'POST' });
-    if (res.ok) {
-      const body = await res.json();
-      err = `Revoked ${body.revoked} other session(s).`;
-      await load();
-    } else err = await res.text();
+  function revokeAll() {
+    modalState = { type: 'revokeAll' };
+  }
+
+  async function confirmModalAction() {
+    if (modalState.type === 'revoke' && modalState.session) {
+      const s = modalState.session;
+      const res = await fetch(`/api/v1/me/sessions/${s.id}`, { method: 'DELETE' });
+      if (res.ok) await load();
+      else err = await res.text();
+    } else if (modalState.type === 'revokeAll') {
+      const res = await fetch('/api/v1/me/sessions/all', { method: 'POST' });
+      if (res.ok) {
+        const body = await res.json();
+        err = `Revoked ${body.revoked} other session(s).`;
+        await load();
+      } else err = await res.text();
+    }
+    modalState = { type: null };
   }
 
   function shortUA(ua: string | null): string {
@@ -65,8 +83,7 @@
 </script>
 
 <div class="stack">
-  <div class="h-row" style="justify-content: space-between">
-    <h2 style="margin:0">Active sessions</h2>
+  <div class="h-row" style="justify-content: flex-end; margin-bottom: 8px;">
     <button class="btn btn-ghost" on:click={revokeAll}>Sign out everywhere else</button>
   </div>
 
@@ -80,7 +97,7 @@
     <table class="t">
       <thead><tr><th>Device</th><th>IP</th><th>Last seen</th><th>Created</th><th>Status</th><th></th></tr></thead>
       <tbody>
-        {#each sessions as s (s.id)}
+        {#each paginatedSessions as s (s.id)}
           <tr style:opacity={s.revokedAt ? 0.5 : 1}>
             <td>
               {shortUA(s.ua)}
@@ -99,14 +116,20 @@
         {/each}
       </tbody>
     </table>
+    <Pagination bind:currentPage {totalPages} />
   {/if}
 </div>
 
+<ConfirmModal 
+  title={modalState.type === 'revoke' ? 'Revoke Session' : 'Sign Out Everywhere'}
+  message={modalState.type === 'revoke' && modalState.session ? `Revoke session from <strong>${shortUA(modalState.session.ua)}</strong>?<br/>The other device will be signed out on its next request.` : 'Sign out every device except this one?'}
+  confirmText="Sign Out"
+  isOpen={modalState.type !== null}
+  on:confirm={confirmModalAction}
+  on:cancel={() => (modalState = { type: null })}
+/>
+
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
-  .t tr:last-child td { border-bottom:none; }
   .chip { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 10px; text-transform: uppercase; background: rgba(124,58,237,0.12); color: var(--c-ink); border-radius: 999px; letter-spacing: 0.06em; font-weight: 700; }
   .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); }
   .link.danger { color: #dc2626; }

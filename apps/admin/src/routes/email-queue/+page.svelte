@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
 
   interface Job {
     id: number;
@@ -14,6 +15,12 @@
   }
 
   let jobs: Job[] = [];
+  let currentPage = 1;
+  const itemsPerPage = 12;
+  $: totalPages = Math.ceil(jobs.length / itemsPerPage) || 1;
+  $: paginatedJobs = jobs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  $: if (currentPage > totalPages) currentPage = totalPages;
+
   let loading = true;
   let filter: 'all' | 'pending' | 'sent' | 'abandoned' = 'all';
   let err = '';
@@ -47,12 +54,15 @@
 </script>
 
 <div class="stack">
-  <h2 style="margin:0">Email queue</h2>
-
-  <div class="h-row" style="gap:6px; flex-wrap:wrap">
-    {#each filterOptions as f}
-      <button class="chip" class:active={filter === f} on:click={() => (filter = f)}>{f}</button>
-    {/each}
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 8px;">
+    <div>
+      <h2 style="margin:0; margin-bottom: 12px;">Email Queue</h2>
+      <div class="h-row" style="gap:8px; flex-wrap:wrap">
+        {#each filterOptions as f}
+          <button class="chip" class:active={filter === f} on:click={() => (filter = f)}>{f}</button>
+        {/each}
+      </div>
+    </div>
   </div>
 
   {#if err}<p style="color:#dc2626; font-size:13px; margin:0">{err}</p>{/if}
@@ -60,23 +70,25 @@
   {#if loading}
     <p style="color:var(--c-muted)">Loading…</p>
   {:else if jobs.length === 0}
-    <p style="color:var(--c-muted)">No jobs match filter "{filter}".</p>
+    <div class="card" style="text-align:center; padding:48px 20px; color:var(--c-muted)">
+      No email jobs match filter "{filter}".
+    </div>
   {:else}
     <table class="t">
       <thead>
-        <tr><th>Recipient</th><th>Subject</th><th>Attempts</th><th>Next / sent at</th><th>Status</th><th>Last error</th><th></th></tr>
+        <tr><th>Recipient</th><th>Subject</th><th>Attempts</th><th>Next / Sent at</th><th>Status</th><th>Last error</th><th></th></tr>
       </thead>
       <tbody>
-        {#each jobs as j (j.id)}
+        {#each paginatedJobs as j (j.id)}
           {@const s = statusOf(j)}
-          <tr>
+          <tr style:opacity={s.label === 'sent' || s.label === 'abandoned' ? 0.6 : 1}>
             <td>{j.recipient}</td>
-            <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{j.subject}</td>
-            <td>{j.attempts} / 5</td>
-            <td>{j.sentAt ? new Date(j.sentAt).toLocaleString() : new Date(j.nextRunAt).toLocaleString()}</td>
-            <td><span style:color={s.color} style="font-weight:600; font-size:12px; text-transform:uppercase">{s.label}</span></td>
-            <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; color:var(--c-muted)" title={j.lastError ?? ''}>{j.lastError ?? ''}</td>
-            <td>
+            <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight: 500;">{j.subject}</td>
+            <td><span style="font-variant-numeric: tabular-nums;">{j.attempts} / 5</span></td>
+            <td style="font-variant-numeric: tabular-nums;">{j.sentAt ? new Date(j.sentAt).toLocaleString() : new Date(j.nextRunAt).toLocaleString()}</td>
+            <td><span class="status-badge" style="color:{s.color}; border-color:{s.color};">{s.label}</span></td>
+            <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--c-error)" title={j.lastError ?? ''}>{j.lastError ?? '—'}</td>
+            <td style="text-align: right;">
               {#if !j.sentAt}
                 <button class="link" on:click={() => retry(j)}>Retry</button>
               {/if}
@@ -85,16 +97,15 @@
         {/each}
       </tbody>
     </table>
+    <Pagination bind:currentPage {totalPages} />
   {/if}
 </div>
 
 <style>
-  .t { width:100%; border-collapse: collapse; background: var(--c-surface-card); border:1px solid var(--c-hairline); border-radius:10px; overflow:hidden; }
-  .t th { text-align:left; font-size:11px; text-transform:uppercase; color:var(--c-muted); padding:10px 12px; background:var(--c-surface-card); border-bottom:1px solid var(--c-hairline); }
-  .t td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--c-hairline); }
-  .t tr:last-child td { border-bottom:none; }
-  .chip { padding: 4px 12px; background: var(--c-surface-card); border: 1px solid var(--c-hairline); border-radius: 999px; font-size: 12px; cursor: pointer; color: var(--c-ink); text-transform: capitalize; }
-  .chip.active { background: var(--c-ink); color: #fff; border-color: var(--c-ink); }
-  .link { background: transparent; border: none; color: var(--c-ink); cursor: pointer; padding: 2px 6px; font-size: 12px; }
-  .link:hover { text-decoration: underline; }
+  .chip { padding: 4px 14px; background: transparent; border: 1px solid var(--c-hairline); border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--c-muted); text-transform: capitalize; transition: all 0.15s; }
+  .chip:hover { border-color: var(--c-primary); color: var(--c-ink); }
+  .chip.active { background: var(--c-primary); color: var(--c-on-dark); border-color: var(--c-primary); box-shadow: 2px 2px 0 var(--c-brand-accent); }
+  .status-badge { padding: 2px 8px; border: 1px solid; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .link { background: transparent; border: none; color: var(--c-ink); cursor: pointer; padding: 4px 8px; font-size: 13px; font-weight: 600; }
+  .link:hover { text-decoration: underline; color: var(--c-primary); }
 </style>

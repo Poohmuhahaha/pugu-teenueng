@@ -198,7 +198,7 @@ small { font-size: 13px; color: var(--c-muted-soft); }
 .text-link.accent { color: var(--c-brand-accent); }
 
 /* ===== Inputs ===== */
-.input, input[type="text"], input[type="email"], input[type="password"],
+.input, input:not([type]), input[type="text"], input[type="email"], input[type="password"],
 input[type="search"], input[type="number"], input[type="url"], input[type="tel"],
 textarea, select {
   display: block;

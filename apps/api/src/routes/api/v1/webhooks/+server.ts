@@ -36,6 +36,6 @@ export async function POST(event) {
   });
   return json(
     { id: hook.id, url: hook.url, events: hook.events, contentTypeSlug: hook.contentTypeSlug, secret },
-    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this signing secret now — used to verify webhook signatures.' } }
+    { status: 201, headers: { 'X-QuestPage-Warning': 'Save this signing secret now - used to verify webhook signatures.' } }
   );
 }

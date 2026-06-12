@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import { db } from './db';
 import { enqueueWebhookJob, activeBackendName } from './queue';
 
-export type HookEvent = 'afterCreate' | 'afterUpdate' | 'afterDelete' | 'beforeDelete';
+export type HookEvent = 'afterCreate' | 'afterUpdate' | 'afterDelete' | 'beforeDelete' | 'prospect.approved';
 
 /**
  * Fire all matching webhooks for a workspace + content-type event.

@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let params: any = undefined;
   let email = '';
   let sent = false;
   let loading = false;

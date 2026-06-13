@@ -5,6 +5,7 @@
   import { page } from '$app/stores';
 
   export let params: any = undefined;
+  export let data: any = undefined;
 
   let mobileOpen = false;
   let isMobile = false;
@@ -12,6 +13,32 @@
 
   // Sidebar collapsible state
   let sidebarCollapsed = false;
+
+  // Workspace Switcher State
+  let wsDropdownOpen = false;
+  $: me = data?.me;
+  $: memberships = me?.memberships || [];
+  $: activeWorkspace = memberships.find(m => m.workspace.id === me?.actor?.workspaceId)?.workspace || memberships[0]?.workspace;
+
+  function toggleWsDropdown() {
+    wsDropdownOpen = !wsDropdownOpen;
+  }
+  
+  function closeWsDropdown() {
+    wsDropdownOpen = false;
+  }
+
+  async function handleSwitchClick(workspaceId: number) {
+    if (activeWorkspace?.id === workspaceId) return;
+    try {
+      const res = await fetch(`/api/v1/workspaces/${workspaceId}/switch`, { method: 'POST' });
+      if (res.ok) {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   // Search Modal state
   let searchOpen = false;
@@ -118,7 +145,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} on:click={closeWsDropdown} />
 
 {#if hideShell}
   <slot />
@@ -144,63 +171,79 @@
     {/if}
   {/if}
 
-  <div class="shell" class:collapsed={sidebarCollapsed}>
-    <aside class="sidebar" class:collapsed={sidebarCollapsed} class:mobile-open={mobileOpen} class:mobile-closed={isMobile && !mobileOpen}>
-      {#if !isMobile}
-        <button type="button" class="sidebar-toggle" on:click={toggleSidebar} aria-label="Toggle Sidebar">
-          {#if sidebarCollapsed}
-            »
-          {:else}
-            «
-          {/if}
-        </button>
-      {/if}
-
+  <div class="app-layout">
+    <header class="top-navbar">
       <div class="brand-row">
-        <a class="brand" href="/">
+        <a class="brand" href="/entries">
           <img src="/logo.png" alt="QuestPage" class="brand-logo" style="height: 28px; width: auto; max-width: 100%; object-fit: contain;" />
           <span class="brand-text">QuestPage</span>
         </a>
       </div>
 
+      {#if activeWorkspace}
+        <div class="ws-switcher-container">
+          <button class="ws-switcher-btn" on:click|stopPropagation={toggleWsDropdown}>
+            <div class="ws-avatar">{activeWorkspace.name.charAt(0).toUpperCase()}</div>
+            <div class="ws-switcher-info">
+              <span class="ws-switcher-name">{activeWorkspace.name}</span>
+            </div>
+            <svg class="ws-switcher-caret" class:open={wsDropdownOpen} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          {#if wsDropdownOpen}
+            <div class="ws-dropdown" on:click|stopPropagation>
+              <div class="ws-dropdown-title">Switch Workspace</div>
+              <div class="ws-dropdown-list">
+                {#each memberships as m}
+                  <button class="ws-dropdown-item" class:active={m.workspace.id === activeWorkspace.id} on:click={() => handleSwitchClick(m.workspace.id)}>
+                    <div class="ws-dropdown-avatar">{m.workspace.name.charAt(0).toUpperCase()}</div>
+                    <div class="ws-dropdown-item-info">
+                      <div class="ws-dropdown-item-name">{m.workspace.name}</div>
+                    </div>
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      {/if}
+    </header>
+
+    <div class="shell" class:collapsed={sidebarCollapsed}>
+      <aside class="sidebar" class:collapsed={sidebarCollapsed} class:mobile-open={mobileOpen} class:mobile-closed={isMobile && !mobileOpen}>
+        {#if !isMobile}
+          <button type="button" class="sidebar-toggle" on:click={toggleSidebar} aria-label="Toggle Sidebar">
+            {#if sidebarCollapsed}
+              »
+            {:else}
+              «
+            {/if}
+          </button>
+        {/if}
+
       <nav class="side-nav">
-        <a href="/" class="nav-link" class:active={isActive('/', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.contentTypes', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          <span class="nav-text">{t('nav.contentTypes', locale)}</span>
-        </a>
-        <a href="/entries" class="nav-link" class:active={isActive('/entries', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.entries', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span class="nav-text">{t('nav.entries', locale)}</span>
-        </a>
-        <a href="/api-keys" class="nav-link" class:active={isActive('/api-keys', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.apiKeys', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-          <span class="nav-text">{t('nav.apiKeys', locale)}</span>
-        </a>
-        <a href="/webhooks" class="nav-link" class:active={isActive('/webhooks', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.webhooks', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          <span class="nav-text">{t('nav.webhooks', locale)}</span>
-        </a>
-        <a href="/audit" class="nav-link" class:active={isActive('/audit', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.audit', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span class="nav-text">{t('nav.audit', locale)}</span>
-        </a>
-        <a href="/waitlist" class="nav-link" class:active={isActive('/waitlist', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.waitlist', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
-          <span class="nav-text">{t('nav.waitlist', locale)}</span>
-        </a>
-        <a href="/billing" class="nav-link" class:active={isActive('/billing', pathname)} on:click={() => (mobileOpen = false)} data-tooltip={t('nav.billing', locale)}>
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          <span class="nav-text">{t('nav.billing', locale)}</span>
-        </a>
-        <a href="/settings/workspace" class="nav-link" class:active={isActive('/settings', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="Settings">
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span class="nav-text">Settings</span>
-        </a>
-        <a href="/email-queue" class="nav-link" class:active={isActive('/email-queue', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="Email Queue">
-          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <span class="nav-text">Email Queue</span>
-        </a>
-      </nav>
+          <a href="/entries" class="nav-link" class:active={isActive('/entries', pathname) || pathname === '/'} on:click={() => (mobileOpen = false)} data-tooltip="Browse Entries">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span class="nav-text">Browse Entries</span>
+          </a>
+          <a href="/graph" class="nav-link" class:active={isActive('/graph', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="Graph">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><line x1="5" y1="7" x2="5" y2="17"/><line x1="7" y1="5" x2="17" y2="5"/><line x1="7" y1="19" x2="17" y2="19"/></svg>
+            <span class="nav-text">Graph</span>
+          </a>
+          <a href="/api-keys" class="nav-link" class:active={isActive('/api-keys', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="API Keys">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <span class="nav-text">API Keys</span>
+          </a>
+          <a href="/webhooks" class="nav-link" class:active={isActive('/webhooks', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="WebHook">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="nav-text">WebHook</span>
+          </a>
+          <a href="/settings/workspace" class="nav-link" class:active={isActive('/settings', pathname)} on:click={() => (mobileOpen = false)} data-tooltip="Settings">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="nav-text">Settings</span>
+          </a>
+        </nav>
 
       <div class="sidebar-footer">
         <button type="button" class="sidebar-search-btn" on:click={() => (searchOpen = true)} data-tooltip="Search (⌘K)">
@@ -237,10 +280,11 @@
           {/if}
         </form>
       </div>
-    </aside>
-    <main class="content">
-      <slot />
-    </main>
+      </aside>
+      <main class="content">
+        <slot />
+      </main>
+    </div>
   </div>
 {/if}
 
@@ -290,10 +334,158 @@
 {/if}
 
 <style>
+  :global(::-webkit-scrollbar) {
+    width: 14px;
+    height: 14px;
+    background: var(--c-surface-soft);
+    border-left: 2px solid var(--c-primary);
+  }
+  :global(::-webkit-scrollbar-thumb) {
+    background: var(--c-primary);
+    border: 2px solid var(--c-surface-soft);
+    border-radius: 0;
+  }
+  :global(::-webkit-scrollbar-thumb:hover) {
+    background: var(--c-ink);
+  }
+  :global(::-webkit-scrollbar-corner) {
+    background: var(--c-surface-soft);
+  }
+
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 var(--s-lg);
+    background: var(--c-canvas);
+    border-bottom: 3px solid var(--c-primary);
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+  .brand-row {
+    display: flex; align-items: center;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--c-ink);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    font-family: var(--font-display);
+  }
+  .ws-switcher-container {
+    position: relative;
+    width: 240px;
+  }
+  .ws-switcher-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--c-canvas);
+    border: 2px solid var(--c-primary);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 2px 2px 0 var(--c-primary);
+    transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+  }
+  .ws-switcher-btn:hover {
+    background: var(--c-surface-soft);
+  }
+  .ws-switcher-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--c-primary);
+  }
+  .ws-avatar {
+    width: 24px;
+    height: 24px;
+    background: var(--c-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex: none;
+  }
+  .ws-switcher-name {
+    display: block;
+    font: 700 13px/1.2 var(--font-body);
+    color: var(--c-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ws-switcher-caret {
+    color: var(--c-primary);
+    flex: none;
+    margin-left: auto;
+    transition: transform 0.2s;
+  }
+  .ws-switcher-caret.open {
+    transform: rotate(180deg);
+  }
+  .ws-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    width: 100%;
+    background: var(--c-canvas);
+    border: 2px solid var(--c-primary);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--c-primary);
+    z-index: 200;
+    overflow: hidden;
+  }
+  .ws-dropdown-title {
+    padding: 8px 12px;
+    font: 700 11px/1 var(--font-body);
+    color: var(--c-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--c-primary);
+    background: var(--c-surface-soft);
+  }
+  .ws-dropdown-item {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 8px 12px; background: transparent;
+    border: none; border-bottom: 1px solid var(--c-hairline-soft);
+    cursor: pointer;
+  }
+  .ws-dropdown-item:hover { background: var(--c-surface-soft); }
+  .ws-dropdown-avatar {
+    width: 22px;
+    height: 22px;
+    background: var(--c-surface-soft);
+    border: 2px solid var(--c-primary);
+    color: var(--c-ink);
+    font-weight: 700;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex: none;
+  }
+  .ws-dropdown-item-name { font-weight: 600; font-size: 13px; }
+
   .shell {
     display: grid;
     grid-template-columns: 260px 1fr;
-    min-height: 100vh;
+    flex: 1;
     background: var(--c-canvas);
     transition: grid-template-columns 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -303,13 +495,13 @@
   .sidebar {
     padding: var(--s-lg);
     background: var(--c-surface-soft);
-    border-right: 1px solid var(--c-hairline);
+    border-right: 3px solid var(--c-primary);
     display: flex;
     flex-direction: column;
     gap: var(--s-md);
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 64px;
+    height: calc(100vh - 64px);
     transition: padding 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
   }
@@ -339,55 +531,36 @@
   .sidebar-toggle:hover {
     background: var(--c-surface-soft);
   }
-  .brand-row {
-    display: flex; align-items: center;
-    padding: 4px 8px;
-    margin-bottom: var(--s-md);
-    transition: justify-content 0.18s;
-  }
-  .sidebar.collapsed .brand-row {
-    justify-content: center;
-    padding: 4px 0;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    color: var(--c-ink);
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: -0.3px;
-  }
-  .brand-text {
-    transition: opacity 0.15s;
-  }
-  .sidebar.collapsed .brand-text {
-    display: none;
-  }
+
   .side-nav {
     display: flex; flex-direction: column; gap: 6px;
     flex: 1;
   }
   .nav-link {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    border-radius: 0px;
-    border: 2px solid transparent;
-    color: var(--c-body);
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
     text-decoration: none;
-    font: 600 14px/1.4 var(--font-body);
-    transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s, justify-content 0.18s, padding 0.18s;
+    color: var(--c-muted);
+    border-radius: 4px;
+    font: 600 14px/1 var(--font-body);
+    transition: all 0.1s;
+    border: 2px solid transparent;
   }
-  .nav-link .icon { color: var(--c-muted); flex: none; }
-  .nav-link:hover { background: var(--c-hairline-soft); color: var(--c-ink); text-decoration: none; }
-  .nav-link.active { 
-    background: var(--c-canvas); 
-    color: var(--c-ink); 
-    border-color: var(--c-primary); 
-    box-shadow: 2px 2px 0 var(--c-primary); 
+  .nav-link:hover {
+    background: var(--c-canvas);
+    color: var(--c-ink);
+    border-color: var(--c-primary);
+    box-shadow: 2px 2px 0 var(--c-primary);
+    transform: translate(-2px, -2px);
   }
-  .nav-link.active .icon { color: var(--c-ink); }
+  .nav-link.active {
+    background: var(--c-primary);
+    color: #fff;
+    border-color: var(--c-primary);
+    box-shadow: 2px 2px 0 var(--c-ink);
+    transform: translate(-2px, -2px);
+  }
+  .nav-link.active .icon { color: #fff; }
 
   .sidebar.collapsed .nav-text {
     display: none;

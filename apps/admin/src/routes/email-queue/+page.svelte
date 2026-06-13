@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import Pagination from '$lib/components/Pagination.svelte';
 
   interface Job {
@@ -48,7 +49,7 @@
     return { label: 'pending', color: 'var(--c-muted)' };
   }
 
-  $: filter, load();
+  $: if (browser) { filter; load(); }
 
   const filterOptions: (typeof filter)[] = ['all', 'pending', 'sent', 'abandoned'];
 </script>

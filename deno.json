@@ -13,6 +13,8 @@
   "nodeModulesDir": "auto",
   "imports": {
     "custom-prisma-client": "./apps/api/node_modules/custom-prisma-client/index.js",
+    "d3-selection": "npm:d3-selection@^3.0.0",
+    "d3-zoom": "npm:d3-zoom@^3.0.0",
     "marked": "npm:marked@^14.1.4",
     "motion": "npm:motion@^12.40.0"
   },

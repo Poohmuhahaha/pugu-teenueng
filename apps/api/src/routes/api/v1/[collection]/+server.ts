@@ -12,44 +12,45 @@ import { ContentEntryCreate } from '@questpage/core';
  * List entries of a content type (workspace-scoped via actor).
  */
 export async function GET(event) {
-  const actor = await resolveActor(event);
-  const slug = event.params.collection;
+  try {
+    const actor = await resolveActor(event);
+    const slug = event.params.collection;
 
-  const contentType = await db.contentType.findFirst({
-    where: { workspaceId: actor.workspaceId, slug, deletedAt: null },
-  });
-  if (!contentType) throw error(404, `Collection "${slug}" not found`);
+    const contentType = await db.contentType.findFirst({
+      where: { workspaceId: actor.workspaceId, slug, deletedAt: null },
+    });
+    if (!contentType) throw error(404, `Collection "${slug}" not found`);
 
-  const q = parseQuery(event.url);
+    const q = parseQuery(event.url);
 
-  // Filtering on JSONB: parseQuery emits Prisma-compatible JSON-path clauses
-  // under q.where.AND. Spread them into the base where so they actually apply.
-  const where: Record<string, unknown> = { contentTypeId: contentType.id, deletedAt: null, ...q.where };
-  const orderBy = q.orderBy
-    .map((o) => ({ [o.field]: o.dir }))
-    .filter((o) =>
-      // Only sort on real ContentEntry columns. Sort keys that target JSON
-      // fields under `data` are silently dropped — Prisma can't push them down
-      // and we no longer support in-memory sorting for paged queries.
-      ['createdAt', 'updatedAt', 'id'].includes(Object.keys(o)[0])
-    );
+    const where: Record<string, unknown> = { contentTypeId: contentType.id, deletedAt: null, ...q.where };
+    const orderBy = q.orderBy
+      .map((o) => ({ [o.field]: o.dir }))
+      .filter((o) =>
+        ['createdAt', 'updatedAt', 'id'].includes(Object.keys(o)[0])
+      );
 
-  // Page at the database layer so we don't load the entire collection into memory.
-  const [total, slice] = await Promise.all([
-    db.contentEntry.count({ where }),
-    db.contentEntry.findMany({
-      where,
-      orderBy,
-      take: q.pageSize,
-      skip: (q.page - 1) * q.pageSize,
-    }),
-  ]);
+    const [total, slice] = await Promise.all([
+      db.contentEntry.count({ where }),
+      db.contentEntry.findMany({
+        where,
+        orderBy,
+        take: q.pageSize,
+        skip: (q.page - 1) * q.pageSize,
+      }),
+    ]);
 
-  const projected = slice.map((e) => projectFields(e, q.fields));
-  return json({
-    data: projected,
-    meta: { page: q.page, pageSize: q.pageSize, total, contentType: slug },
-  });
+    const projected = slice.map((e) => projectFields(e, q.fields));
+    return json({
+      data: projected,
+      meta: { page: q.page, pageSize: q.pageSize, total, contentType: slug },
+    });
+  } catch (err: any) {
+    if (err.status) throw err; // rethrow sveltekit errors
+    console.error("API GET ERROR:", err);
+    require('fs').writeFileSync('D:/PROJECTS/website/QuestPage/error.log', err.stack || err.message || String(err));
+    return json({ error: err.message, stack: err.stack }, { status: 500 });
+  }
 }
 
 /**

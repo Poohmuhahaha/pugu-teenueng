@@ -1,5 +1,4 @@
 <script lang="ts">
-  export let params: any = undefined;
   import '@questpage/ui/design.css';
   import { page } from '$app/stores';
   import WebWorkspaceSwitcher from '$lib/components/WebWorkspaceSwitcher.svelte';

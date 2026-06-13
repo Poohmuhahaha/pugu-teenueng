@@ -12,6 +12,8 @@
   let transferTarget = '';
   let err = '';
   let loading = true;
+  let newWorkspaceName = '';
+  let creating = false;
   let inviteEmail = '';
   let inviteRole: 'admin' | 'editor' | 'member' | 'viewer' = 'member';
   let inviting = false;
@@ -55,6 +57,37 @@
     });
     if (!res.ok) { err = await res.text(); return; }
     await load();
+  }
+
+  async function createWorkspace() {
+    if (!newWorkspaceName.trim()) return;
+    creating = true;
+    err = '';
+    try {
+      const res = await fetch(`/api/v1/workspaces`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newWorkspaceName.trim() }),
+      });
+      if (!res.ok) {
+        err = await res.text();
+        return;
+      }
+      const ws = await res.json();
+      // Switch to the new workspace automatically
+      await switchWorkspace(ws.id);
+    } finally {
+      creating = false;
+    }
+  }
+
+  async function switchWorkspace(workspaceId: number) {
+    const res = await fetch(`/api/v1/workspaces/${workspaceId}/switch`, { method: 'POST' });
+    if (res.ok) {
+      window.location.href = '/';
+    } else {
+      err = await res.text();
+    }
   }
 
   async function confirmModalAction() {
@@ -137,123 +170,140 @@
   onMount(load);
 </script>
 
-<div class="stack">
-  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-    <h2>Workspace Settings</h2>
+<div class="stack" style="max-width: 900px; margin: 0 auto; padding-top: 20px;">
+  <div class="workspace-header">
+    <h2 class="workspace-title">Workspace Settings</h2>
+    <p style="color: var(--c-muted); margin-top: 8px;">Manage your workspace preferences, members, and billing.</p>
   </div>
 
   {#if loading || !me}
-    <p style="color:var(--c-muted)">Loading…</p>
+    <div style="display: flex; justify-content: center; padding: 40px;">
+      <div class="spinner"></div>
+      <p style="color:var(--c-muted); margin-left: 12px;">Loading settings…</p>
+    </div>
   {:else}
     {@const isOwner = me.workspace.role === 'owner'}
     {@const isAdmin = isOwner || me.workspace.role === 'admin'}
 
-    <div class="stack">
-      <div>
-        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Rename workspace {isAdmin ? '' : '(admin only)'}</div>
-        <div style="font-size:13px; color:var(--c-muted); margin-bottom: 12px;">Update your workspace's display name.</div>
-      </div>
-      <div class="h-row">
-        <input bind:value={renameValue} disabled={!isAdmin} style="flex:1; max-width: 400px;" />
-        <button class="btn" on:click={rename} disabled={!isAdmin}>Save</button>
+    <div class="setting-section">
+      <div class="section-label">Create New Workspace</div>
+      <div class="section-desc">Create a brand new workspace to organize a different set of databases and entries.</div>
+      <div class="h-row" style="gap: 12px; margin-top: 16px;">
+        <input bind:value={newWorkspaceName} class="input-styled" placeholder="New workspace name" />
+        <button class="btn-primary" on:click={createWorkspace} disabled={creating || !newWorkspaceName.trim()}>{creating ? 'Creating...' : 'Create Workspace'}</button>
       </div>
     </div>
 
-    <hr class="divider" />
-
-    <div class="stack">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none; margin: 0;">Members ({members.length})</div>
+    <div class="setting-section">
+      <div class="section-label">Workspace Name {isAdmin ? '' : '(Read Only)'}</div>
+      <div class="section-desc">Update your workspace's display name. This will be visible to all members.</div>
+      <div class="h-row" style="gap: 12px;">
+        <input bind:value={renameValue} disabled={!isAdmin} class="input-styled" placeholder="Enter workspace name" />
+        <button class="btn-primary" on:click={rename} disabled={!isAdmin}>Save Changes</button>
       </div>
-      <div style="font-size:13px; color:var(--c-muted); margin-bottom: 4px;">Manage who has access to this workspace.</div>
+    </div>
+
+    <div class="setting-section">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+        <div class="section-label" style="margin: 0;">Members <span style="background: var(--c-surface-soft); padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px; border: 1px solid var(--c-hairline);">{members.length}</span></div>
+      </div>
+      <div class="section-desc">Manage who has access to this workspace and their permission levels.</div>
 
       {#if isAdmin}
-        <div class="invite-row" style="background: var(--c-surface-soft); padding: 12px; border-radius: 4px; border: 1px solid var(--c-hairline); margin-bottom: 16px;">
-          <input bind:value={inviteEmail} type="email" placeholder="invite@example.com" style="flex:1" />
-          <select bind:value={inviteRole}>
-            <option value="viewer">viewer</option>
-            <option value="member">member</option>
-            <option value="editor">editor</option>
-            <option value="admin">admin</option>
+        <div class="invite-row">
+          <input bind:value={inviteEmail} type="email" placeholder="Email address to invite" class="input-styled" />
+          <select bind:value={inviteRole} class="select-role">
+            <option value="viewer">Viewer</option>
+            <option value="member">Member</option>
+            <option value="editor">Editor</option>
+            <option value="admin">Admin</option>
           </select>
-          <button class="btn" on:click={invite} disabled={inviting || !inviteEmail.trim()}>{inviting ? '…' : 'Invite'}</button>
+          <button class="btn-primary" style="padding: 10px 16px;" on:click={invite} disabled={inviting || !inviteEmail.trim()}>{inviting ? 'Sending...' : 'Invite Member'}</button>
         </div>
-        {#if inviteMsg}<p style="color:#10b981; font-size:13px; margin-top:-8px; margin-bottom:8px;">{inviteMsg}</p>{/if}
+        {#if inviteMsg}<p style="color:#10b981; font-size:14px; margin-top:-8px; margin-bottom:16px; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">{inviteMsg}</p>{/if}
       {/if}
 
-      <table class="t">
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th>{#if isAdmin}<th></th>{/if}</tr></thead>
-        <tbody>
-          {#each paginatedMembers as m (m.userId)}
-            <tr>
-              <td>{m.name}</td>
-              <td>{m.email}</td>
-              <td>
-                {#if isAdmin && m.userId !== me.user.id}
-                  <select value={m.role} on:change={(e) => changeRole(m, e.currentTarget.value)}>
-                    <option value="viewer">viewer</option>
-                    <option value="member">member</option>
-                    <option value="editor">editor</option>
-                    <option value="admin">admin</option>
-                  </select>
-                {:else}{m.role}{/if}
-              </td>
-              {#if isAdmin}
-                <td style="text-align:right">
-                  {#if m.userId !== me.user.id}<button class="link danger" on:click={() => removeMember(m)}>Remove</button>{/if}
+      <div style="overflow-x: auto; border: 3px solid var(--c-primary); border-radius: 4px; box-shadow: 6px 6px 0 var(--c-primary); background: var(--c-canvas);">
+        <table class="table-styled">
+          <thead><tr><th>User</th><th>Role</th>{#if isAdmin}<th style="text-align: right;">Action</th>{/if}</tr></thead>
+          <tbody>
+            {#each paginatedMembers as m (m.userId)}
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: var(--c-ink);">{m.name || 'Pending User'}</div>
+                  <div style="font-size: 13px; color: var(--c-muted);">{m.email}</div>
                 </td>
-              {/if}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-      <Pagination bind:currentPage {totalPages} />
+                <td>
+                  {#if isAdmin && m.userId !== me.user.id}
+                    <select value={m.role} on:change={(e) => changeRole(m, e.currentTarget.value)} class="select-role">
+                      <option value="viewer">Viewer</option>
+                      <option value="member">Member</option>
+                      <option value="editor">Editor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  {:else}
+                    <span style="padding: 4px 8px; background: var(--c-surface-soft); border-radius: 4px; font-size: 13px; border: 1px solid var(--c-hairline); text-transform: capitalize;">{m.role}</span>
+                  {/if}
+                </td>
+                {#if isAdmin}
+                  <td style="text-align:right">
+                    {#if m.userId !== me.user.id}<button class="link danger" on:click={() => removeMember(m)}>Remove</button>{/if}
+                  </td>
+                {/if}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top: 16px;">
+        <Pagination bind:currentPage {totalPages} />
+      </div>
     </div>
 
     {#if isOwner}
-      <hr class="divider" />
-      <div class="stack">
-        <div>
-          <div class="label" style="font-size: 14px; font-weight: 600; color: var(--c-ink); text-transform: none;">Transfer ownership</div>
-          <div style="font-size:13px; color:var(--c-muted); margin-bottom: 12px;">Transfer your workspace ownership to another member. You will become an admin.</div>
-        </div>
-        <div class="h-row">
-          <select bind:value={transferTarget} style="flex:1; max-width: 250px;">
-            <option value="" disabled>Select a member...</option>
+      <div class="setting-section">
+        <div class="section-label">Transfer Ownership</div>
+        <div class="section-desc">Transfer your workspace ownership to another member. You will be demoted to an admin role.</div>
+        <div class="h-row" style="gap: 12px;">
+          <select bind:value={transferTarget} class="input-styled" style="max-width: 300px;">
+            <option value="" disabled>Select a member to transfer to...</option>
             {#each members.filter(m => m.userId !== me.user.id) as m}
               <option value={m.userId}>{m.name || m.email}</option>
             {/each}
           </select>
-          <button class="btn" on:click={transfer} disabled={!transferTarget}>Transfer</button>
+          <button class="btn-primary" style="background: var(--c-primary);" on:click={transfer} disabled={!transferTarget}>Transfer Ownership</button>
         </div>
       </div>
     {/if}
 
-    <hr class="divider" />
-
-    <div class="stack">
-      <div class="label" style="font-size: 14px; font-weight: 600; color: #ef4444; text-transform: none; margin-bottom: 8px;">Danger zone</div>
+    <div class="setting-section danger-zone">
+      <div class="section-label">Danger Zone</div>
+      <div class="section-desc">Irreversible actions that affect your access and the workspace's data.</div>
       
-      <div class="h-row" style="justify-content: space-between; background: rgba(239, 68, 68, 0.04); padding: 16px; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px;">
+      <div class="danger-item">
         <div>
-          <div style="font-weight:600; font-size: 14px;">Leave workspace</div>
-          <div style="font-size:13px; color:var(--c-muted); margin-top: 2px;">Remove your access to this workspace. Owners cannot leave until they transfer ownership.</div>
+          <div class="danger-item-title" style="color: var(--c-ink);">Leave Workspace</div>
+          <div class="danger-item-desc">Remove your access to this workspace. Owners cannot leave until they transfer ownership.</div>
         </div>
-        <button class="btn btn-ghost" on:click={leave} style="color: #ef4444; font-weight: 600;">Leave Workspace</button>
+        <button class="btn-danger" on:click={leave} disabled={isOwner && members.length > 1}>Leave</button>
       </div>
 
       {#if isOwner}
-        <div class="h-row" style="justify-content: space-between; background: rgba(239, 68, 68, 0.04); padding: 16px; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px; margin-top: 4px;">
+        <div class="danger-item">
           <div>
-            <div style="font-weight:600; font-size: 14px; color:#ef4444">Delete workspace</div>
-            <div style="font-size:13px; color:var(--c-muted); margin-top: 2px;">Permanently delete this workspace and all its data. This cannot be undone.</div>
+            <div class="danger-item-title">Delete Workspace</div>
+            <div class="danger-item-desc">Permanently delete this workspace and all its data. This action cannot be undone.</div>
           </div>
-          <button class="btn" style="background:#ef4444; color: white; border-color: #ef4444;" on:click={destroyWorkspace}>Delete Workspace</button>
+          <button class="btn-danger" on:click={destroyWorkspace}>Delete Workspace</button>
         </div>
       {/if}
     </div>
 
-    {#if err}<p style="color:#dc2626; font-size:13px; margin:0">{err}</p>{/if}
+    {#if err}
+      <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); color: #dc2626; padding: 12px; border-radius: 8px; margin-top: 16px;">
+        <strong>Error:</strong> {err}
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -277,9 +327,167 @@
 />
 
 <style>
-  .invite-row { display: flex; gap: 8px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed var(--c-hairline); margin-bottom: 8px; }
-  .invite-row select { width: 110px; }
-  .link { background: transparent; border: none; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--c-ink); font-weight: 600; }
+  .workspace-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--c-hairline-soft);
+  }
+  .workspace-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--c-primary);
+  }
+  .setting-section {
+    background: var(--c-canvas);
+    border: 3px solid var(--c-primary);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 6px 6px 0 var(--c-primary);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .setting-section:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--c-primary);
+  }
+  .section-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--c-ink);
+    margin-bottom: 4px;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--c-muted);
+    margin-bottom: 16px;
+  }
+  .input-styled {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    border: 2px solid var(--c-ink);
+    background: var(--c-surface-soft);
+    transition: border-color 0.1s, box-shadow 0.1s;
+  }
+  .input-styled:focus {
+    border-color: var(--c-primary);
+    box-shadow: 4px 4px 0 var(--c-primary);
+    outline: none;
+  }
+  .btn-primary {
+    background: var(--c-primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    border: 2px solid var(--c-primary);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 4px 4px 0 var(--c-primary);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--c-primary);
+  }
+  .btn-primary:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--c-primary);
+  }
+  .invite-row { 
+    display: flex; gap: 12px; align-items: center; padding: 16px; 
+    background: var(--c-surface-soft); border-radius: 4px; 
+    border: 3px solid var(--c-primary); margin-bottom: 16px; 
+    box-shadow: 4px 4px 0 var(--c-primary);
+  }
+  .invite-row select { 
+    width: 120px; padding: 10px; border-radius: 4px; border: 2px solid var(--c-ink); outline: none;
+  }
+  .invite-row select:focus {
+    border-color: var(--c-primary);
+    box-shadow: 4px 4px 0 var(--c-primary);
+  }
+  .table-styled {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table-styled th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-muted);
+    border-bottom: 1px solid var(--c-hairline);
+  }
+  .table-styled td {
+    padding: 16px;
+    border-bottom: 1px solid var(--c-hairline-soft);
+    font-size: 14px;
+  }
+  .table-styled tr:hover td {
+    background: var(--c-surface-soft);
+  }
+  .select-role {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 2px solid var(--c-ink);
+    background: var(--c-canvas);
+    outline: none;
+  }
+  .select-role:focus {
+    border-color: var(--c-primary);
+    box-shadow: 4px 4px 0 var(--c-primary);
+  }
+  .link { background: transparent; border: none; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-weight: 600; transition: background 0.2s; }
   .link.danger { color: #dc2626; }
-  .link:hover { text-decoration: underline; }
+  .link.danger:hover { background: rgba(220, 38, 38, 0.1); }
+  .danger-zone {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  .danger-zone .section-label {
+    color: #ef4444;
+  }
+  .danger-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(239, 68, 68, 0.03);
+    border-radius: 4px;
+    border: 3px solid #ef4444;
+    box-shadow: 4px 4px 0 #ef4444;
+    margin-bottom: 12px;
+  }
+  .danger-item-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #ef4444;
+  }
+  .danger-item-desc {
+    font-size: 13px;
+    color: var(--c-muted);
+    margin-top: 4px;
+  }
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    border: 2px solid #b91c1c;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 4px 4px 0 #b91c1c;
+  }
+  .btn-danger:hover {
+    background: #dc2626;
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 #b91c1c;
+  }
+  .btn-danger:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #b91c1c;
+  }
 </style>

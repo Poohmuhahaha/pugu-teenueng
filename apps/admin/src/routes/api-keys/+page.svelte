@@ -1,5 +1,4 @@
 <script lang="ts">
-  export let params: any = undefined;
   import { onMount } from 'svelte';
   import Pagination from '$lib/components/Pagination.svelte';
 

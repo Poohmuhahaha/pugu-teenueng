@@ -1,5 +1,4 @@
 <script lang="ts">
-  export let params: any = undefined;
   let email = '';
   let password = '';
   let err = '';

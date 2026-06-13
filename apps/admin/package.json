@@ -12,7 +12,10 @@
   "dependencies": {
     "@questpage/core": "workspace:*",
     "@questpage/sdk": "workspace:*",
-    "@questpage/ui": "workspace:*"
+    "@questpage/ui": "workspace:*",
+    "d3-force": "^3.0.0",
+    "d3-zoom": "^3.0.0",
+    "d3-selection": "^3.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.2.0",

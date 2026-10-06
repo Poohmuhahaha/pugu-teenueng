@@ -1,8 +1,8 @@
 {
-  "name": "@questpage/core",
+  "name": "@pugu/core",
   "version": "0.0.1",
   "private": true,
-  "description": "Zod schemas + domain types shared by all QuestPage apps",
+  "description": "Zod schemas + domain types shared by all Pugu apps",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",

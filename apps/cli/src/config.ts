@@ -1,5 +1,5 @@
 /**
- * Local config — persisted at ~/.questpage/config.json.
+ * Local config — persisted at ~/.pugu/config.json.
  *
  * Holds the API base URL and the active credential (either a JWT session token
  * obtained via device-code login, or an API key pasted via `life login`).
@@ -12,7 +12,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 export interface LifeConfig {
-  /** Base URL of the QuestPage API. Default: http://localhost:3000 (dev). */
+  /** Base URL of the Pugu API. Default: http://localhost:3000 (dev). */
   apiUrl: string;
   /** Active credential, set by `life login`. */
   auth?: {
@@ -28,7 +28,7 @@ export interface LifeConfig {
 
 const DEFAULT_API_URL = process.env.QUESTPAGE_API_URL ?? process.env.LIFEOS_API_URL ?? 'http://localhost:3000';
 
-const CONFIG_DIR = join(homedir(), '.questpage');
+const CONFIG_DIR = join(homedir(), '.pugu');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json');
 
 export async function loadConfig(): Promise<LifeConfig> {

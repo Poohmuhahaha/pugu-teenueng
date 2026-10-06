@@ -1,7 +1,7 @@
 {
-  "name": "@questpage/cli",
+  "name": "@pugu/cli",
   "version": "0.1.0",
-  "description": "Dashboard Command — the QuestPage CLI. Authenticate, browse taverns, capture entries, query the API.",
+  "description": "Dashboard Command — the Pugu CLI. Authenticate, browse taverns, capture entries, query the API.",
   "type": "module",
   "bin": {
     "quest": "./bin/life.js",
@@ -22,7 +22,7 @@
     "lint": "echo \"todo: eslint\""
   },
   "keywords": [
-    "questpage",
+    "pugu",
     "cli",
     "headless-cms",
     "productivity"

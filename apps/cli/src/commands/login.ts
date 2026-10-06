@@ -21,7 +21,7 @@ async function apiKeyLogin(ctx: Ctx): Promise<void> {
   const token = (await askSecret('Workspace Seal:')).trim();
   if (!token) { err('aborted: empty key'); return; }
   if (!token.startsWith('lk_') || !token.includes('.')) {
-    err('that does not look like a QuestPage Workspace Seal (expected `lk_<prefix>.<secret>`)');
+    err('that does not look like a Pugu Workspace Seal (expected `lk_<prefix>.<secret>`)');
     return;
   }
 

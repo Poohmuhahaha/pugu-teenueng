@@ -1,6 +1,6 @@
-import type { Role } from '@questpage/core';
+import type { Role } from '@pugu/core';
 
-export interface QuestPageClientOptions {
+export interface PuguClientOptions {
   baseUrl: string;
   apiKey?: string;     // X-API-Key header
   bearerToken?: string; // Authorization: Bearer <jwt>
@@ -40,11 +40,11 @@ export interface ApiKeyInfo {
   revokedAt: string | null;
 }
 
-export class QuestPageClient {
-  private opts: QuestPageClientOptions;
+export class PuguClient {
+  private opts: PuguClientOptions;
   private f: typeof fetch;
 
-  constructor(opts: QuestPageClientOptions) {
+  constructor(opts: PuguClientOptions) {
     this.opts = opts;
     this.f = opts.fetch ?? fetch;
   }
@@ -133,5 +133,5 @@ export class QuestPageClient {
 
 async function asError(res: Response): Promise<Error> {
   const txt = await res.text().catch(() => res.statusText);
-  return new Error(`QuestPage API ${res.status}: ${txt}`);
+  return new Error(`Pugu API ${res.status}: ${txt}`);
 }

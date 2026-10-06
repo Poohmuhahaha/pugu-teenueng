@@ -30,7 +30,7 @@ To access certain features, including our managed synchronization services (Ques
 
 ### 3.1. Open-Source Core
 The core source code of the QuestPage software is open-source software and is licensed under the **GNU Affero General Public License version 3 (AGPL-3.0)**. 
-* You are permitted to inspect, self-host, copy, modify, and redistribute the core software in accordance with the terms of the AGPL-3.0 license.
+* You are permitted to inspect, copy, modify, and redistribute the core software in accordance with the terms of the AGPL-3.0 license.
 * **Network Deployment Condition:** In compliance with Section 13 of the AGPL-3.0, if you modify the QuestPage software and run it on a server to make it available to other users over a network, you MUST make the modified source code available to those users under the terms of the AGPL-3.0.
 
 ### 3.2. Proprietary Assets and Trademarks

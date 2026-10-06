@@ -1,5 +1,5 @@
 /**
- * @questpage/ui — animation utilities (DISABLED).
+ * @pugu/ui — animation utilities (DISABLED).
  *
  * Animations have been intentionally removed from the project. All helpers
  * here are kept as no-op shims so existing import sites continue to compile,

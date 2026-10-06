@@ -1,19 +1,19 @@
-# @questpage/sdk
+# @pugu/sdk
 
-Typed TypeScript client for the QuestPage REST API.
+Typed TypeScript client for the Pugu REST API.
 
 ## Install
 
 ```bash
-npm install @questpage/sdk
+npm install @pugu/sdk
 ```
 
 ## Usage
 
 ```ts
-import { QuestPageClient } from '@questpage/sdk';
+import { PuguClient } from '@pugu/sdk';
 
-const client = new QuestPageClient({
+const client = new PuguClient({
   baseUrl: 'https://api.questpage.so',
   apiKey: process.env.LIFEOS_API_KEY,
 });

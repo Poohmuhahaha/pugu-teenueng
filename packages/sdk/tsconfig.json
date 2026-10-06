@@ -10,7 +10,7 @@
     "noEmit": true,
     "lib": ["ES2022", "DOM"],
     "paths": {
-      "@questpage/core": ["../core/src/index.ts"]
+      "@pugu/core": ["../core/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"]

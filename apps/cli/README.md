@@ -1,15 +1,15 @@
 # Dashboard Command
 
-The official QuestPage CLI — `life`.
+The official Pugu CLI — `life`.
 
 ```bash
-npm install -g @questpage/cli
+npm install -g @pugu/cli
 life
 ```
 
 ```
   ⬤  Dashboard Command
-  QuestPage CLI · v0.1.0
+  Pugu CLI · v0.1.0
 
   type
   	help     — list commands
@@ -24,10 +24,10 @@ life ›
 
 ```bash
 # npm
-npm install -g @questpage/cli
+npm install -g @pugu/cli
 
 # bun
-bun add -g @questpage/cli
+bun add -g @pugu/cli
 
 # deno (runs the TypeScript source directly)
 deno install -A -g -n life --import-map=https://questpage.app/deno-import-map.json \
@@ -76,7 +76,7 @@ Run `life` with no arguments for an interactive REPL.
 
 ## Config
 
-Stored at `~/.questpage/config.json` (mode 0600 on POSIX). The file holds the API
+Stored at `~/.pugu/config.json` (mode 0600 on POSIX). The file holds the API
 URL and either a Workspace Seal or a session JWT.
 
 Environment overrides:

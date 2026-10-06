@@ -25,8 +25,8 @@ You'll get:
 Then bootstrap the database and seed:
 
 ```bash
-docker compose exec api deno run -A npm:prisma migrate deploy --schema=prisma/schema.prisma
-docker compose exec api deno task db:seed   # creates pooh@questpage.dev / changeme123
+docker compose exec server bunx prisma migrate deploy --schema=prisma/schema.prisma
+docker compose exec server bun run db:seed   # creates pooh@questpage.dev / changeme123
 ```
 
 Open http://localhost:3001 and sign in.
@@ -38,7 +38,7 @@ You need Deno 2 + a Postgres instance.
 ```bash
 git clone https://github.com/Poohmuhahaha/questpage.git
 cd questpage
-deno task setup-dev   # sets up environment, database, and runs all dev servers in parallel
+bun run setup-dev   # sets up environment, database, and runs all dev servers in parallel
 ```
 
 | App | Port | URL |
@@ -69,4 +69,4 @@ See `helm/questpage/values.yaml` for all knobs.
    ```
 4. **Register a Messenger Bird** — admin → Messenger Birds → Slack incoming messenger bird URL → events `afterCreate,afterUpdate`
 
-See `docs/api.md` for the full API reference, `docs/self-host.md` for production deployment guidance.
+See `docs/api.md` for the full API reference and `docs/scaling.md` for scaling guidance.

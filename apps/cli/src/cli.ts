@@ -48,7 +48,7 @@ function buildCtx(): Ctx {
 }
 
 export function openDocs(): void {
-  const docPath = "D:/PROJECTS/website/questpage/docs/proof_of_concept_proposal.pdf";
+  const docPath = "D:/PROJECTS/website/pugu/docs/proof_of_concept_proposal.pdf";
   const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
   
   info(`Opening documentation: ${docPath}`);
@@ -87,7 +87,7 @@ export async function main(argv: string[]): Promise<void> {
     const program = new Command();
     program
       .name('quest')
-      .description('QuestPage CLI — the command line tool for QuestPage')
+      .description('Pugu CLI — the command line tool for Pugu')
       .version('0.1.0');
 
     // /help command
@@ -101,7 +101,7 @@ export async function main(argv: string[]): Promise<void> {
     // login command
     program
       .command('login [token]')
-      .description('Log into QuestPage (using token or device authentication)')
+      .description('Log into Pugu (using token or device authentication)')
       .option('-d, --device', 'Use device confirmation flow')
       .action(async (token, options) => {
         const args = [];

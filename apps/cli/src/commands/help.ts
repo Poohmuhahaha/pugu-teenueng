@@ -6,7 +6,7 @@ export async function runHelp(_args: string[], _ctx: Ctx): Promise<void> {
   out.write(
     [
       '',
-      c.bold('Dashboard Command') + c.dim(' — QuestPage CLI'),
+      c.bold('Dashboard Command') + c.dim(' — Pugu CLI'),
       '',
       c.dim('USAGE'),
       `  ${c.cyan('quest')} ${c.dim('<command> [args]')}`,

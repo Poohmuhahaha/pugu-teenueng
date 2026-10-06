@@ -1,0 +1,21 @@
+{
+  "name": "pugu",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter @pugu/vue dev",
+    "build": "bun run --filter @pugu/vue build",
+    "preview": "bun run --filter @pugu/vue preview",
+    "test": "bun run --filter @pugu/vue test",
+    "typecheck": "bun run --filter @pugu/vue typecheck",
+    "api": "cargo run --manifest-path server/Cargo.toml",
+    "api:release": "cargo build --release --manifest-path server/Cargo.toml",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
+  }
+}

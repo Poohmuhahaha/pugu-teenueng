@@ -5,7 +5,7 @@
  *   const me = await api.get('/api/v1/me');
  *
  * No SDK dependency — this CLI is intentionally portable. If you want a
- * richer typed surface, swap to @questpage/sdk on top of the same fetch logic.
+ * richer typed surface, swap to @pugu/sdk on top of the same fetch logic.
  */
 
 import { startSpinner } from './output.js';
@@ -32,7 +32,7 @@ export function createApi(cfg: LifeConfig): ApiClient {
   function headers(): HeadersInit {
     const h: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'questpage-cli',
+      'User-Agent': 'pugu-cli',
     };
     if (cfg.auth) {
       if (cfg.auth.kind === 'apikey') {
@@ -45,7 +45,7 @@ export function createApi(cfg: LifeConfig): ApiClient {
   }
 
   async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
-    const spinner = startSpinner('Connecting to QuestPage server');
+    const spinner = startSpinner('Connecting to Pugu server');
     const url = base + path;
     const init: RequestInit = { method, headers: headers() };
     if (body !== undefined) init.body = JSON.stringify(body);

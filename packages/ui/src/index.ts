@@ -1,7 +1,7 @@
 /**
- * @questpage/ui — shared design system.
+ * @pugu/ui — shared design system.
  *
- * Apps should `import '@questpage/ui/design.css';` exactly once in their layout.
+ * Apps should `import '@pugu/ui/design.css';` exactly once in their layout.
  * This file only exists so the package has a JS entrypoint for tooling
  * (TypeScript module resolution, etc.). It re-exports a small set of token
  * names so non-CSS consumers can reference them programmatically if needed.

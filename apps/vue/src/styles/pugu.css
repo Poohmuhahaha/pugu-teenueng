@@ -1,0 +1,59 @@
+/* Pugu layer — sits on top of the huuk design system (@huuk/style.css).
+   Maps legacy --c-* tokens onto huuk tokens; all component styling lives in
+   the huuk components themselves. This file only carries tokens + typography. */
+
+:root {
+  --c-canvas: var(--surface);
+  --c-ink: var(--ink);
+  --c-body: var(--ink);
+  --c-muted: var(--muted);
+  --c-muted-soft: var(--muted);
+  --c-faint: #a3a3a3;
+  --c-ink-body: var(--ink);
+  --c-hairline: var(--ink);
+  --c-hairline-soft: var(--line);
+  --c-surface-card: var(--surface);
+  --c-surface-soft: var(--wash);
+  --c-surface-strong: var(--line);
+  --c-surface-dark: var(--ink);
+  --c-surface-dark-elev: var(--ink);
+  --c-on-dark: #ffffff;
+  --c-on-dark-soft: #a3a3a3;
+  --c-primary: var(--ink);
+  --c-primary-active: var(--ink);
+  --c-success: var(--ink);
+  --c-warning: var(--ink);
+  --c-error: var(--ink);
+  --c-brand-accent: var(--ink);
+  --font-main: var(--font-display);
+  --font-body: var(--font);
+  --font-mono: var(--mono);
+  --s-xxs: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 32px;
+  --s-xxl: 48px;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+h1 { font-size: clamp(30px, 3.4vw, 48px); line-height: 1.04; letter-spacing: -0.02em; }
+h2 { font-size: clamp(26px, 2.6vw, 36px); line-height: 1.06; letter-spacing: -0.02em; }
+h3 { font-size: 21px; line-height: 1.25; letter-spacing: -0.01em; }
+a { color: inherit; }
+
+/* huuk fills every control; keep inline buttons inline. */
+button, a.btn { width: auto; }

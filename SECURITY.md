@@ -6,7 +6,7 @@ Currently, we support the `main` branch for security updates.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in QuestPage, please **do not** open a public issue.
+If you discover a security vulnerability in Pugu, please **do not** open a public issue.
 
 Instead, please send an email to our security team at: **support@questpage.app**.
 

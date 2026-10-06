@@ -1,5 +1,5 @@
 {
-  "name": "@questpage/ui",
+  "name": "@pugu/ui",
   "version": "0.0.1",
   "private": true,
   "description": "Shared Cal.com-inspired design system — tokens, base styles, utility classes",

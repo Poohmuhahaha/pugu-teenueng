@@ -1,0 +1,21 @@
+[package]
+name = "pugu-server"
+version = "0.1.0"
+edition = "2021"
+description = "Pugu REST backend — Axum + in-memory/JSON store (huuk-style stack)"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal", "time", "fs"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
+argon2 = "0.5"
+rand = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+strip = true
+lto = true

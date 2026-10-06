@@ -25,7 +25,7 @@ This report is Agent 3's independent verification.
 - **Status**: Verified
 - **What Agent 2 changed**: `apps/api/src/routes/api/auth/device/start/+server.ts` now prefers `process.env.PUBLIC_WEB_URL` and only falls back to the `:3000 → :5176` swap, which is the dev shape.
 - **Why this resolves the bug**: In production the previous `.replace(/:3000$/, ':5176')` was a no-op (prod origins end with `:443`/no port), so `verification_uri` pointed at the API host instead of the web app. Setting `PUBLIC_WEB_URL=https://app.questpage.com` now puts the CLI user on the right host.
-- **Residual concern**: Self-hosted operators must set `PUBLIC_WEB_URL` or the device flow still issues an API-host URL in production. Worth documenting in `docs/self-host.md`.
+- **Residual concern**: Operators must set `PUBLIC_WEB_URL` or the device flow still issues an API-host URL in production. Worth documenting in `docs/quickstart.md`.
 
 ### B-002 — `touchSession` not awaited in hooks
 - **Status**: Verified
@@ -102,7 +102,7 @@ This report is Agent 3's independent verification.
 - **`/api/v1/:collection` filters silently ignored**: `parseQuery` builds a `where` from `?filters[...]` but the route never passes it to Prisma. Either wire it in (Prisma supports `path` filters on JSONB) or strip the parsing.
 - **Stale comment in `[collection]/+server.ts`**: The "filters in-memory after fetching" comment is no longer true (and wasn't true before either). Remove or rewrite.
 - **`touchSession` swallows errors**: While B-002's await is correct, the inner `.catch(() => {})` means session-write failures are still invisible. Consider logging via the structured logger.
-- **`PUBLIC_WEB_URL` is required in production** for the device flow but isn't called out in `docs/self-host.md` or `docs/quickstart.md`. Worth adding to the env-var checklist.
+- **`PUBLIC_WEB_URL` is required in production** for the device flow but isn't called out in `docs/quickstart.md`. Worth adding to the env-var checklist.
 - **Webhook secret rotation**: Not in scope here, but while reading the Stripe handler I noticed `STRIPE_WEBHOOK_SECRET` has no rotation/multi-secret support. Low priority but worth a tracker note.
 
 ## Process notes for Agent 1
@@ -160,7 +160,7 @@ Agent 1.2 found 2 bugs, Agent 2.2 fixed 2, deferred 0.
 
 - **C-B (touchSession swallows DB errors)**: Still applicable. `apps/api/src/lib/server/sessions.ts:24` still ends with `.catch(() => {})`. No code change since cycle 1. The cycle-1 await fix landed, but the inner error swallow remains — session-write failures are still invisible to logs.
 - **C-C (B-006 partial — duplicate workspace on same-user race)**: Still applicable. `apps/api/src/lib/server/workspace.ts:40-56` is unchanged from cycle 1. On a P2002 from concurrent same-user signup, the catch branch still falls through to `db.workspace.create({ slug: baseSlug-<random> })` without re-checking `findFirst({ userId, role: 'owner' })`, so the user can end up owning two workspaces.
-- **C-D (PUBLIC_WEB_URL not documented)**: Still applicable. `grep -r PUBLIC_WEB_URL docs/` returns only this audit report — `docs/self-host.md` and `docs/quickstart.md` still lack the env-var entry.
+- **C-D (PUBLIC_WEB_URL not documented)**: Still applicable. `grep -r PUBLIC_WEB_URL docs/` returns only this audit report — `docs/quickstart.md` still lacks the env-var entry.
 
 ## Recommendations for cycle 3
 
@@ -205,7 +205,7 @@ Agent 2.3 fixed all four (plus a stale comment in `[collection]/+server.ts`).
 **C-D — PUBLIC_WEB_URL documentation** ✅
 Added to two places:
 - `.env.example:31` — `PUBLIC_WEB_URL=""` with comment noting dev fallback and production requirement.
-- `docs/self-host.md:62` — full row in the optional-env table explaining the CLI device-code use case, dev `:3000→:5176` fallback, and production requirement.
+- `docs/quickstart.md` — full row in the optional-env table explaining the CLI device-code use case, dev `:3000→:5176` fallback, and production requirement.
 Doc text matches the implementation at `apps/api/src/routes/api/auth/device/start/+server.ts:64` exactly (`process.env.PUBLIC_WEB_URL ?? event.url.origin.replace(/:3000$/, ':5176')`).
 
 **Stale comment cleanup** ✅

@@ -11,7 +11,7 @@ export function banner(): void {
   const lines = [
     '',
     c.bold('  ⬤  Quest Command'),
-    `  ${c.dim('QuestPage CLI · v0.1.0')}`,
+    `  ${c.dim('Pugu CLI · v0.1.0')}`,
     '',
     c.dim('  type'),
     `    ${c.cyan('help')}     ${c.dim('— list commands')}`,

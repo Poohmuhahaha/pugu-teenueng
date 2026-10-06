@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: QuestPage-flat-retro-design
+name: Pugu-flat-retro-design
 description: A clean, retro-flat interface anchored on warm light cream canvas with dark brown primary CTAs. Layout containers are entirely flat with no borders or container cards. Features, pricing, and testimonials are presented as flat columns separated by simple horizontal divider lines. Cards are reserved exclusively for product UI mockups.
 
 colors:
@@ -273,11 +273,11 @@ components:
 
 ## Overview
 
-QuestPage's marketing surface is a clean, friendly interface — warm light cream canvas (`{colors.canvas}` — #FFF2D9) with dark brown primary CTAs (`{colors.primary}` — #3A2616), custom display typography, and flat, borderless column layouts. Features, pricing lists, and testimonials are presented directly on the canvas without background cards, using simple top-border lines as dividers. The system reads as confidently engineered — every band has clear hierarchy, generous whitespace, and a single primary action.
+Pugu's marketing surface is a clean, friendly interface — warm light cream canvas (`{colors.canvas}` — #FFF2D9) with dark brown primary CTAs (`{colors.primary}` — #3A2616), custom display typography, and flat, borderless column layouts. Features, pricing lists, and testimonials are presented directly on the canvas without background cards, using simple top-border lines as dividers. The system reads as confidently engineered — every band has clear hierarchy, generous whitespace, and a single primary action.
 
 Type voice splits cleanly into two roles: display headlines (using display typography) and body typography (used for everything else — body, buttons, nav, captions).
 
-Component voltage comes from **product UI fragments shown directly inside mockups** — task boards, scheduling forms, automation diagrams, integration tiles. QuestPage doesn't paint marketing illustrations of the product; it shows the actual product chrome at small scale embedded in the marketing flow. Mockups are the only elements allowed to have boxy container outlines ("cards").
+Component voltage comes from **product UI fragments shown directly inside mockups** — task boards, scheduling forms, automation diagrams, integration tiles. Pugu doesn't paint marketing illustrations of the product; it shows the actual product chrome at small scale embedded in the marketing flow. Mockups are the only elements allowed to have boxy container outlines ("cards").
 
 The footer flips to `{colors.surface-dark}` (#3A2616) — a deep dark brown that visually closes every long-scroll page. The footer is the only dark section in the system.
 
@@ -374,7 +374,7 @@ If Cal Sans is unavailable, **Inter** at weight 600 with -0.04em letter-spacing 
 - **Footer:** 4-column link list at desktop, wrapping to 2-up at tablet, 1-up at mobile.
 
 ### Whitespace Philosophy
-QuestPage uses generous but not excessive whitespace — section padding sits at 96px, and flat column spacing is aligned with top-border divider lines. The rhythm is calibrated for fast scanning: every band has a single h1 + h2 + supporting flat lists, never densely packed cards.
+Pugu uses generous but not excessive whitespace — section padding sits at 96px, and flat column spacing is aligned with top-border divider lines. The rhythm is calibrated for fast scanning: every band has a single h1 + h2 + supporting flat lists, never densely packed cards.
 
 ## Elevation & Depth
 
@@ -412,9 +412,9 @@ Avatar photos use square styling at 36px or 40px with no border-radius. Hero ill
 
 ### Top Navigation
 
-**`top-nav`** — Warm light cream nav bar pinned to the top of every page. 64px tall, `{colors.canvas}` background. Carries the QuestPage wordmark + logo at left, primary horizontal menu center, right-side cluster with "Sign in" text-link, "Sign up free" `{component.button-primary}`, and a sometimes-visible language selector.
+**`top-nav`** — Warm light cream nav bar pinned to the top of every page. 64px tall, `{colors.canvas}` background. Carries the Pugu wordmark + logo at left, primary horizontal menu center, right-side cluster with "Sign in" text-link, "Sign up free" `{component.button-primary}`, and a sometimes-visible language selector.
 
-**`nav-pill-group`** — A small pill-radius wrapper around 2-3 sub-nav segments. Background `{colors.surface-soft}` with internal padding 6px, rounded `{rounded.pill}`. Active segment renders as a warm light cream canvas pill with a subtle drop shadow inside the wrapper. The pill-in-pill treatment is one of QuestPage's signature interactive components.
+**`nav-pill-group`** — A small pill-radius wrapper around 2-3 sub-nav segments. Background `{colors.surface-soft}` with internal padding 6px, rounded `{rounded.pill}`. Active segment renders as a warm light cream canvas pill with a subtle drop shadow inside the wrapper. The pill-in-pill treatment is one of Pugu's signature interactive components.
 
 ### Buttons
 
@@ -432,13 +432,13 @@ Avatar photos use square styling at 36px or 40px with no border-radius. Hero ill
 
 **`hero-band`** — Warm, full-width retro hero background (`/hero-bg.png` rendered at 100% color intensity with a 60% dark overlay filter) with a 7-5 grid: high-contrast light text (`{colors.on-dark}` and `{colors.on-dark-soft}`) on the left, and an interactive `{component.hero-app-mockup-card}` on the right. Vertical padding `{spacing.section}` (96px).
 
-**`hero-app-mockup-card`** — A product-UI mockup card showing the actual QuestPage widget with task boards, time slots, and a confirm button. Renders as a boxy mockup container with a 3px solid border, 0px border-radius, and flat solid drop shadow.
+**`hero-app-mockup-card`** — A product-UI mockup card showing the actual Pugu widget with task boards, time slots, and a confirm button. Renders as a boxy mockup container with a 3px solid border, 0px border-radius, and flat solid drop shadow.
 
 **`feature-card`** — Used in 3-up feature grids. Flat layout with a 3px solid top border divider, no container box or background. Carries a small icon, headline, and body description.
 
 **`feature-icon-card`** — A simpler flat feature variant. Top-border divider, no container background. Carries a small icon, title, and short description.
 
-**`product-mockup-card`** — A mockup card showing actual QuestPage product UI fragments (workflow editor, task list, timeline). Carries a 3px solid border, 0px border-radius, and flat shadow.
+**`product-mockup-card`** — A mockup card showing actual Pugu product UI fragments (workflow editor, task list, timeline). Carries a 3px solid border, 0px border-radius, and flat shadow.
 
 **`testimonial-card`** — Used in testimonial grids. Flat layout with a 3px solid top border divider, no container box or background. Top row carries avatar + name + role; below sits the quote text.
 
@@ -468,12 +468,12 @@ Avatar photos use square styling at 36px or 40px with no border-radius. Hero ill
 
 **`cta-band-light`** — A pre-footer "Smarter, simpler scheduling" CTA card. Background `{colors.surface-card}`, rounded `{rounded.lg}`, padding `{spacing.xxl}` (48px). Carries an h2 in `{typography.display-sm}`, a sub-line, and a `{component.button-primary}` centered.
 
-**`footer`** — Dark brown footer that closes every page. Background `{colors.surface-dark}` (#3A2616), text `{colors.on-dark-soft}`. 4-column link list at desktop covering Product / Solutions / Company / Resources. Vertical padding 64px. The QuestPage wordmark sits at the top-left in `{colors.on-dark}`. The footer is the only dark surface on every page — the deliberate inversion visually closes the page.
+**`footer`** — Dark brown footer that closes every page. Background `{colors.surface-dark}` (#3A2616), text `{colors.on-dark-soft}`. 4-column link list at desktop covering Product / Solutions / Company / Resources. Vertical padding 64px. The Pugu wordmark sits at the top-left in `{colors.on-dark}`. The footer is the only dark surface on every page — the deliberate inversion visually closes the page.
 
 ## Do's and Don'ts
 
 ### Do
-- Reserve `{colors.primary}` (#3A2616) for primary CTAs and h1/h2 type. QuestPage's button is dark brown, not blue.
+- Reserve `{colors.primary}` (#3A2616) for primary CTAs and h1/h2 type. Pugu's button is dark brown, not blue.
 - Use display font for every display headline. Pair with body font. Never blur the boundary.
 - Apply negative letter-spacing on display sizes (-0.5 to -2px).
 - Use `{component.feature-card}` (light gold) and `{component.product-mockup-card}` (warm cream with chrome) deliberately — the gold cards signal "abstract feature claim", cream cards signal "look at the actual product".
@@ -487,7 +487,7 @@ Avatar photos use square styling at 36px or 40px with no border-radius. Hero ill
 - Don't bold display weight beyond 600. Cal Sans at 700 reads as bombastic.
 - Don't use rounded radius beyond `{rounded.xl}` (16px) on cards. Larger radii read as consumer-app, not professional booking software.
 - Don't put dark surface cards anywhere except the footer and the featured pricing tier. The dark surface is a deliberate, scarce signal.
-- Don't repeat the same surface mode in two consecutive bands. QuestPage's pacing alternates warm cream → light gold → warm cream → product-mockup-card → warm cream → dark footer.
+- Don't repeat the same surface mode in two consecutive bands. Pugu's pacing alternates warm cream → light gold → warm cream → product-mockup-card → warm cream → dark footer.
 - Don't add hover state styling beyond what the system already encodes — primary darkens on press; nothing else changes.
 
 ## Responsive Behavior

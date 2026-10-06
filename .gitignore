@@ -26,6 +26,9 @@ dist
 .vite
 **/.vite
 
+# ── Rust ──────────────────────────────────
+target/
+
 # ── Prisma ────────────────────────────────
 **/prisma/migrations/dev.db*
 **/prisma/.env

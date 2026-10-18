@@ -1,42 +1,45 @@
 # Pugu
 
-> Your personal AI secretary that turns daily life into RPG quests.
+> Collaborative workspace, database collections, LibreOffice Calc-compatible spreadsheet engine, and knowledge graph.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![Bun](https://img.shields.io/badge/Bun-1.x-black)](https://bun.sh)
-[![SvelteKit](https://img.shields.io/badge/SvelteKit-4.x-red)](https://kit.svelte.dev)
+[![Rust](https://img.shields.io/badge/Rust-Axum%200.8%20%2B%20SQLx-orange)](https://github.com/tokio-rs/axum)
+[![Vue 3](https://img.shields.io/badge/Vue-3.5%20%2B%20TanStack%20Query-42b883)](https://vuejs.org)
 
-An intelligent assistant that turns your life, tasks, and notes into an RPG adventure. It combines a **private AI secretary**, **fantasy quest boards**, **block-based pages**, and **webhooks/REST APIs** so your life remains automated and your data remains 100% yours.
+Pugu combines structured **database collections**, a **full-page spreadsheet engine** (with `.ods` / `.csv` import/export, OpenFormula support, pivot tables, charts, and conditional formatting), **rich document notes**, and a **bidirectional `[[Wiki-Link]]` / `=ENTRY()` knowledge graph**.
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/Poohmuhahaha/questpage.git
-cd pugu
-cp .env.example .env  # set POSTGRES_PASSWORD, JWT_SECRET, CSRF_SECRET
+cp .env.example .env
+# 1. Start PostgreSQL + run one-off migrations + start Rust API & Caddy ingress
 docker compose up -d
-docker compose exec server bunx prisma migrate deploy --schema=prisma/schema.prisma
-docker compose exec server bun run db:seed   # creates pooh@questpage.app / changeme123
+
+# 2. Or run locally for development:
+docker compose -f deploy/docker-compose.dev.yml up -d
+cargo run --manifest-path server/Cargo.toml -- --run-migrations-only
+cargo run --manifest-path server/Cargo.toml
+bun run dev
 ```
 
-Open `http://localhost:3001` and sign in.  
-Full guide → [docs/quickstart.md](docs/quickstart.md)
+Open `http://localhost:3001` (Docker) or `http://localhost:5173` (Vite dev) and sign in with the demo account:
+`pooh@questpage.app` / `changeme123`.
 
 ---
 
-## Stack
+## Stack (Master Engineering SOP Compliant)
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | SvelteKit 4 (Svelte 5 once Tiptap-svelte stabilizes) |
-| **API** | SvelteKit server-only routes |
-| **Database** | PostgreSQL 16 via Prisma |
-| **Editor** | TipTap (svelte-tiptap) |
-| **Offline / Sync** | RxDB + Dexie adapter (replication via REST + SSE) |
-| **Auth** | JWT + bcrypt + Dashboard RBAC (Owner / Admin / Editor / Viewer / Member) |
-| **License** | AGPL-3.0 for the OSS core |
+| **Ingress / Edge** | **Caddy 2** reverse proxy (same-origin topology, Zstd/Gzip compression, HSTS/CSP headers, immutable `/assets/*` cache + `no-store` HTML cache, unbuffered SSE `/api/agent/stream/*`) |
+| **Frontend** | **Vue 3** (`<script setup lang="ts">`) + **TanStack Query** (`@tanstack/vue-query`) + **Tailwind CSS** design tokens + **Huuk** UI kit |
+| **Contract & Validation** | **ts-rs** (Rust DTO → `.d.ts` single source of truth) + **Zod** runtime boundary validation with `AssertEqual<ZodType, TsRsType>` compile-time gate |
+| **Backend API** | **Rust (Axum 0.8 + Tokio)** with `mimalloc` global allocator, zero production `.unwrap()`, and `spawn_blocking` offloaded CPU/crypto/IO work |
+| **Database & Persistence** | **PostgreSQL 16** via **SQLx** (`PgPoolOptions` with `statement_timeout = 5000ms` & `lock_timeout = 3000ms`, Expand-and-Contract migrations via `--run-migrations-only`) |
+| **Auth** | **HttpOnly + Secure + SameSite=Lax** session cookies (`axum-extra` `Cookie`) + client-side single-flight `401` silent refresh queue |
+| **License** | AGPL-3.0 |
 
 ---
 
@@ -44,57 +47,54 @@ Full guide → [docs/quickstart.md](docs/quickstart.md)
 
 ```
 pugu/
-├─ apps/
-│  ├─ web/          # SvelteKit frontend — localhost:5176 (dev) / 3001 (prod)
-│  ├─ api/          # SvelteKit server-only API — localhost:3000
-│  ├─ admin/        # Dashboard admin UI — localhost:5175
-│  └─ landing/      # Marketing site — localhost:5177
-├─ packages/
-│  ├─ core/         # Zod schemas + domain types — shared by all apps
-│  ├─ ui/           # Svelte component library
-│  ├─ sdk/          # TypeScript client, auto-generated from OpenAPI
-│  └─ templates/    # Starter quest-type packs (Dashboard Quests, Revenue Tracker, Integration & Rations, Documentation)
-├─ docs/            # Full documentation
+├─ .github/workflows/
+│  ├─ ci.yml                     # CI verification pipeline
+│  └─ ci-cd.yml                  # Canonical SOP §8.4 CI/CD pipeline
+├─ deploy/
+│  ├─ Caddyfile                  # Canonical production Caddy reverse proxy config (SOP §4.2)
+│  ├─ docker-compose.dev.yml     # Local PostgreSQL 16 development database
+│  └─ docker-compose.prod.yml    # Production stack (Postgres, one-off Migration, Axum Backend, Caddy)
+├─ server/                       # Rust (Axum + SQLx) backend
+│  ├─ Cargo.toml                 # Dependencies & LTO release profile (SOP §10.2)
+│  ├─ Dockerfile                 # cargo-chef + musl + Alpine 3.20 non-root image (SOP §5.2)
+│  ├─ migrations/                # SQLx PostgreSQL migrations (Expand-and-Contract)
+│  └─ src/
+│     ├─ main.rs                 # MiMalloc, PgPool guardrails, --run-migrations-only, /healthz
+│     ├─ db.rs                   # PostgreSQL pool & Store persistence sync
+│     ├─ error.rs                # Unified ApiError / ApiErrorResponse (SOP §6.4)
+│     ├─ model.rs                # Domain & wire DTOs with #[derive(TS)]
+│     ├─ handlers.rs             # Axum HTTP handlers & Cookie session management
+│     ├─ store.rs                # Workspace, collection, entry, and backref engine
+│     └─ ods.rs                  # LibreOffice Calc .ods & .csv parser/writer
+├─ apps/                         # Vue 3 + TanStack Query + Zod SPA
+│  ├─ Caddyfile                  # Container Caddyfile for SPA + /api/* reverse proxy
+│  ├─ Dockerfile                 # Multi-stage Bun build -> caddy:2-alpine runtime
+│  ├─ tailwind.config.ts         # Semantic design tokens (SOP §10.1 Hard Rule 9)
+│  ├─ vite.config.ts             # Manual vendor chunk splitting (SOP §10.2)
+│  └─ src/
+│     ├─ api/
+│     │  ├─ client.ts            # customFetch with single-flight 401 refresh queue (SOP §2.3)
+│     │  ├─ types/               # Auto-generated by ts-rs via `cargo test`
+│     │  ├─ schemas/             # Zod schemas + AssertEqual<Zod, TsRs> gates (SOP §6.3)
+│     │  └─ queries/             # TanStack Query hooks (useQuery / useMutation)
+│     ├─ pages/                  # 4-state UI views (LeadDesk, Entries, Sheet, Graph, Login)
+│     └─ __tests__/              # Vitest unit tests (auth queue, Zod contracts, spreadsheet)
 ├─ docker-compose.yml
-└─ helm/pugu/     # Kubernetes Helm chart
+├─ CONTRIBUTING.md
+├─ SECURITY.md
+├─ LICENSE                       # MIT License
+└─ justfile                      # Unified command runner (`just verify`, `just gen-types`, `just deploy`)
 ```
 
 ---
 
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [docs/quickstart.md](docs/quickstart.md) | Get running in 10 minutes — Docker, Node, or Kubernetes |
-| [docs/scaling.md](docs/scaling.md) | Scale beyond one node — Redis pub/sub, read replicas, webhook queues |
-| [docs/api.md](docs/api.md) | Workspace API reference — quest boards, auth, admin endpoints, SDK |
-| [docs/webhooks.md](docs/webhooks.md) | Messenger Bird registration, signature verification, retry semantics, recipes |
-| [docs/privacy-policy.md](docs/privacy-policy.md) | Privacy Policy |
-| [docs/terms-of-service.md](docs/terms-of-service.md) | Terms of Service |
-
----
-
-## Pricing (tentative)
-
-| Tier | THB / month | USD / month | Limits |
-|------|------------:|------------:|--------|
-| Free | 0 | $0 | 1 Dashboard · 1 Adventurer · 1,000 entries · community support |
-| Adventurer Pro | 199 | $5.99 | Unlimited entries · 5 GB · Workspace Seal API |
-| Admin | 999 | $29 | 10 Adventurers · 50 GB · SSO · Dashboard Chronicles · Fast Support |
-
----
-
-## Local Development
+## Verification & Operations
 
 ```bash
-bun run setup-dev   # sets up environment, database, and starts dev servers
+just verify       # fmt, clippy -D warnings, cargo test, ts-rs git diff check, typecheck, vitest, build
+just gen-types    # Export TypeScript bindings from Rust DTOs via ts-rs
+just deploy       # Zero-downtime migration + rolling 2->1 backend scale + Caddy reload + /healthz check
 ```
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to submit issues, feature requests, and pull requests.
 
 ## Security
 
@@ -102,4 +102,4 @@ To report a security vulnerability, please follow our [SECURITY.md](SECURITY.md)
 
 ## License
 
-Pugu is licensed under the **GNU Affero General Public License v3.0**. See [LICENSE](LICENSE) for the full text.
+Pugu is open-source software licensed under the **MIT License**. See [LICENSE](LICENSE) for the full text.

@@ -1,8 +1,8 @@
-//! In-memory store + optional JSON snapshot (mirrors huuk's approach).
+//! In-memory store + PostgreSQL/JSON persistence.
 
 use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
@@ -18,7 +18,7 @@ use crate::model::*;
 
 pub const SESSION_TTL_DAYS: i64 = 30;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Store {
     pub users: Vec<User>,
     pub workspaces: Vec<Workspace>,
@@ -32,7 +32,10 @@ pub struct Store {
 
 impl Store {
     pub fn fresh() -> Self {
-        Self { next_id: 1, ..Default::default() }
+        Self {
+            next_id: 1,
+            ..Default::default()
+        }
     }
 
     fn id(&mut self) -> i64 {
@@ -53,35 +56,144 @@ impl Store {
             password_hash: hash,
         });
         let ws_id = store.id();
-        store.workspaces.push(Workspace { id: ws_id, name: "Pooh's Dashboard".into(), slug: "pooh-dashboard".into() });
+        store.workspaces.push(Workspace {
+            id: ws_id,
+            name: "Pooh's Dashboard".into(),
+            slug: "pooh-dashboard".into(),
+        });
         store.memberships.push((user_id, ws_id, "owner".into()));
 
         let types: [(&str, &str, &str, Vec<Field>); 4] = [
-            ("areas", "Areas", "document", vec![
-                Field { name: "title".into(), kind: "text".into(), required: true, options: None, format: None },
-                Field { name: "description".into(), kind: "richtext".into(), required: false, options: None, format: None },
-                Field { name: "icon".into(), kind: "text".into(), required: false, options: None, format: None },
-            ]),
-            ("projects", "Projects", "document", vec![
-                Field { name: "title".into(), kind: "text".into(), required: true, options: None, format: None },
-                Field { name: "status".into(), kind: "select".into(), required: false, options: Some(vec!["active".into(), "paused".into(), "done".into()]), format: None },
-                Field { name: "dueDate".into(), kind: "date".into(), required: false, options: None, format: None },
-            ]),
-            ("tasks", "Tasks", "spreadsheet", vec![
-                Field { name: "title".into(), kind: "text".into(), required: true, options: None, format: None },
-                Field { name: "status".into(), kind: "select".into(), required: false, options: Some(vec!["todo".into(), "doing".into(), "done".into()]), format: None },
-                Field { name: "priority".into(), kind: "select".into(), required: false, options: Some(vec!["low".into(), "med".into(), "high".into()]), format: None },
-                Field { name: "estimate".into(), kind: "number".into(), required: false, options: None, format: None },
-            ]),
-            ("resources", "Resources", "document", vec![
-                Field { name: "title".into(), kind: "text".into(), required: true, options: None, format: None },
-                Field { name: "category".into(), kind: "text".into(), required: false, options: None, format: None },
-                Field { name: "url".into(), kind: "text".into(), required: false, options: None, format: None },
-            ]),
+            (
+                "areas",
+                "Areas",
+                "document",
+                vec![
+                    Field {
+                        name: "title".into(),
+                        kind: "text".into(),
+                        required: true,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "description".into(),
+                        kind: "richtext".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "icon".into(),
+                        kind: "text".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                ],
+            ),
+            (
+                "projects",
+                "Projects",
+                "document",
+                vec![
+                    Field {
+                        name: "title".into(),
+                        kind: "text".into(),
+                        required: true,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "status".into(),
+                        kind: "select".into(),
+                        required: false,
+                        options: Some(vec!["active".into(), "paused".into(), "done".into()]),
+                        format: None,
+                    },
+                    Field {
+                        name: "dueDate".into(),
+                        kind: "date".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                ],
+            ),
+            (
+                "tasks",
+                "Tasks",
+                "spreadsheet",
+                vec![
+                    Field {
+                        name: "title".into(),
+                        kind: "text".into(),
+                        required: true,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "status".into(),
+                        kind: "select".into(),
+                        required: false,
+                        options: Some(vec!["todo".into(), "doing".into(), "done".into()]),
+                        format: None,
+                    },
+                    Field {
+                        name: "priority".into(),
+                        kind: "select".into(),
+                        required: false,
+                        options: Some(vec!["low".into(), "med".into(), "high".into()]),
+                        format: None,
+                    },
+                    Field {
+                        name: "estimate".into(),
+                        kind: "number".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                ],
+            ),
+            (
+                "resources",
+                "Resources",
+                "document",
+                vec![
+                    Field {
+                        name: "title".into(),
+                        kind: "text".into(),
+                        required: true,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "category".into(),
+                        kind: "text".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                    Field {
+                        name: "url".into(),
+                        kind: "text".into(),
+                        required: false,
+                        options: None,
+                        format: None,
+                    },
+                ],
+            ),
         ];
 
+        let mut areas_id = 0i64;
+        let mut tasks_id = 0i64;
         for (slug, name, kind, fields) in types {
             let ct_id = store.id();
+            if slug == "areas" {
+                areas_id = ct_id;
+            } else if slug == "tasks" {
+                tasks_id = ct_id;
+            }
             let now = Utc::now();
             store.content_types.push(ContentType {
                 id: ct_id,
@@ -89,15 +201,14 @@ impl Store {
                 slug: slug.into(),
                 name: name.into(),
                 kind: kind.into(),
-                schema: Schema { fields },
+                schema: Schema { fields, meta: None },
                 created_at: now,
                 updated_at: now,
                 deleted_at: None,
             });
         }
 
-        // Sample entries (mirrors the Prisma seed).
-        let areas = store.content_types.iter().find(|t| t.slug == "areas").unwrap().id;
+        // Sample entries (mirrors the initial seed).
         for (title, desc, icon) in [
             ("Health & Fitness", "Everything related to my physical and mental wellbeing. See [[Business & Career]] for work goals.", "💪"),
             ("Business & Career", "Professional growth, projects, and ventures.", "💼"),
@@ -108,12 +219,18 @@ impl Store {
             data.insert("title".into(), json!(title));
             data.insert("description".into(), json!(desc));
             data.insert("icon".into(), json!(icon));
-            store.entries.push(Entry { id, content_type_id: areas, data, created_at: now, updated_at: now, deleted_at: None });
+            store.entries.push(Entry {
+                id,
+                content_type_id: areas_id,
+                data,
+                created_at: now,
+                updated_at: now,
+                deleted_at: None,
+            });
         }
 
         // Sample spreadsheet rows (free-form keys, insertion order preserved).
         // First row = plain data labels (like a Google Sheets header row).
-        let tasks = store.content_types.iter().find(|t| t.slug == "tasks").unwrap().id;
         {
             let id = store.id();
             let now = Utc::now();
@@ -122,7 +239,14 @@ impl Store {
             data.insert("status".into(), json!("status"));
             data.insert("priority".into(), json!("priority"));
             data.insert("estimate".into(), json!("estimate"));
-            store.entries.push(Entry { id, content_type_id: tasks, data, created_at: now, updated_at: now, deleted_at: None });
+            store.entries.push(Entry {
+                id,
+                content_type_id: tasks_id,
+                data,
+                created_at: now,
+                updated_at: now,
+                deleted_at: None,
+            });
         }
         for (title, status, priority, estimate) in [
             ("Design the component library", "doing", "high", "5"),
@@ -136,7 +260,14 @@ impl Store {
             data.insert("status".into(), json!(status));
             data.insert("priority".into(), json!(priority));
             data.insert("estimate".into(), json!(estimate));
-            store.entries.push(Entry { id, content_type_id: tasks, data, created_at: now, updated_at: now, deleted_at: None });
+            store.entries.push(Entry {
+                id,
+                content_type_id: tasks_id,
+                data,
+                created_at: now,
+                updated_at: now,
+                deleted_at: None,
+            });
         }
 
         store.ensure_demo_workspace();
@@ -152,9 +283,15 @@ impl Store {
         if self.workspaces.iter().any(|w| w.slug == "huuk-hq") {
             return;
         }
-        let Some(user_id) = self.users.first().map(|u| u.id) else { return };
+        let Some(user_id) = self.users.first().map(|u| u.id) else {
+            return;
+        };
         let ws_id = self.id();
-        self.workspaces.push(Workspace { id: ws_id, name: "Huuk HQ".into(), slug: "huuk-hq".into() });
+        self.workspaces.push(Workspace {
+            id: ws_id,
+            name: "Huuk HQ".into(),
+            slug: "huuk-hq".into(),
+        });
         self.memberships.push((user_id, ws_id, "admin".into()));
 
         let ct_id = self.id();
@@ -167,7 +304,13 @@ impl Store {
             kind: "spreadsheet".into(),
             schema: Schema {
                 fields: vec![
-                    Field { name: "title".into(), kind: "text".into(), required: true, options: None, format: None },
+                    Field {
+                        name: "title".into(),
+                        kind: "text".into(),
+                        required: true,
+                        options: None,
+                        format: None,
+                    },
                     Field {
                         name: "quarter".into(),
                         kind: "select".into(),
@@ -183,6 +326,7 @@ impl Store {
                         format: None,
                     },
                 ],
+                meta: None,
             },
             created_at: now,
             updated_at: now,
@@ -206,16 +350,20 @@ impl Store {
 
     // ---- auth ---------------------------------------------------------
 
-    pub fn login(&mut self, email: &str, password: &str) -> ApiResult<String> {
+    pub fn find_user_by_email(&self, email: &str) -> Option<User> {
+        self.users
+            .iter()
+            .find(|u| u.email.eq_ignore_ascii_case(email))
+            .cloned()
+    }
+
+    pub fn create_session_for_user(&mut self, user_id: i64) -> ApiResult<(String, User)> {
         let user = self
             .users
             .iter()
-            .find(|u| u.email.eq_ignore_ascii_case(email))
-            .ok_or_else(|| ApiError::unauthorized("Invalid email or password"))?;
-        if !verify_password(password, &user.password_hash) {
-            return Err(ApiError::unauthorized("Invalid email or password"));
-        }
-        let user_id = user.id;
+            .find(|u| u.id == user_id)
+            .cloned()
+            .ok_or_else(|| ApiError::unauthorized("User not found"))?;
         let token = random_token();
         let active_workspace_id = self
             .memberships
@@ -231,11 +379,66 @@ impl Store {
                 expires_at: Utc::now() + Duration::days(SESSION_TTL_DAYS),
             },
         );
+        Ok((token, user))
+    }
+
+    pub fn register_user_with_hash(
+        &mut self,
+        name: &str,
+        email: &str,
+        password_hash: String,
+    ) -> ApiResult<(String, User)> {
+        if self.find_user_by_email(email).is_some() {
+            return Err(ApiError::conflict("Email is already registered"));
+        }
+        let user_id = self.id();
+        let user = User {
+            id: user_id,
+            name: name.trim().to_string(),
+            email: email.trim().to_string(),
+            password_hash,
+        };
+        self.users.push(user);
+        if let Some(ws_id) = self.workspaces.first().map(|w| w.id) {
+            self.memberships.push((user_id, ws_id, "member".into()));
+        }
+        self.create_session_for_user(user_id)
+    }
+
+    #[cfg(test)]
+    pub fn login(&mut self, email: &str, password: &str) -> ApiResult<String> {
+        let user = self
+            .find_user_by_email(email)
+            .ok_or_else(|| ApiError::unauthorized("Invalid email or password"))?;
+        if !verify_password(password, &user.password_hash) {
+            return Err(ApiError::unauthorized("Invalid email or password"));
+        }
+        let (token, _) = self.create_session_for_user(user.id)?;
         Ok(token)
     }
 
     pub fn logout(&mut self, token: &str) {
         self.sessions.remove(token);
+    }
+
+    /// Rotates a live session (silent refresh): the presented token is
+    /// revoked and a fresh token is issued, preserving the active workspace.
+    pub fn rotate_session(&mut self, token: &str) -> ApiResult<String> {
+        let session = self
+            .sessions
+            .remove(token)
+            .filter(|s| s.expires_at >= Utc::now())
+            .ok_or_else(|| ApiError::unauthorized("Session expired"))?;
+        let new_token = random_token();
+        self.sessions.insert(
+            new_token.clone(),
+            Session {
+                token: new_token.clone(),
+                expires_at: Utc::now() + Duration::days(SESSION_TTL_DAYS),
+                ..session
+            },
+        );
+        Ok(new_token)
     }
 
     pub fn user_for_token(&self, token: &str) -> Option<&User> {
@@ -251,10 +454,13 @@ impl Store {
             .iter()
             .filter(|(uid, _, _)| *uid == user_id)
             .filter_map(|(_, ws_id, role)| {
-                self.workspaces.iter().find(|w| w.id == *ws_id).map(|w| Membership {
-                    workspace: w.clone(),
-                    role: role.clone(),
-                })
+                self.workspaces
+                    .iter()
+                    .find(|w| w.id == *ws_id)
+                    .map(|w| Membership {
+                        workspace: w.clone(),
+                        role: role.clone(),
+                    })
             })
             .collect()
     }
@@ -264,7 +470,11 @@ impl Store {
         self.sessions
             .get(token)
             .and_then(|s| s.active_workspace_id)
-            .filter(|id| self.memberships.iter().any(|(uid, ws, _)| *uid == user_id && ws == id))
+            .filter(|id| {
+                self.memberships
+                    .iter()
+                    .any(|(uid, ws, _)| *uid == user_id && ws == id)
+            })
             .or_else(|| {
                 self.memberships
                     .iter()
@@ -275,13 +485,20 @@ impl Store {
             .unwrap_or(1)
     }
 
-    pub fn switch_workspace(&mut self, token: &str, user_id: i64, workspace_id: i64) -> ApiResult<()> {
+    pub fn switch_workspace(
+        &mut self,
+        token: &str,
+        user_id: i64,
+        workspace_id: i64,
+    ) -> ApiResult<()> {
         let is_member = self
             .memberships
             .iter()
             .any(|(uid, ws, _)| *uid == user_id && *ws == workspace_id);
         if !is_member {
-            return Err(ApiError::forbidden("You are not a member of that workspace"));
+            return Err(ApiError::forbidden(
+                "You are not a member of that workspace",
+            ));
         }
         let session = self
             .sessions
@@ -294,7 +511,12 @@ impl Store {
     // ---- content types -------------------------------------------------
 
     pub fn content_types(&self) -> Vec<ContentType> {
-        let mut list: Vec<_> = self.content_types.iter().filter(|t| t.deleted_at.is_none()).cloned().collect();
+        let mut list: Vec<_> = self
+            .content_types
+            .iter()
+            .filter(|t| t.deleted_at.is_none())
+            .cloned()
+            .collect();
         list.sort_by_key(|t| t.id);
         list
     }
@@ -325,7 +547,9 @@ impl Store {
         schema: Schema,
     ) -> ApiResult<ContentType> {
         if self.content_type_by_slug(slug, workspace_id).is_some() {
-            return Err(ApiError::conflict("A content type with that slug already exists"));
+            return Err(ApiError::conflict(
+                "A content type with that slug already exists",
+            ));
         }
         let id = self.id();
         let now = Utc::now();
@@ -334,7 +558,11 @@ impl Store {
             workspace_id,
             slug: slug.into(),
             name: name.into(),
-            kind: if kind.is_empty() { "document".into() } else { kind.into() },
+            kind: if kind.is_empty() {
+                "document".into()
+            } else {
+                kind.into()
+            },
             schema,
             created_at: now,
             updated_at: now,
@@ -386,12 +614,25 @@ impl Store {
     // ---- entries -------------------------------------------------------
 
     pub fn entries_for(&self, type_id: i64) -> Vec<&Entry> {
+        let is_spreadsheet = self
+            .content_types
+            .iter()
+            .find(|t| t.id == type_id)
+            .map(|t| t.kind == "spreadsheet")
+            .unwrap_or(false);
         let mut list: Vec<_> = self
             .entries
             .iter()
             .filter(|e| e.content_type_id == type_id && e.deleted_at.is_none())
             .collect();
-        list.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+        if is_spreadsheet {
+            list.sort_by_key(|e| {
+                let row_idx = e.data.get("_row").and_then(|v| v.as_i64()).unwrap_or(e.id);
+                (row_idx, e.id)
+            });
+        } else {
+            list.sort_by_key(|e| std::cmp::Reverse(e.updated_at));
+        }
         list
     }
 
@@ -404,13 +645,25 @@ impl Store {
     pub fn create_entry(&mut self, type_id: i64, data: Map<String, Value>) -> EntryView {
         let id = self.id();
         let now = Utc::now();
-        let entry = Entry { id, content_type_id: type_id, data, created_at: now, updated_at: now, deleted_at: None };
+        let entry = Entry {
+            id,
+            content_type_id: type_id,
+            data,
+            created_at: now,
+            updated_at: now,
+            deleted_at: None,
+        };
         let view = EntryView::from(&entry);
         self.entries.push(entry);
         view
     }
 
-    pub fn update_entry(&mut self, type_id: i64, id: i64, patch: Map<String, Value>) -> ApiResult<EntryView> {
+    pub fn update_entry(
+        &mut self,
+        type_id: i64,
+        id: i64,
+        patch: Map<String, Value>,
+    ) -> ApiResult<EntryView> {
         let entry = self
             .entries
             .iter_mut()
@@ -433,8 +686,82 @@ impl Store {
         Ok(())
     }
 
+    /// Perform atomic batch creation, updates, and deletions for a spreadsheet or collection.
+    pub fn batch_entries(
+        &mut self,
+        type_id: i64,
+        create: Vec<Map<String, Value>>,
+        update: Vec<(i64, Map<String, Value>)>,
+        delete: Vec<i64>,
+    ) -> ApiResult<Vec<EntryView>> {
+        let mut touched_ids = Vec::new();
+        for data in create {
+            let v = self.create_entry(type_id, data);
+            touched_ids.push(v.id);
+        }
+        for (id, patch) in update {
+            let v = self.update_entry(type_id, id, patch)?;
+            touched_ids.push(v.id);
+        }
+        for id in delete {
+            let _ = self.delete_entry(type_id, id);
+        }
+        for id in touched_ids {
+            self.rebuild_backrefs(id);
+        }
+        Ok(self
+            .entries_for(type_id)
+            .into_iter()
+            .map(EntryView::from)
+            .collect())
+    }
+
+    /// Replace or append rows in a spreadsheet (used by `.ods`/`.csv` import).
+    pub fn import_sheet_rows(
+        &mut self,
+        type_id: i64,
+        rows: Vec<Map<String, Value>>,
+        meta: Option<SheetMeta>,
+        replace_existing: bool,
+    ) -> ApiResult<Vec<EntryView>> {
+        if replace_existing {
+            let now = Utc::now();
+            for e in self
+                .entries
+                .iter_mut()
+                .filter(|e| e.content_type_id == type_id && e.deleted_at.is_none())
+            {
+                e.deleted_at = Some(now);
+            }
+        }
+        if let Some(m) = meta {
+            if let Some(ct) = self.content_types.iter_mut().find(|t| t.id == type_id) {
+                ct.schema.meta = Some(m);
+                ct.updated_at = Utc::now();
+            }
+        }
+        let mut created_ids = Vec::with_capacity(rows.len());
+        for data in rows {
+            let v = self.create_entry(type_id, data);
+            created_ids.push(v.id);
+        }
+        for id in created_ids {
+            self.rebuild_backrefs(id);
+        }
+        Ok(self
+            .entries_for(type_id)
+            .into_iter()
+            .map(EntryView::from)
+            .collect())
+    }
+
+    #[cfg(test)]
     pub fn backrefs_to(&self, to: i64) -> Vec<Backref> {
-        self.backrefs.iter().filter(|b| b.to_entry_id == Some(to)).cloned().collect()
+        self.backrefs
+            .iter()
+            .filter(|b| b.to_entry_id == Some(to))
+            .cloned()
+            .collect()
     }
 
     /// Backrefs for the active workspace, optionally filtered by to/from/target.
@@ -449,10 +776,10 @@ impl Store {
             .backrefs
             .iter()
             .filter(|b| b.workspace_id == workspace_id)
-            .filter(|b| to.map_or(true, |t| b.to_entry_id == Some(t)))
-            .filter(|b| from.map_or(true, |f| b.from_entry_id == f))
+            .filter(|b| to.is_none_or(|t| b.to_entry_id == Some(t)))
+            .filter(|b| from.is_none_or(|f| b.from_entry_id == f))
             .filter(|b| {
-                target.map_or(true, |t| {
+                target.is_none_or(|t| {
                     b.target_name
                         .as_deref()
                         .map(|n| n.eq_ignore_ascii_case(t))
@@ -461,12 +788,13 @@ impl Store {
             })
             .cloned()
             .collect();
-        list.sort_by(|a, b| b.id.cmp(&a.id));
+        list.sort_by_key(|b| std::cmp::Reverse(b.id));
         list.truncate(200);
         list
     }
 
-    /// Re-scan one entry's string fields for `[[wiki-links]]` and rebuild its outgoing refs.
+    /// Re-scan one entry's string fields for `[[wiki-links]]` and `=ENTRY()`/`=LINK()` formulas,
+    /// and rebuild its outgoing refs.
     pub fn rebuild_backrefs(&mut self, entry_id: i64) -> (usize, usize) {
         let Some(entry) = self
             .entries
@@ -476,7 +804,11 @@ impl Store {
         else {
             return (0, 0);
         };
-        let Some(ct) = self.content_types.iter().find(|t| t.id == entry.content_type_id) else {
+        let Some(ct) = self
+            .content_types
+            .iter()
+            .find(|t| t.id == entry.content_type_id)
+        else {
             return (0, 0);
         };
         let workspace_id = ct.workspace_id;
@@ -487,7 +819,12 @@ impl Store {
             for (target, alias, offset) in parse_wiki_links(s) {
                 let start = clamp_boundary(s, offset.saturating_sub(80));
                 let end = clamp_boundary(s, (offset + 80).min(s.len()));
-                links.push((target, alias, offset as i64, Some(s[start..end].to_string())));
+                links.push((
+                    target,
+                    alias,
+                    offset as i64,
+                    Some(s[start..end].to_string()),
+                ));
             }
         }
 
@@ -505,7 +842,7 @@ impl Store {
                 if !in_workspace {
                     return None;
                 }
-                let title = e.data.get("title")?.as_str()?;
+                let title = e.data.get("title").or_else(|| e.data.get("a"))?.as_str()?;
                 Some((title.to_lowercase(), e.id))
             })
             .collect();
@@ -567,9 +904,17 @@ impl Store {
         let bytes = serde_json::to_vec_pretty(self).unwrap_or_default();
         fs::write(path, bytes)
     }
+
+    /// Serialize and write a cloned `Store` snapshot on a blocking thread (SOP §3.5 Hard Rule 10).
+    pub async fn save_to_async(snapshot: Store, path: PathBuf) -> std::io::Result<()> {
+        tokio::task::spawn_blocking(move || snapshot.save_to(&path))
+            .await
+            .map_err(std::io::Error::other)?
+    }
 }
 
-/// Parse `[[target]]` / `[[target|alias]]` links with byte offsets.
+/// Parse `[[target]]` / `[[target|alias]]` links AND `=ENTRY("target", ...)` / `=LINK("target", ...)`
+/// formula references with byte offsets.
 pub fn parse_wiki_links(text: &str) -> Vec<(String, Option<String>, usize)> {
     let bytes = text.as_bytes();
     let mut out = Vec::new();
@@ -595,6 +940,30 @@ pub fn parse_wiki_links(text: &str) -> Vec<(String, Option<String>, usize)> {
         }
         i += 1;
     }
+
+    // Also scan formula calls: ENTRY("Target", "field") or LINK("Target", "field")
+    let trimmed = text.trim();
+    if trimmed.starts_with('=') || trimmed.starts_with("of:=") {
+        let upper = text.to_ascii_uppercase();
+        for fn_name in ["ENTRY(", "LINK("] {
+            let mut search_from = 0usize;
+            while let Some(rel) = upper[search_from..].find(fn_name) {
+                let fn_start = search_from + rel;
+                let arg_start = fn_start + fn_name.len();
+                let rest = text[arg_start..].trim_start();
+                if let Some(stripped) = rest.strip_prefix('"') {
+                    if let Some(q_end) = stripped.find('"') {
+                        let raw_target = stripped[..q_end].trim();
+                        if !raw_target.starts_with("[[") && !raw_target.is_empty() {
+                            out.push((raw_target.to_string(), Some("formula".into()), fn_start));
+                        }
+                    }
+                }
+                search_from = arg_start;
+            }
+        }
+    }
+
     out
 }
 
@@ -609,7 +978,8 @@ fn clamp_boundary(s: &str, mut i: usize) -> usize {
     i
 }
 
-pub fn hash_password(password: &str) -> String {    let salt = SaltString::generate(&mut OsRng);
+pub fn hash_password(password: &str) -> String {
+    let salt = SaltString::generate(&mut OsRng);
     Argon2::default()
         .hash_password(password.as_bytes(), &salt)
         .map(|h| h.to_string())
@@ -618,7 +988,9 @@ pub fn hash_password(password: &str) -> String {    let salt = SaltString::gener
 
 pub fn verify_password(password: &str, hash: &str) -> bool {
     match PasswordHash::new(hash) {
-        Ok(parsed) => Argon2::default().verify_password(password.as_bytes(), &parsed).is_ok(),
+        Ok(parsed) => Argon2::default()
+            .verify_password(password.as_bytes(), &parsed)
+            .is_ok(),
         Err(_) => false,
     }
 }
@@ -627,4 +999,80 @@ pub fn random_token() -> String {
     let mut bytes = [0u8; 32];
     rand::thread_rng().fill_bytes(&mut bytes);
     bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rotate_session_revokes_old_token_and_preserves_workspace() {
+        let mut store = Store::seed();
+        let token = store.login("pooh@questpage.app", "changeme123").unwrap();
+        let workspace = store.active_workspace_id(&token, 1);
+
+        let rotated = store.rotate_session(&token).unwrap();
+        assert_ne!(rotated, token);
+        assert!(
+            store.user_for_token(&token).is_none(),
+            "old token must be dead"
+        );
+        assert!(store.user_for_token(&rotated).is_some());
+        assert_eq!(store.active_workspace_id(&rotated, 1), workspace);
+    }
+
+    #[test]
+    fn rotate_session_rejects_unknown_token() {
+        let mut store = Store::seed();
+        assert!(store.rotate_session("deadbeef").is_err());
+    }
+
+    #[test]
+    fn test_spreadsheet_row_ordering_and_batch_ops() {
+        let mut store = Store::seed();
+        let tasks_ct = store
+            .content_types
+            .iter()
+            .find(|t| t.slug == "tasks")
+            .unwrap()
+            .id;
+        let initial: Vec<i64> = store.entries_for(tasks_ct).iter().map(|e| e.id).collect();
+        assert_eq!(initial.len(), 4);
+        assert!(initial.windows(2).all(|w| w[0] < w[1]));
+
+        // Update the first row (header) so its updated_at is newest; order must remain stable!
+        let mut patch = Map::new();
+        patch.insert("estimate".into(), json!("=SUM(D2:D4)"));
+        store.update_entry(tasks_ct, initial[0], patch).unwrap();
+        let after: Vec<i64> = store.entries_for(tasks_ct).iter().map(|e| e.id).collect();
+        assert_eq!(initial, after);
+    }
+
+    #[test]
+    fn test_formula_entry_backrefs() {
+        let mut store = Store::seed();
+        let tasks_ct = store
+            .content_types
+            .iter()
+            .find(|t| t.slug == "tasks")
+            .unwrap()
+            .id;
+        let health_id = store
+            .entries
+            .iter()
+            .find(|e| e.data.get("title").and_then(|v| v.as_str()) == Some("Health & Fitness"))
+            .unwrap()
+            .id;
+
+        let mut row_data = Map::new();
+        row_data.insert(
+            "title".into(),
+            json!("=ENTRY(\"Health & Fitness\", \"icon\")"),
+        );
+        let created = store.create_entry(tasks_ct, row_data);
+        let (resolved, _) = store.rebuild_backrefs(created.id);
+        assert_eq!(resolved, 1);
+        let refs = store.backrefs_to(health_id);
+        assert!(refs.iter().any(|b| b.from_entry_id == created.id));
+    }
 }

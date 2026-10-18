@@ -1,0 +1,93 @@
+# Production Zero-Downtime Stack (SOP §1.3, §3.3, §4.2, §5.5)
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pugu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-pugu}
+    expose:
+      - '5432'
+    volumes:
+      - pugu_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-pugu} -d $${POSTGRES_DB:-pugu}']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+
+  migration:
+    build:
+      context: ../server
+    command: ['/app/pugu-server', '--run-migrations-only']
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://pugu:${POSTGRES_PASSWORD}@postgres:5432/pugu}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+
+  backend:
+    build:
+      context: ../server
+    restart: unless-stopped
+    environment:
+      BIND_ADDR: 0.0.0.0
+      PORT: 8788
+      SEED: ${SEED:-1}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      DATABASE_URL: ${DATABASE_URL:-postgres://pugu:${POSTGRES_PASSWORD}@postgres:5432/pugu}
+    # SOP §1.3: NEVER publish Axum's port to the outside host — internal Docker network only
+    expose:
+      - '8788'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+
+  caddy:
+    build:
+      context: ..
+      dockerfile: apps/Dockerfile
+      additional_contexts:
+        huuk: /home/aslpooht/PROJECT/_TEENUENG-COMPANY/components/huuk
+    restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      BACKEND_UPSTREAM: backend:8788
+    depends_on:
+      - backend
+    ports:
+      - '${WEB_PORT:-3001}:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+
+volumes:
+  pugu_postgres_data:
+  caddy_data:
+  caddy_config:

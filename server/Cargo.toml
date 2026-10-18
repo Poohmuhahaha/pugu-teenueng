@@ -2,13 +2,19 @@
 name = "pugu-server"
 version = "0.1.0"
 edition = "2021"
-description = "Pugu REST backend — Axum + in-memory/JSON store (huuk-style stack)"
+license = "MIT"
+description = "Pugu REST backend — Axum + SQLx PostgreSQL store"
 
 [dependencies]
 axum = "0.8"
+axum-extra = { version = "0.10", features = ["cookie"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal", "time", "fs"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
+sqlx = { version = "0.8.6", default-features = false, features = ["postgres", "runtime-tokio", "tls-rustls", "migrate", "macros"] }
+mimalloc = "0.1"
+time = "0.3"
+ts-rs = { version = "10", features = ["no-serde-warnings"] }
 tower-http = { version = "0.6", features = ["cors", "trace"] }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
 argon2 = "0.5"
@@ -17,5 +23,8 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 [profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
 strip = true
-lto = true

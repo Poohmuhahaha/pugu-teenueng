@@ -1,0 +1,27 @@
+# Local Development PostgreSQL Stack (SOP §0.1 & §3)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pugu-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pugu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme-dev-password}
+      POSTGRES_DB: ${POSTGRES_DB:-pugu}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pugu_postgres_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-pugu} -d $${POSTGRES_DB:-pugu}']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+
+volumes:
+  pugu_postgres_dev:

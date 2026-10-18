@@ -1,29 +1,25 @@
 # Contributing to Pugu
 
-We welcome contributions! Pugu is built as a local-first productivity tool, and community contributions are key to making it better.
+Thank you for contributing to **Pugu**! This project is open-source software licensed under the **MIT License** and follows our Master Engineering SOP for Vue 3, TanStack Query, Caddy, and Rust (Axum + SQLx).
 
-## Development Setup
+## Prerequisites
 
-1. Fork the repository and clone it locally.
-2. Install dependencies: `pnpm install`
-3. Copy `.env.example` to `.env` and set required secrets.
-4. Start the database: `docker-compose up -d db`
-5. Run migrations: `pnpm --filter @pugu/api exec prisma migrate dev`
-6. Start development servers: `pnpm dev` (This will start the web, api, admin, and landing apps).
+- **Rust** 1.85+ (`rustfmt`, `clippy`)
+- **Bun** 1.2+
+- **Docker & Docker Compose** (for PostgreSQL 16 and Caddy 2)
+- **just** (optional command runner)
 
-## Pull Requests
+## 8-Step Feature Lifecycle (SOP §0.2)
 
-1. Create a feature branch (`git checkout -b feature/your-feature-name`).
-2. Implement your changes.
-3. Ensure the project still builds (`pnpm build`) and linting passes (`pnpm lint`).
-4. Commit your changes with descriptive, conventional commit messages.
-5. Push to your fork and submit a Pull Request against the `main` branch.
-
-## Code Style
-
-- We use Prettier for formatting and ESLint for linting.
-- Follow the existing code style in the repository.
+1. Write/update SQL migration in `server/migrations/` (obeying Expand-and-Contract).
+2. Define Rust DTO struct in `server/src/model.rs` with `#[derive(Serialize, Deserialize, TS)]` and `#[ts(export, export_to = "../../apps/src/api/types/")]`.
+3. Implement Axum handler in `server/src/handlers.rs` (zero `.unwrap()` / `.expect()`, propagating errors into `ApiError`).
+4. Run `cargo test --manifest-path server/Cargo.toml` to export `.ts` bindings into `apps/src/api/types/`.
+5. Define the matching Zod schema in `apps/src/api/schemas/index.ts` with `AssertEqual<ZodType, TsRsType>`.
+6. Create the TanStack Query hook in `apps/src/api/queries/index.ts` using `customFetch`.
+7. Build the Vue 3 component (`<script setup lang="ts">`) handling all 4 states: `isPending`, `isError`, `isEmpty`, and `data`.
+8. Run `just verify` and fix all warnings/errors before opening a pull request.
 
 ## License
 
-By contributing to Pugu, you agree that your contributions will be licensed under the AGPL-3.0 License.
+By contributing to Pugu, you agree that your contributions will be licensed under the [MIT License](LICENSE).

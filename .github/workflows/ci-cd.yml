@@ -1,0 +1,30 @@
+# .github/workflows/ci-cd.yml — Canonical CI/CD Pipeline (SOP §0.1 & §8.4)
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: server
+
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Run Deterministic Verification & Contract Drift Check
+        run: just verify-ci

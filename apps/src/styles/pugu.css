@@ -1,0 +1,69 @@
+/* Pugu layer — sits on top of the huuk design system (@huuk/style.css).
+   Maps semantic --c-* tokens onto huuk tokens (SOP §10.1 Hard Rule 9). */
+
+:root {
+  --c-canvas: var(--surface);
+  --c-ink: var(--ink);
+  --c-body: var(--ink);
+  --c-muted: var(--muted);
+  --c-muted-soft: var(--muted);
+  --c-faint: var(--muted);
+  --c-ink-body: var(--ink);
+  --c-hairline: var(--ink);
+  --c-hairline-soft: var(--line);
+  --c-surface-card: var(--surface);
+  --c-surface-soft: var(--wash);
+  --c-surface-strong: var(--line);
+  --c-surface-dark: var(--ink);
+  --c-surface-dark-elev: var(--ink);
+  --c-on-dark: var(--surface);
+  --c-on-dark-soft: var(--muted);
+  --c-primary: var(--ink);
+  --c-primary-active: var(--ink);
+  --c-success: var(--ink);
+  --c-warning: var(--ink);
+  --c-error: var(--ink);
+  --c-brand-accent: var(--ink);
+  --c-graph-1: var(--ink);
+  --c-graph-2: var(--muted);
+  --c-graph-3: var(--ink);
+  --c-graph-4: var(--muted);
+  --c-graph-5: var(--ink);
+  --c-graph-6: var(--muted);
+  --c-graph-7: var(--ink);
+  --c-graph-8: var(--muted);
+  --font-main: var(--font-display);
+  --font-body: var(--font);
+  --font-mono: var(--mono);
+  --s-xxs: 0.25rem;
+  --s-xs: 0.5rem;
+  --s-sm: 0.75rem;
+  --s-md: 1rem;
+  --s-lg: 1.5rem;
+  --s-xl: 2rem;
+  --s-xxl: 3rem;
+  --layout-topbar-h: 3.375rem;
+  --layout-sidebar-w: 14.5rem;
+  --layout-max-w: 68.75rem;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+h1 { font-size: clamp(1.875rem, 3.4vw, 3rem); line-height: 1.04; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.625rem, 2.6vw, 2.25rem); line-height: 1.06; letter-spacing: -0.02em; }
+h3 { font-size: 1.3125rem; line-height: 1.25; letter-spacing: -0.01em; }
+a { color: inherit; }
+
+/* huuk fills every control; keep inline buttons inline. */
+button, a.btn { width: auto; }
